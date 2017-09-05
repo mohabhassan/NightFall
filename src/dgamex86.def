@@ -1,0 +1,4 @@
+LIBRARY dgamex86.dll BASE=0x40080000
+
+	EXPORTS
+		GetGameAPI

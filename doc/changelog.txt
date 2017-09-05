@@ -1,0 +1,58 @@
+2009-29-12		Razorapid	<mike_man@o2.pl>
+	
+		* added misc.c and misc.h as a place where we can place our own custom functions, code, structs,
+		so the gamex86 related stuff won't get messed up with it
+		
+		* added 2 new functions: SendGameMessage, BroadcastGameMessage in misc.c
+		* added MESSAGE_TYPES for this functions in misc.h
+		
+		* added some global variables at the beggining of gamex86.c for no-recoil detection
+		* added anti-NORECOIL/NO-RECOIL detection code in G_ClientThink (gamex86.c)
+		
+		* added other global variables like: gi, *globals, globals_backup as 'extern' at the end of gamex86.h
+		so we can use them in misc.c for eg.
+		
+		* moved clientdata_t struct the the bottom of gamex86.h so it's easier to find it and it won't get lost
+		between other mohaa structs, since it's our custom struct.
+		
+		* removed unneeded loop in anti-STWH code (it caused unneeded overload for every client, every frame)
+		
+		* added some comments
+		
+		* removed unused variables, decreasing warnings count during compilation
+		
+		* added detours.lib and detours.h to the folder so people won't need to look for it/download
+		and it will be easier to compile without 'missing files' errors
+		* commented out #include "detours.h" because we don't need it, but it may be useful later on
+		whie developing new functions/reversing
+		
+2009-30-12		Razorapid	<mike_man@o2.pl>
+
+		* fixed NORECOIL detection code
+		* added code for getting the weapon class of the weapon used by player
+		
+		Tommaso
+		* fixed string formatting bug in SendGameMessage and BroadcastGameMessage
+		
+		* added CreateRandomText function to misc.c for generating random cvars, values etc.
+		* included <time.h> in misc.h
+		
+2009-31-12		Tommaso		<gtom@freemail.hu>
+
+		* deleted cross-includes between header files that made the compiler run into an infinite loop
+		
+		* reorganized imports, added linux-spexific imports with ifdef's. Now all C sources include all header files, 
+		but header files don't include other header files. Only the gamex86.h is responsible to include all the necessary system libraries, I think it's cleaner this way.
+		
+		* commented out the definition of sigset_t type in gamex86.h, because it's already defined on linux, and currently unused in the code
+		
+		* increased BroadcastGameMessage and SendGameMessage buffer size to 4000, because in Q3 source code max message size is 16384
+		
+		* eliminated compiler warnings: first parameter's type changed from client_t * to int in gi.SendServerCommand and gi.DropClient
+		
+		* added G_Shutdown to unload original game library and custom signal handler on linux
+		
+		* added custom signal handler to print stack trace on crash (linux only)
+		
+		* added some useful functions to misc.c (memory allocation, logging, string manipulation, date/time functions etc.)
+
