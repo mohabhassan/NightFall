@@ -16,10 +16,10 @@
 #pragma warning(disable : 4244 4013 4996 4700)
 
 #if defined(MSVC6) || defined(__MINGW32__)
-	struct timespec {
+	/*struct timespec {
 		time_t tv_sec;
 		long tv_nsec;
-	};
+	};*/
 #endif
 
 iplist_t iplist;
