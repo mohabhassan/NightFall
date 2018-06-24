@@ -10,7 +10,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include <errno.h>
-
+#define MOHBT
 #if defined(_WIN32) || defined(__MINGW32__)
 	//  windows-only
 	#include <windows.h>	//Windows header
@@ -1227,51 +1227,52 @@ typedef struct trace_s
 
 typedef struct playerState_s
 {
-	int commandTime;
-	pmType_t pmType;
-	int bobCycle;
-	int pmFlags;
-	int pmRunTime;
-	vec3_t origin;
-	vec3_t velocity;
-	int gravity;
-	int speed;
-	int deltaAngles[3];
-	int groundEntityNum;
-	qboolean walking;
-	qboolean groundPlane;
-	int feetFalling;
-	vec3_t fallDir;
-	trace_t groundTrace;
-	int clientNum;
-	vec3_t viewAngles;
-	int viewHeight;
-	float leanAngle;
-	int viewModelAnim;
-	int viewModelAnimChanged;
-	int stats[MAX_PLAYERSTATS];
-	int activeItems[8];
-	int ammoNameIndex[MAX_WEAPONS];
-	int ammoAmount[MAX_WEAPONS];
-	int maxAmmoAmount[MAX_WEAPONS];
-	musicMood_t currentMusicMood;
-	musicMood_t fallbackMusicMood;
-	float musicVolume;
-	float musicVolumeFadeTime;
-	int reverbType;
-	float reverbLevel;
-	vec4_t blend;
-	float fov;
-	vec3_t cameraOrigin;
-	vec3_t cameraAngles;
-	float cameraTime;
-	vec3_t cameraOffset;
-	vec3_t cameraPosOfs;
-	int cameraFlags;
-	vec3_t damageAngles;
-	int ping;
-	vec3_t eyePos;
-
+	int commandTime;//4 - 0
+	pmType_t pmType;//4 - 4
+	int bobCycle;//4 - 8
+	int pmFlags;//4 - 12
+	//int pmRunTime; //removed in bt ////////////bt
+	vec3_t origin;//12 - 16
+	vec3_t velocity;//12 - 28
+	int gravity;//4 - 40
+	int speed;//4 - 44
+	int deltaAngles[3];//12 - 48
+	int groundEntityNum;//4 - 60
+	qboolean walking;//4 - 64
+	qboolean groundPlane;//4 - 68
+	int feetFalling;//4 - 72
+	vec3_t fallDir;//12 - 76
+	trace_t groundTrace;//68 - 88
+	int clientNum;//4 - 156
+	vec3_t viewAngles;//12 - 160
+	int viewHeight;//4 - 172
+	float leanAngle;//4 - 176
+	int viewModelAnim;//4 - 180
+	int viewModelAnimChanged;//4 - 184
+	int stats[MAX_PLAYERSTATS];//128 - 188
+	int activeItems[8];//32 - 316
+	int ammoNameIndex[MAX_WEAPONS];//64 - 348
+	int ammoAmount[MAX_WEAPONS];//64 - 412
+	int maxAmmoAmount[MAX_WEAPONS];//64 - 476
+	musicMood_t currentMusicMood;//4 - 540
+	musicMood_t fallbackMusicMood;//4 - 544
+	float musicVolume;//4 - 548
+	float musicVolumeFadeTime;//4 - 552
+	int reverbType;//4 - 556
+	float reverbLevel;//4 - 560
+	vec4_t blend;//16 - 564
+	float fov;//4 - 580
+	vec3_t cameraOrigin;//12 - 584
+	vec3_t cameraAngles;//12 - 596
+	float cameraTime;//4 - 608
+	vec3_t cameraOffset;//12 - 612
+	vec3_t cameraPosOfs;//12 - 624
+	int cameraFlags;//4 - 636
+	vec3_t damageAngles;//12 - 640
+	byte filler1[8];//8 - 652  ////////////bt
+	int ping;//4 - 660
+	vec3_t eyePos;//12 - 664
+	//?? - 676
 } playerState_t;
 
 extern playerState_t ps;
@@ -4062,7 +4063,187 @@ typedef struct clientGameExport_s
 	qboolean ( *CG_Command_ProcessFile )( char *name, qboolean quiet, dtiki_t *curTiki );
 
 } clientGameExport_t;
-
+#ifdef MOHBT
+typedef struct gameImport_s
+{
+	void(*Printf)(const char *format, ...);
+	void(*DPrintf)(const char *format, ...);
+	void(*DPrintf2)(const char *format, ...);
+	void(*DebugPrintf)(const char *format, ...);
+	void(*Error)(int level, const char *format, ...);
+	int(*Milliseconds)();
+	int(*sub_493F70) (int a1);//1
+	const char * (*LV_ConvertString)(const char *string);
+	void * (*Malloc)(size_t size);
+	void(*Free)(void *ptr);
+	cvar_t * (*Cvar_Get)(const char *varName, const char *varValue, int varFlags);
+	void(*Cvar_Set)(const char *varName, const char *varValue);
+	cvar_t *(*cvar_set2)(const char *varName, const char *varValue, qboolean force);
+	cvar_t *(*NextCvar)(cvar_t *var);
+	int(*Argc)();
+	char * (*Argv)(int arg);
+	char * (*Args)();
+	void(*AddCommand)(const char *cmdName, xcommand_t cmdFunction);
+	int(*FS_ReadFile)(const char *qpath, void **buffer);// , qboolean quiet);< from FS_ReadFileEX
+	void(*FS_FreeFile)(void *buffer);
+	size_t(*FS_WriteFile)(const char *qpath, const void *buffer, size_t size);
+	fileHandle_t(*FS_FOpenFileWrite)(const char *fileName);
+	fileHandle_t(*FS_FOpenFileAppend)(const char *fileName);
+	const char *(*FS_PrepFileWrite)(const char *fileName);
+	size_t(*FS_Write)(void *buffer, size_t size, fileHandle_t fileHandle);
+	size_t(*FS_Read)(void *buffer, size_t len, fileHandle_t fileHandle);
+	void(*FS_FCloseFile)(fileHandle_t fileHandle);
+	int(*FS_Tell)(fileHandle_t fileHandle);
+	int(*FS_Seek)(fileHandle_t fileHandle, long int offset, fsOrigin_t origin);
+	void(*FS_Flush)(fileHandle_t fileHandle);
+	int(*FS_FileNewer)(const char *source, const char *destination);
+	void(*FS_CanonicalFilename)(char *fileName);
+	char **(*FS_ListFiles)(const char *qpath, const char *extension, qboolean wantSubs, int *numFiles);
+	char **(*FS_ListFilteredFiles)(const char *path, const char *extension, char *filter, qboolean wantSubs, int *numfiles);//2
+	void(*FS_FreeFileList)(char **list);
+	const char *(*GetArchiveFileName)(char *fileName, char *extension);
+	void(*SendConsoleCommand)(const char *text);
+	void(*Cbuf_ExecuteText) (int exec_when, const char *text);//3: Cbuf_ExecuteText
+	void(*DebugGraph)(float value, int color);
+	void(*SendServerCommand)(int client, const char *format, ...);
+	void(*DropClient)(int client, const char *reason);
+	void(*MSG_WriteBits)(int value, int bits);
+	void(*MSG_WriteChar)(int c);
+	void(*MSG_WriteByte)(int c);
+	void(*MSG_WriteSVC)(int c);
+	void(*MSG_WriteShort)(int c);
+	void(*MSG_WriteLong)(int c);
+	void(*MSG_WriteFloat)(float f);
+	void(*MSG_WriteString)(const char *s);
+	void(*MSG_WriteAngle8)(float f);
+	void(*MSG_WriteAngle16)(float f);
+	void(*MSG_WriteCoord)(float f);
+	void(*MSG_WriteDir)(vec3_t dir);
+	void(*MSG_StartCGM)(int type);
+	void(*MSG_EndCGM)();
+	void(*MSG_SetClient)(int client);
+	void(*SetBroadcastVisible)(vec3_t pos, vec3_t posB);
+	void(*SetBroadcastHearable)(vec3_t pos, vec3_t posB);
+	void(*SetBroadcastAll)();
+	void(*SetConfigstring)(int index, const char *val);
+	char *(*GetConfigstring)(int index);
+	void(*SetUserinfo)(int index, char *val);
+	void(*GetUserinfo)(int index, char *buffer, int bufferSize);
+	void(*SetBrushModel)(gentity_t *ent, const char *name);
+	void(*ModelBoundsFromName)(char *name, vec3_t mins, vec3_t maxs);
+	qboolean(*SightTraceEntity)(gentity_t *touch, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int contentMask, qboolean cylinder);
+	qboolean(*SightTrace)(vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int passEntityNum, int passEntityNum2, int contentMask, qboolean cylinder);
+	void(*Trace)(trace_t *results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask, qboolean cylinder, qboolean traceDeep);
+	int(*sub_451C80) (int *a1, float *a2);//4
+	baseShader_t * (*GetShader)(int shaderNum);
+	int(*PointContents)(const vec3_t p, int passEntityNum);
+	int(*PointBrushnum)(vec3_t p, clipHandle_t model);
+	void(*AdjustAreaPortalState)(gentity_t *ent, qboolean open);
+	int(*AreaForPoint)(vec3_t pos);
+	qboolean(*AreasConnected)(int area1, int area2);
+	qboolean(*InPVS)(float *p1, float *p2);
+	void(*LinkEntity)(gentity_t *gEnt);
+	void(*UnlinkEntity)(gentity_t *gEnt);
+	int(*AreaEntities)(const vec3_t mins, const vec3_t maxs, int *list, int maxcount);
+	void(*ClipToEntity)(trace_t *tr, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int entityNum, int contentMask);
+	qboolean(*SV_EntityContact)(vec3_t mins, vec3_t maxs, gentity_t *gEnt);//5:
+	int(*imageindex)(const char *name);
+	int(*itemindex)(const char *name);
+	int(*soundindex)(const char *name, int streamed);
+	dtiki_t *(*TIKI_RegisterModel)(const char *path);
+	dtiki_t *(*modeltiki)(const char *name);
+	dtikianim_t *(*modeltikianim)(const char *name);
+	void(*SetLightStyle)(int index, const char *data);
+	const char *(*GameDir)();
+	qboolean(*setmodel)(gentity_t *ent, const char *name);
+	void(*clearmodel)(gentity_t *ent);
+	int(*TIKI_NumAnims)(dtiki_t *tiki);
+	int(*NumSurfaces)(dtiki_t *tiki);
+	int(*NumTags)(dtiki_t *tiki);
+	void(*CalculateBounds)(dtiki_t *tiki, float scale, vec3_t mins, vec3_t maxs);
+	void *(*TIKI_GetSkeletor)(dtiki_t *tiki, int entNum);
+	const char *(*Anim_NameForNum)(dtiki_t *tiki, int animNum);
+	int(*Anim_NumForName)(dtiki_t *tiki, const char *name);
+	int(*Anim_Random)(dtiki_t *tiki, const char *name);
+	int(*Anim_NumFrames)(dtiki_t *tiki, int animNum);
+	float(*Anim_Time)(dtiki_t *tiki, int animNum);
+	float(*Anim_Frametime)(dtiki_t *tiki, int animNum);
+	float(*Anim_CrossTime)(dtiki_t *tiki, int animNum);
+	void(*Anim_Delta)(dtiki_t *tiki, int animNum, float *delta);
+	DWORD *(*sub_487570)(DWORD *a1, int a2, DWORD *a3);//6
+	qboolean(*Anim_HasDelta)(dtiki_t *tiki, int animNum);
+	void(*Anim_DeltaOverTime)(dtiki_t *tiki, int animNum, float time1, float time2, float *delta);
+	void(*TIKI_Anim_AngularDeltaOverTime)(int a1, int a2, float a3, float a4, float *a5);//7
+	int(*Anim_Flags)(dtiki_t *tiki, int animNum);
+	int(*Anim_FlagsSkel)(dtiki_t *tiki, int animNum);
+	qboolean(*Anim_HasCommands)(dtiki_t *tiki, int animNum);
+	int(*NumHeadModels)(const char *model);
+	void(*GetHeadModel)(const char *model, int num, char *name);
+	int(*NumHeadSkins)(const char *model);
+	void(*GetHeadSkin)(const char *model, int num, char *name);
+	qboolean(*Frame_Commands)(dtiki_t *tiki, int animNum, int frameNum, tiki_cmd_t *tikiCmds);
+	int(*Surface_NameToNum)(dtiki_t *tiki, const char *name);
+	const char * (*Surface_NumToName)(dtiki_t *tiki, int surfacenum);
+	int(*Tag_NumForName)(dtiki_t *pmdl, const char *name);
+	const char * (*Tag_NameForNum)(dtiki_t *pmdl, int tagNum);
+	orientation_t(*TIKI_OrientationInternal)(dtiki_t *tiki, int entNum, int tagNum, float scale);
+	void *(*TIKI_TransformInternal)(dtiki_t *tiki, int entNum, int tagNum);
+	qboolean(*TIKI_IsOnGroundInternal)(dtiki_t *tiki, int entNum, int num, float threshold);
+	void(*TIKI_SetPoseInternal)(dtiki_t *tiki, int entNum, frameInfo_t *frameInfo, int *boneTag, vec4_t *boneQuat, float actionWeight);
+	const char *(*CM_GetHitLocationInfo)(int location, float *radius, float *offset);
+	const char *(*CM_GetHitLocationInfoSecondary)(int location, float *radius, float *offset);
+	qboolean(*Alias_Add)(dtiki_t *pmdl, const char *alias, const char *name, const char *parameters);
+	const char	*(*Alias_FindRandom)(dtiki_t *tiki, const char *alias, aliasListNode_t **ret);
+	void(*Alias_Dump)(dtiki_t *tiki);
+	void(*Alias_Clear)(dtiki_t *tiki);
+	void(*Alias_UpdateDialog)(dtikianim_t *tiki, const char *alias);
+	const char	*(*TIKI_NameForNum)(dtiki_t *tiki);
+	qboolean(*GlobalAlias_Add)(const char *alias, const char *name, const char *parameters);
+	const char	*(*GlobalAlias_FindRandom)(const char *alias, aliasListNode_t **ret);
+	void(*GlobalAlias_Dump)();
+	void(*GlobalAlias_Clear)();
+	void(*centerprintf)(gentity_t *ent, const char *format, ...);
+	void(*locationprintf)(gentity_t *ent, int x, int y, const char *format, ...);
+	void(*Sound)(vec3_t *org, int entNum, int channel, const char *soundName, float volume, float minDist, float pitch, float maxDist, int streamed);
+	void(*StopSound)(int entNum, int channel);
+	float ( *SoundLength )( int channel, const char *name );
+	unsigned char * ( *SoundAmplitudes )( int channel, const char *name );
+	int(*S_IsSoundPlaying)(int channel, const char *name);
+	short unsigned int(*CalcCRC)(unsigned char *start, int count);
+	void **DebugLines;
+	int *numDebugLines;
+	void **DebugStrings;
+	int *numDebugStrings;
+	void(*LocateGameData)(gentity_t *gEnts, int numGEntities, int sizeofGEntity, playerState_t *clients, int sizeofGameClient);
+	void(*SetFarPlane)(int farPlane);
+	void(*SetSkyPortal)(qboolean skyPortal);
+	void(*Popmenu)(int client, int i);
+	void(*Showmenu)(int client, const char *name, qboolean force);
+	void(*Hidemenu)(int client, const char *name, qboolean force);
+	void(*Pushmenu)(int client, const char *name);
+	void(*HideMouseCursor)(int client);
+	void(*ShowMouseCursor)(int client);
+	const char * (*MapTime)();
+	void(*LoadResource)(char *name);
+	void(*ClearResource)();
+	int(*Key_StringToKeynum)(char *str);
+	const char *(*Key_KeynumToBindString)(int keyNum);
+	void(*Key_GetKeysForCommand)(const char *command, int *key1, int *key2);
+	void(*ArchiveLevel)(qboolean loading);
+	void(*AddSvsTimeFixup)(int *piTime);
+	void(*HudDrawShader)(int info, char *name);
+	void(*HudDrawAlign)(int info, int horizontalAlign, int verticalAlign);
+	void(*HudDrawRect)(int info, int x, int y, int width, int height);
+	void(*HudDrawVirtualSize)(int info, qboolean virtualScreen);
+	void(*HudDrawColor)(int info, float *color);
+	void(*HudDrawAlpha)(int info, float alpha);
+	void(*HudDrawString)(int info, char *string);
+	void(*HudDrawFont)(int info, char *fontName);
+	qboolean(*SanitizeName)(char *oldName, char *newName);
+	cvar_t *fsDebug;
+} gameImport_t;
+#endif
+#ifdef MOHAA
 typedef struct gameImport_s
 {
     void ( *Printf )( char *format, ... );
@@ -4246,7 +4427,7 @@ typedef struct gameImport_s
 
 
 } gameImport_t;
-
+#endif
 typedef struct gameExport_s
 {
 	int apiVersion;
