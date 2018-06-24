@@ -47,12 +47,20 @@ to be placed into the level.  This will happen every level load,
 and on transition between teams, but doesn't happen on respawns
 ============
 */
-//void G_ClientBegin( gentity_t *ent, userCmd_t *cmd )
-//{
-//	gi.centerprintf(ent, "Welcome %s, have fun!", ent->client->pers.netname);
-//
-//	globals_backup.ClientBegin( ent, cmd );
-//}
+void G_ClientBegin( gentity_t *ent, userCmd_t *cmd )
+{
+	sizeof(playerState_t);//676
+	sizeof(entityState_t);
+	sizeof(gentity_t);
+	//sizeof(int);		  //4
+						  //1350
+	//sizeof(client_persistant_t);//1588
+	//gi.centerprintf(ent, "Welcome %s, have fun!", ent->client->pers.netname); //not working ?
+	gi.centerprintf(ent, "Welcome %d %d, have fun!", ent->client->ps.clientNum, ent->s.eType);
+	gi.Printf("Player Name: %s : %d\n", ent->client->pers.netname, ent->client->ps.clientNum);
+
+	globals_backup.ClientBegin( ent, cmd );
+}
 
 /*
 ===========
@@ -78,7 +86,7 @@ char G_ClientConnect( int clientNum, qboolean firstTime )
 {
 	char * name ;
 	char buff[MAX_INFOSTRING];
-	gi.getUserinfo(clientNum , buff , MAX_INFOSTRING);
+	gi.GetUserinfo(clientNum , buff , MAX_INFOSTRING);
 	name = Info_ValueForKey(buff,"name");
 	if(strHasIP(name))
 	{
@@ -319,6 +327,11 @@ void  G_ClientCommand ( gentity_t *ent ){
 			return;
 		}
 	}
+	else if (strstr(gi.Argv(0), "mohbtweaponselect"))
+	{
+		//gi.cvar_set2("trigger_users",ent->client->ps)
+		gi.centerprintf(ent, "mohbtweaponselect %d %d, have fun!", ent->client->ps.clientNum, ent->s.eType);
+	}
 	globals_backup.ClientCommand(ent);
 }
 void G_ClientUserinfoChanged(gentity_t *ent, char *userInfo)
@@ -420,7 +433,7 @@ gameExport_t* GetGameAPI( gameImport_t *import )
 	globals->BotThink				= G_BotThink;
 	globals->Cleanup				= G_Cleanup;
 */
-//	globals->ClientBegin			= G_ClientBegin;
+	globals->ClientBegin			= G_ClientBegin;
 
 	
 	globals->ClientCommand			= G_ClientCommand;
