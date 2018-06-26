@@ -327,11 +327,6 @@ void  G_ClientCommand ( gentity_t *ent ){
 			return;
 		}
 	}
-	else if (strstr(gi.Argv(0), "mohbtweaponselect"))
-	{
-		//gi.cvar_set2("trigger_users",ent->client->ps)
-		gi.centerprintf(ent, "mohbtweaponselect %d %d, have fun!", ent->client->ps.clientNum, ent->s.eType);
-	}
 	globals_backup.ClientCommand(ent);
 }
 void G_ClientUserinfoChanged(gentity_t *ent, char *userInfo)
