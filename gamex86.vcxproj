@@ -122,6 +122,7 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>CompileAsC</CompileAs>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -129,7 +130,7 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;src/detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\release/dgamex86.dll</OutputFile>
+      <OutputFile>$(OutDir)\dgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\src\dgamex86.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>.\release/gamex86.pdb</ProgramDatabaseFile>
@@ -137,15 +138,20 @@
       <DataExecutionPrevention />
       <ImportLibrary>.\release/gamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\release/gamex86.bsc</OutputFile>
     </Bscmake>
+    <PostBuildEvent>
+      <Command>"D:\Downloads 3\fgameded_SH\fgameded_SH\release\copy.bat"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\gamex86.c" />
-    <ClCompile Include="src\misc.c" />
+    <ClCompile Include="src\gamex86.cpp" />
+    <ClCompile Include="src\ihuddraw.cpp" />
+    <ClCompile Include="src\misc.cpp" />
     <ClCompile Include="src\slre.c" />
     <ClCompile Include="src\xtrace.cpp" />
   </ItemGroup>
@@ -155,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="src\detours.h" />
     <ClInclude Include="src\gamex86.h" />
+    <ClInclude Include="src\ihuddraw.h" />
     <ClInclude Include="src\misc.h" />
     <ClInclude Include="src\slre.h" />
     <ClInclude Include="src\xtrace.h" />

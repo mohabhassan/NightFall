@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\gamex86.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\misc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\xtrace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\slre.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ihuddraw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gamex86.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\detours.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\gamex86.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\misc.h">
@@ -42,6 +42,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\slre.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ihuddraw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gamex86.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
