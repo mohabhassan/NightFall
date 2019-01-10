@@ -9,9 +9,14 @@
 #define HUD_MESSAGE_CHAT_WHITE		0x02
 #define HUD_MESSAGE_CHAT_RED		0x04
 
+
+#define	BIG_INFO_STRING		8192  // used for system info key only
+#define	BIG_INFO_KEY		8192
+#define	BIG_INFO_VALUE		8192
+
 extern void SendGameMessage(int clientNum, char message_type, const char *text, ... );
 extern void BroadcastGameMessage(int maxClients, char message_type, const char *text, ... );
-extern const char *Info_ValueForKey (const char *s, const char *key);
+extern char *Info_ValueForKey(const char *s, const char *key);
 //extern void Info_SetValueForKey( char *s, const char *key, const char *value );//not working
 //extern void Info_RemoveKey( char *s, const char *key );//not working
 extern void add_log(const char *level, const char *fmt, ...);

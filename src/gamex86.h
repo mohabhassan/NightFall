@@ -3567,7 +3567,7 @@ typedef struct State_s
 
 } State;
 
-typedef struct Event_GAMEDLL_s
+typedef struct Event_GAMEDLL_s //not complete
 {
 	DWORD dummy[2];
 	qboolean fromScript;
@@ -3576,6 +3576,19 @@ typedef struct Event_GAMEDLL_s
     DWORD *dummy2;
 
 } Event_GAMEDLL;
+
+
+typedef struct eventInfo_s
+{
+	Event_GAMEDLL		*ev;//dont use! not complete
+	const char	*command;
+	int			flags;
+	const char	*formatspec;
+	const char	*argument_names;
+	const char	*documentation;
+	int			type;
+	struct eventInfo_s	*prev;
+} eventInfo_t;
 
 typedef struct Player_s
 {
@@ -4077,7 +4090,7 @@ typedef struct gameImport_s
 	void * (*Malloc)(size_t size);
 	void(*Free)(void *ptr);
 	cvar_t * (*Cvar_Get)(const char *varName, const char *varValue, int varFlags);
-	void(*Cvar_Set)(const char *varName, const char *varValue);
+	void (*Cvar_Set)(const char *varName, const char *varValue);
 	cvar_t *(*cvar_set2)(const char *varName, const char *varValue, qboolean force);
 	cvar_t *(*NextCvar)(cvar_t *var);
 	int(*Argc)();
