@@ -1,3 +1,5 @@
+#pragma once
+
 // windows and linux common includes
 #include <time.h>
 #include <stdio.h>
@@ -10,6 +12,9 @@
 #include <ctype.h>
 #include <limits.h>
 #include <errno.h>
+#include "vector.h"
+#include "str.h"
+
 #define MOHBT
 #if defined(_WIN32) || defined(__MINGW32__)
 	//  windows-only
@@ -212,11 +217,7 @@ typedef int clipHandle_t;
 typedef int cvarHandle_t;
 typedef int fileHandle_t;
 typedef int qboolean;
-
-typedef float vec2_t[2];
-typedef float vec3_t[3];
-typedef float vec4_t[4];
-typedef float vec5_t[5];
+typedef unsigned char uchar;
 
 typedef enum soundChannel_s
 {
@@ -2603,22 +2604,11 @@ typedef struct dtiki_s
 
 } dtiki_t;
 
-typedef struct
-{
-    char *s;
 
-} str_;
-
-typedef struct str_s
-{
-    str_ *s;
-
-} str;
 
 /* ======================================================================================================*/
 /* This isn't complete. Need to finish up */
 
-typedef vec3_t Vector;
 
 typedef struct Entity_s
 {
@@ -3577,19 +3567,7 @@ typedef struct Event_GAMEDLL_s //not complete
 
 } Event_GAMEDLL;
 
-
-typedef struct eventInfo_s
-{
-	Event_GAMEDLL		*ev;//dont use! not complete
-	const char	*command;
-	int			flags;
-	const char	*formatspec;
-	const char	*argument_names;
-	const char	*documentation;
-	int			type;
-	struct eventInfo_s	*prev;
-} eventInfo_t;
-
+/*
 typedef struct Player_s
 {
 	struct Sentient_s baseSentient;
@@ -3729,6 +3707,7 @@ typedef struct Player_s
 	int statsRightArmShots;
 
 } Player;
+*/
 
 
 typedef struct refImport_s
@@ -4441,6 +4420,9 @@ typedef struct gameImport_s
 
 } gameImport_t;
 #endif
+
+#ifdef MOHBT
+
 typedef struct gameExport_s
 {
 	int apiVersion;
@@ -4453,15 +4435,18 @@ typedef struct gameExport_s
 	void ( *Restart )( );
 	void ( *SetTime )( int svsStartTime, int svsTime );
 	void ( *SpawnEntities )( char *entities, int svsTime);
-	char ( *ClientConnect )( int clientNum, qboolean firstTime );
+	char *( *ClientConnect )( int clientNum, qboolean firstTime );
 	void ( *ClientBegin )( gentity_t *ent, userCmd_t *cmd );
 	void ( *ClientUserinfoChanged )( gentity_t *ent, char *userInfo );
 	void ( *ClientDisconnect )( gentity_t *ent );
 	void ( *ClientCommand )( gentity_t *ent );
 	void ( *ClientThink )( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo );
-	void ( *BotBegin )( gentity_t *ent, userCmd_t *cmd );
-	void ( *BotThink )( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo );
-	void ( *PrepFrame )( );
+	//void ( *BotBegin )( gentity_t *ent, userCmd_t *cmd );//Extra in opm
+	//void ( *BotThink )( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo );//Extra in opm
+	//void ( *PrepFrame )( );//Extra in opm
+	void ( *DavenExtra )( );//Extra in BT. sub_311300C0
+	void ( *cgameSub1 )( );//Client sub
+	void ( *cgameSub2 )( );//Client sub
 	void ( *RunFrame )( int svsTime, int frameTime );
 	void ( *ServerSpawned )( );
 	void ( *RegisterSounds )( );
@@ -4479,15 +4464,18 @@ typedef struct gameExport_s
 	void ( *DebugCircle )( float *org, float radius, float r, float g, float b, float alpha, qboolean horizontal );
 	void ( *SetFrameNumber )( int frameNumber );
 	void ( *SoundCallback )( int entNum, soundChannel_t channelNumber, char *name );
+	void ( *cgameSub3 )( );//Client sub
 
-	profGame_t *profStruct;
+	//profGame_t *profStruct;//Extra in opm
 	gentity_t *gentities;
 	int gentitySize;
-	int numEntities;
-	int maxEntities;
+	int num_entities;
+	int max_entities;
 	char *errorMessage;
 
 } gameExport_t;
+
+#endif // MOHBT
 
 /*
 These are custom function non related to MOHAA
@@ -4544,3 +4532,4 @@ typedef struct clientdata_s
 extern	gameImport_t	gi;
 extern	gameExport_t	*globals;
 extern	gameExport_t	globals_backup;
+

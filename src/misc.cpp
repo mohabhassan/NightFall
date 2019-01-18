@@ -267,7 +267,7 @@ void initIPBlocker()
 	int x,x0,x1,x2,x3;
 	iplist.ip_index = 0;
 	gi.Printf("Opening ipfilter.cfg\n");
-	x = gi.FS_ReadFile("ipfilter.cfg",&iplist_file);
+	x = gi.FS_ReadFile("ipfilter.cfg", reinterpret_cast<void**>(&iplist_file));
 	if(x != -1 && x > 1)
 	{
 		gi.Printf("Opened ipfilter.cfg size in bytes: %d\n",x);
@@ -498,7 +498,7 @@ char * make_message(const char *fmt, ...) {
 		} else {           /* glibc 2.0 */
 			size *= 2;  /* twice the old size */
 		}
-		if ((np = realloc (p, size)) == NULL) {
+		if ((np = reinterpret_cast<char*>(realloc (p, size))) == NULL) {
 			//free(p);
 			MyFree(p);
 			return NULL;

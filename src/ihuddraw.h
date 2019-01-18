@@ -1,3 +1,4 @@
+#pragma once
 
 #include "gamex86.h"
 
@@ -11,3 +12,4 @@ void iHudDrawAlpha(int cl_num, int info, float alpha);
 void iHudDrawString(int cl_num, int info, const char *string);
 void iHudDrawFont(int cl_num, int info, const char *fontName);
 void iHudDrawTimer(int cl_num, int index, float duration, float fade_out_time);
+
