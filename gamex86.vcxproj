@@ -14,7 +14,7 @@
     <ProjectGuid>{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}</ProjectGuid>
     <RootNamespace>gamex86</RootNamespace>
     <ProjectName>dgamex86</ProjectName>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -50,8 +50,8 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>\release\</OutDir>
-    <IntDir>\bin\</IntDir>
+    <OutDir>./release/</OutDir>
+    <IntDir>./bin/</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -107,9 +107,9 @@
       <HeaderFileName />
     </Midl>
     <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;GAMEX86_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -121,7 +121,7 @@
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <CompileAs>CompileAsC</CompileAs>
+      <CompileAs>CompileAsCpp</CompileAs>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
@@ -129,7 +129,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;src/detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)\dgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\src\dgamex86.def</ModuleDefinitionFile>
@@ -139,31 +139,58 @@
       <ImportLibrary>.\release/gamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\release/gamex86.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
-      <Command>"D:\Downloads 3\fgameded_SH\fgameded_SH\release\copy.bat"</Command>
+      <Command>"$(OutDir)/copy.bat"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Class.cpp" />
+    <ClCompile Include="src\ClassDef.cpp" />
+    <ClCompile Include="src\con_set.cpp" />
+    <ClCompile Include="src\CustomEventResponseSet.cpp" />
+    <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\gamex86.cpp" />
+    <ClCompile Include="src\g_misc.cpp" />
     <ClCompile Include="src\ihuddraw.cpp" />
     <ClCompile Include="src\misc.cpp" />
+    <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\qcommon.cpp" />
+    <ClCompile Include="src\ScriptThread.cpp" />
+    <ClCompile Include="src\ScriptVariable.cpp" />
     <ClCompile Include="src\slre.c" />
+    <ClCompile Include="src\str.cpp" />
     <ClCompile Include="src\xtrace.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\dgamex86.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\detours.h" />
+    <ClInclude Include="src\Class.h" />
+    <ClInclude Include="src\ClassDef.h" />
+    <ClInclude Include="src\con_set.h" />
+    <ClInclude Include="src\CustomEventResponseSet.h" />
+    <ClInclude Include="src\dbgheap.h" />
+    <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\gamex86.h" />
+    <ClInclude Include="src\g_misc.h" />
     <ClInclude Include="src\ihuddraw.h" />
+    <ClInclude Include="src\Linklist.h" />
+    <ClInclude Include="src\mem_blockalloc.h" />
     <ClInclude Include="src\misc.h" />
+    <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\qcommon.h" />
+    <ClInclude Include="src\ScriptThread.h" />
+    <ClInclude Include="src\ScriptVariable.h" />
+    <ClInclude Include="src\short3.h" />
     <ClInclude Include="src\slre.h" />
+    <ClInclude Include="src\str.h" />
+    <ClInclude Include="src\vector.h" />
     <ClInclude Include="src\xtrace.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

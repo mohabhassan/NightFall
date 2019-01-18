@@ -1,9 +1,13 @@
+
 #define INCL_DOSMODULEMGR
 #include "gamex86.h"
 #include "misc.h"
 #include "slre.h"
 #include "ihuddraw.h"
-
+#include "detours.h"
+#include "ClassDef.h"
+#include "Player.h"
+#include "ScriptThread.h"
 
 //#include "hooks/script.h"
 
@@ -85,7 +89,7 @@ to the server machine, but qfalse on map changes and tournement
 restarts.
 ============
 */
-char G_ClientConnect( int clientNum, qboolean firstTime )
+char *G_ClientConnect( int clientNum, qboolean firstTime )
 {
 	char * name ;
 	char buff[MAX_INFOSTRING];
@@ -330,93 +334,6 @@ void  G_ClientCommand ( gentity_t *ent ){
 			return;
 		}
 	}
-	else if (!strcmp(gi.Argv(0), "mohbtweaponselect1"))
-	{
-		//char entnum[10];
-		//memset(entnum, 0, sizeof(entnum));
-		//itoa(ent->entity->entnum, entnum, 10);
-		//gi.Cvar_Set("trigger_user", entnum);
-		//gi.centerprintf(ent, "entnum %d, have fun!", ent->entity->entnum);
-		int huddrawIndex = 32;
-		float color[3];
-		color[0] = 0.0f;
-		color[1] = 0.0f;
-		color[2] = 0.0f;
-		iHudDrawAlign(ent->client->ps.clientNum, huddrawIndex, 0, 0);
-		iHudDrawFont(ent->client->ps.clientNum, huddrawIndex, "courier-20");
-		iHudDrawRect(ent->client->ps.clientNum, huddrawIndex, 20, 400, 600, 64);
-		iHudDrawColor(ent->client->ps.clientNum, huddrawIndex, color);
-		iHudDrawAlpha(ent->client->ps.clientNum, huddrawIndex, 1.0f);
-		iHudDrawShader(ent->client->ps.clientNum, huddrawIndex, "textures/common/black");
-		iHudDrawVirtualSize(ent->client->ps.clientNum, huddrawIndex, 1);
-		///////////////////////////////////////////////////////
-
-		huddrawIndex++;
-		color[0] = 0.0f;
-		color[1] = 0.0f;
-		color[2] = 0.0f;
-		iHudDrawAlign(ent->client->ps.clientNum, huddrawIndex, 0, 0);
-		iHudDrawFont(ent->client->ps.clientNum, huddrawIndex, "courier-20");
-		iHudDrawRect(ent->client->ps.clientNum, huddrawIndex, 20, 100, 600, 64);
-		iHudDrawColor(ent->client->ps.clientNum, huddrawIndex, color);
-		iHudDrawAlpha(ent->client->ps.clientNum, huddrawIndex, 1.0f);
-		iHudDrawShader(ent->client->ps.clientNum, huddrawIndex, "textures/common/black");
-		iHudDrawVirtualSize(ent->client->ps.clientNum, huddrawIndex, 1);
-		///////////////////////////////////////////////////////
-
-		huddrawIndex++;
-		color[0] = 1.0f;
-		color[1] = 1.0f;
-		color[2] = 1.0f;
-		iHudDrawAlign(ent->client->ps.clientNum, huddrawIndex, 1, 0);
-		iHudDrawFont(ent->client->ps.clientNum, huddrawIndex, "courier-20");
-		iHudDrawRect(ent->client->ps.clientNum, huddrawIndex, 0, 125, 550, 64);
-		iHudDrawColor(ent->client->ps.clientNum, huddrawIndex, color);
-		iHudDrawAlpha(ent->client->ps.clientNum, huddrawIndex, 1.0f);
-		iHudDrawVirtualSize(ent->client->ps.clientNum, huddrawIndex, 1);
-		iHudDrawString(ent->client->ps.clientNum, huddrawIndex, "PLEASE DO NOT FIRE.YOU ARE BEING CHECKED BY ADMIN.");
-		///////////////////////////////////////////////////////
-
-		huddrawIndex++;
-		color[0] = 1.0f;
-		color[1] = 1.0f;
-		color[2] = 1.0f;
-		iHudDrawAlign(ent->client->ps.clientNum, huddrawIndex, 1, 0);
-		iHudDrawFont(ent->client->ps.clientNum, huddrawIndex, "courier-20");
-		iHudDrawRect(ent->client->ps.clientNum, huddrawIndex, 0, 432, 420, 64);
-		iHudDrawColor(ent->client->ps.clientNum, huddrawIndex, color);
-		iHudDrawAlpha(ent->client->ps.clientNum, huddrawIndex, 1.0f);
-		iHudDrawVirtualSize(ent->client->ps.clientNum, huddrawIndex, 1);
-		iHudDrawString(ent->client->ps.clientNum, huddrawIndex, "MATDRB4 NAR.EL ADMIN BY3ML CHECK 3LEEK.");
-		///////////////////////////////////////////////////////
-		huddrawIndex++;
-		color[0] = 0.0f;
-		color[1] = 1.0f;
-		color[2] = 0.0f;
-		iHudDrawAlign(ent->client->ps.clientNum, huddrawIndex, 0, 0);
-		iHudDrawFont(ent->client->ps.clientNum, huddrawIndex, "courier-20");
-		iHudDrawRect(ent->client->ps.clientNum, huddrawIndex, 320, 240, 600, 64);
-		iHudDrawColor(ent->client->ps.clientNum, huddrawIndex, color);
-		iHudDrawAlpha(ent->client->ps.clientNum, huddrawIndex, 1.0f);
-		iHudDrawShader(ent->client->ps.clientNum, huddrawIndex, "textures/common/caulk");
-		iHudDrawVirtualSize(ent->client->ps.clientNum, huddrawIndex, 1);
-		///////////////////////////////////////////////////////
-		//gi.centerprintf(ent, "test");
-		/*huddraw_align 32 center center
-		huddraw_font 32 handle-16
-		huddraw_rect 32 -20 -20 20 20
-		huddraw_color 32 1 0 0
-		huddraw_alpha 32 1.0
-		huddraw_shader 32 "textures/common/black"
-		huddraw_virtualsize 32 1*/
-	}
-	else if (!strcmp(gi.Argv(0), "mohbtweaponselect2"))
-	{
-		char entnum[10];
-		memset(entnum, 0, sizeof(entnum));
-		itoa(ent->entity->entnum, entnum, 10);
-		gi.Cvar_Set("trigger_user", entnum);
-	}
 	globals_backup.ClientCommand(ent);
 }
 void G_ClientUserinfoChanged(gentity_t *ent, char *userInfo)
@@ -436,6 +353,40 @@ void G_ClientUserinfoChanged(gentity_t *ent, char *userInfo)
 	}
 	globals_backup.ClientUserinfoChanged(ent,userInfo);
 }
+
+void initScriptHooks()
+{
+	Event::Init();
+	ClassDef::Init();
+
+	Player::Init();
+	ScriptThread::Init();
+	LONG ret = DetourTransactionBegin();
+	gi.Printf("DetourTransactionBegin(): %ld\n", ret);
+	ret = DetourUpdateThread(GetCurrentThread());
+	gi.Printf("DetourUpdateThread(GetCurrentThread()): %ld\n", ret);
+	ret = DetourAttach(&(PVOID&)(ClassDef::BuildResponseList_Orignal), (PVOID)(&BuildResponseListHook));
+	gi.Printf("DetourAttach(): %ld\n", ret);
+	ret = DetourTransactionCommit();
+	gi.Printf("DetourTransactionCommit(): %ld\n", ret);
+}
+
+void shutdownScriptHooks()
+{
+
+	Player::Shutdown();
+	ScriptThread::Shutdown();
+
+	LONG ret = DetourTransactionBegin();
+	gi.Printf("DetourTransactionBegin(): %ld\n", ret);
+	ret = DetourUpdateThread(GetCurrentThread());
+	gi.Printf("DetourUpdateThread(GetCurrentThread()): %ld\n", ret);
+	ret = DetourDetach(&(PVOID&)(ClassDef::BuildResponseList_Orignal), (PVOID)(&BuildResponseListHook));
+	gi.Printf("DetourDetach(): %ld\n", ret);
+	ret = DetourTransactionCommit();
+	gi.Printf("DetourTransactionCommit(): %ld\n", ret);
+}
+extern int classcount;
 /*
 ============
 G_InitGame
@@ -452,10 +403,13 @@ void G_InitGame( int startTime, int randomSeed )
 	initsighandlers();  // init our custom signal handlers  (linux only)
 	#endif
 
-	globals_backup.Init( startTime, randomSeed );
+	initScriptHooks();
 
-	gi.Printf( "RyBack Wrapper inited \n");
+	globals_backup.Init( startTime, randomSeed );
+	gi.Printf("Class count: %d", classcount);
 	initIPBlocker();
+	gi.Printf( "RyBack Wrapper inited \n");
+	
 }
 
 /*
@@ -464,10 +418,12 @@ Needed to unload fgamededmohaa.so on mapchange!
 */
 void	G_Shutdown (void)
 {
+	sizeof(gameImport_t);
 	gi.Printf("==== Wrapper Shutdown ==== \n");
-	shutDownIPBlocker();
 	globals_backup.Shutdown();
-	
+
+	shutDownIPBlocker();
+	shutdownScriptHooks();
 	#ifndef _WIN32
 		// linux
 		dlerror();
@@ -480,7 +436,7 @@ void	G_Shutdown (void)
 }
  
 
-gameExport_t* GetGameAPI( gameImport_t *import ) 
+gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 {
 	/****** Linux: Load fgamededmohaa.so ******/
 	#ifndef _WIN32
@@ -621,7 +577,7 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 
 		if(!hmod)
 		{
-
+			return FALSE;
 		}
 		pGetGameAPI = (pGetGameAPI_spec)GetProcAddress( hmod,"GetGameAPI" );
 

@@ -1,3 +1,4 @@
+#pragma once
 // Misc and custom user-written functions
 // Added by Razorapid
 
