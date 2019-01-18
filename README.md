@@ -1,3 +1,4 @@
+
 ## dgamexwrapper
 MOHBT dgamex86 wrapper based on MOHAA gamex86 wrapper.
 
@@ -13,3 +14,7 @@ I am not guaranteeing anything, but it'll probably work.
 
 
 Have fun ! ;)
+
+## License
+
+**MIT**
