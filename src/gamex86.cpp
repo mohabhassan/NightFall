@@ -8,6 +8,7 @@
 #include "ClassDef.h"
 #include "Player.h"
 #include "ScriptThread.h"
+#include "Director.h"
 
 //#include "hooks/script.h"
 
@@ -358,9 +359,12 @@ void initScriptHooks()
 {
 	Event::Init();
 	ClassDef::Init();
+	Director::Init();
+	ScriptVariable::Init();
 
 	Player::Init();
 	ScriptThread::Init();
+
 	LONG ret = DetourTransactionBegin();
 	gi.Printf("DetourTransactionBegin(): %ld\n", ret);
 	ret = DetourUpdateThread(GetCurrentThread());

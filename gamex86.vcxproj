@@ -150,19 +150,25 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Animate.cpp" />
     <ClCompile Include="src\Class.cpp" />
     <ClCompile Include="src\ClassDef.cpp" />
     <ClCompile Include="src\con_set.cpp" />
     <ClCompile Include="src\CustomEventResponseSet.cpp" />
+    <ClCompile Include="src\Director.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\gamex86.cpp" />
     <ClCompile Include="src\g_misc.cpp" />
     <ClCompile Include="src\ihuddraw.cpp" />
+    <ClCompile Include="src\Listener.cpp" />
     <ClCompile Include="src\misc.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\qcommon.cpp" />
     <ClCompile Include="src\ScriptThread.cpp" />
     <ClCompile Include="src\ScriptVariable.cpp" />
+    <ClCompile Include="src\Sentient.cpp" />
+    <ClCompile Include="src\SimpleEntity.cpp" />
     <ClCompile Include="src\slre.c" />
     <ClCompile Include="src\str.cpp" />
     <ClCompile Include="src\xtrace.cpp" />
@@ -171,23 +177,30 @@
     <None Include="src\dgamex86.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Animate.h" />
     <ClInclude Include="src\Class.h" />
     <ClInclude Include="src\ClassDef.h" />
-    <ClInclude Include="src\con_set.h" />
+    <ClInclude Include="src\con_arrayset.h" />
     <ClInclude Include="src\CustomEventResponseSet.h" />
     <ClInclude Include="src\dbgheap.h" />
+    <ClInclude Include="src\Director.h" />
+    <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\gamex86.h" />
     <ClInclude Include="src\g_misc.h" />
     <ClInclude Include="src\ihuddraw.h" />
     <ClInclude Include="src\Linklist.h" />
+    <ClInclude Include="src\Listener.h" />
     <ClInclude Include="src\mem_blockalloc.h" />
     <ClInclude Include="src\misc.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\qcommon.h" />
+    <ClInclude Include="src\safeptr.h" />
     <ClInclude Include="src\ScriptThread.h" />
     <ClInclude Include="src\ScriptVariable.h" />
+    <ClInclude Include="src\Sentient.h" />
     <ClInclude Include="src\short3.h" />
+    <ClInclude Include="src\SimpleEntity.h" />
     <ClInclude Include="src\slre.h" />
     <ClInclude Include="src\str.h" />
     <ClInclude Include="src\vector.h" />

@@ -18,7 +18,7 @@ Event::Event()
 
 Event::Event(const char * command, int flags, const char * formatspec, const char * argument_names, const char * documentation, uchar type)
 {
-	eventInfo_t *evi = (eventInfo_t *)gi.Malloc(sizeof(eventInfo_t));
+	eventInfo_t *evi = (eventInfo_t *)gi.Malloc(sizeof(eventInfo_t)); // de alloced by mohaa
 
 	evi->ev = this;
 	evi->command = command;
@@ -58,6 +58,132 @@ void Event::Clear(void)
 		data = NULL;
 		dataSize = 0;
 	}
+}
+
+/*
+=======================
+AddEntity
+=======================
+*/
+void Event::AddEntity(Entity *ent)
+{
+	AddListener((Listener*)ent);
+}
+
+/*
+=======================
+AddFloat
+=======================
+*/
+void Event::AddFloat(float number)
+{
+	ScriptVariable& variable = GetValue();
+	variable.setFloatValue(number);
+}
+
+/*
+=======================
+AddInteger
+=======================
+*/
+void Event::AddInteger(int number)
+{
+	ScriptVariable& variable = GetValue();
+	variable.setIntValue(number);
+}
+
+/*
+=======================
+AddListener
+=======================
+*/
+void Event::AddListener(Listener * listener)
+{
+	ScriptVariable& variable = GetValue();
+	variable.setListenerValue(listener);
+}
+
+/*
+=======================
+AddNil
+=======================
+*/
+void Event::AddNil(void)
+{
+	ScriptVariable& variable = GetValue();
+	variable.Clear();
+}
+
+#ifndef NO_SCRIPTENGINE
+
+/*
+=======================
+AddConstString
+=======================
+*/
+void Event::AddConstString(const_str string)
+{
+	ScriptVariable& variable = GetValue();
+	variable.setConstStringValue(string);
+}
+
+#endif
+
+/*
+=======================
+AddString
+=======================
+*/
+void Event::AddString(str string)
+{
+	ScriptVariable& variable = GetValue();
+	variable.setStringValue(string);
+}
+
+/*
+=======================
+AddToken
+=======================
+*/
+void Event::AddToken(str token)
+{
+	ScriptVariable& variable = GetValue();
+	variable.setStringValue(token);
+}
+
+/*
+=======================
+AddTokens
+=======================
+*/
+void Event::AddTokens(int argc, const char **argv)
+{
+	for (int i = 0; i < argc; i++)
+	{
+		AddToken(argv[i]);
+	}
+}
+
+/*
+=======================
+AddValue
+=======================
+*/
+void Event::AddValue(const ScriptVariable &value)
+{
+	ScriptVariable& variable = GetValue();
+	variable = value;
+}
+
+/*
+=======================
+AddVector
+=======================
+*/
+void Event::AddVector(const Vector& vector)
+{
+	ScriptVariable& variable = GetValue();
+	variable.setVectorValue(vector);
 }
 
 /*
@@ -109,6 +235,11 @@ str Event::GetToken(int pos)
 	return variable.stringValue();
 }
 
+Entity *Event::GetEntity(int pos)
+{
+	ScriptVariable& variable = GetValue(pos);
+	return variable.entityValue();
+}
 /*
 =======================
 CheckPos
@@ -125,6 +256,7 @@ void Event::CheckPos(int pos)
 =======================
 GetValue
 =======================
+Index starts at 1
 */
 ScriptVariable& Event::GetValue(int pos)
 {

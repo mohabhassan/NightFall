@@ -2608,7 +2608,8 @@ typedef struct dtiki_s
 
 /* ======================================================================================================*/
 /* This isn't complete. Need to finish up */
-
+/* Update: reversed in new Entity class */
+/* This should never be used */
 
 typedef struct Entity_s
 {
@@ -3507,12 +3508,16 @@ struct SafePtr_s
     struct SafePtr_s *next;
 };
 
+#ifdef MOHAA
+
 typedef struct Animate_s
 {
 	struct Entity_s baseEntity;
 	DWORD dummy[70];
 
 } Animate;
+
+
 
 typedef struct Container_s
 {
@@ -3537,6 +3542,7 @@ typedef struct Sentient_s
 
 } Sentient;
 
+#endif // MOHAA
 typedef struct State_s
 {
     DWORD dummy[2];

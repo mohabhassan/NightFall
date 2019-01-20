@@ -2,7 +2,9 @@
 #include "ScriptVariable.h"
 #include "con_set.h"
 #include "Class.h"
-
+#include "Director.h"
+#include "Entity.h"
+#include <cstdint>
 // Event flags
 #define EV_CONSOLE				(1<<0)		// Allow entry from console
 #define EV_CHEAT				(1<<1)		// Only allow entry from console if cheats are enabled
@@ -43,7 +45,7 @@ public:
 	const char		*formatspec;
 	const char		*argument_names;
 	const char		*documentation;
-	byte			type;
+	uint8_t			type;
 	//void /*Container<EventArgDef>*/ *definition; //Extra in opm
 
 	//EventDef() { definition = NULL; } //Extra in opm
@@ -86,6 +88,18 @@ public:
 	void Clear(void);
 
 
+	//void		AddContainer(Container< SafePtr< Listener > > *container);
+	void		AddEntity(Entity * ent);
+	void		AddFloat(float number);
+	void		AddInteger(int number);
+	void		AddListener(Listener * listener);
+	void		AddNil(void);
+	void		AddConstString(const_str string);
+	void		AddString(str string);
+	void		AddToken(str token);
+	void		AddTokens(int argc, const char **argv);
+	void		AddValue(const ScriptVariable &value);
+	void		AddVector(const Vector& vector);
 
 	int				NumArgs();
 
@@ -100,6 +114,7 @@ public:
 
 	str				GetString(int pos);
 	str				GetToken(int pos);
+	Entity			*GetEntity(int pos);
 	void			CheckPos(int pos);
 	ScriptVariable&	GetValue(int pos);
 	ScriptVariable&	GetValue(void);

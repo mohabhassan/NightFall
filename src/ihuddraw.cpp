@@ -1,4 +1,3 @@
-
 #include "gamex86.h"
 enum hudDrawCMD
 {
@@ -89,13 +88,15 @@ void iHudDrawTimer(int cl_num, int index, float duration, float fade_out_time)
 	gi.MSG_EndCGM();
 }
 */
+/* iHudDrawVirtualSize
+ **/
 void iHudDrawVirtualSize(int cl_num, int info, int virtualScreen)
 {
 	gi.MSG_SetClient(cl_num);
 	gi.MSG_StartCGM(CGM_HUDDRAW_VIRTUALSIZE);
 	HudWriteNumber(info);					// c = info
 
-	gi.MSG_WriteBits(!!virtualScreen, 1);	// value = ?	bits = 1
+	gi.MSG_WriteBits(virtualScreen, 1);		// value = ?	bits = 1
 											// value = esi
 											// esi = virtualScreen
 											// NEG esi
@@ -107,13 +108,13 @@ void iHudDrawVirtualSize(int cl_num, int info, int virtualScreen)
 
 }
 
-void iHudDrawColor(int cl_num, int info, float *color)
+void iHudDrawColor(int cl_num, int info, float r, float g, float b)
 {
 	long int temp[3];
 
-	temp[0] = (long int)(color[0] * 255.0f);
-	temp[1] = (long int)(color[1] * 255.0f);
-	temp[2] = (long int)(color[2] * 255.0f);
+	temp[0] = (long int)(r * 255.0f);
+	temp[1] = (long int)(g * 255.0f);
+	temp[2] = (long int)(b * 255.0f);
 
 	gi.MSG_SetClient(cl_num);
 	gi.MSG_StartCGM(CGM_HUDDRAW_COLOR);
