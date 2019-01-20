@@ -1,10 +1,11 @@
 #pragma once
 
-
+class SafePtrBase;
 class Class
 {
+public:
 	void				 *vftable;
-	void /*SafePtrBase*/ *SafePtrList;//FIXME
+	SafePtrBase *SafePtrList;//FIXME
 public:
 	Class();
 	~Class();

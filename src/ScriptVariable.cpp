@@ -1,12 +1,18 @@
 #include "ScriptVariable.h"
+#include "Director.h"
 
+#define CLEARINTERNAL_ADDR 0x31058D60
+#define LISTENERVALUE_ADDR 0x3105A230
 
+void		(__thiscall *ScriptVariable::ClearInternal)(ScriptVariable*_this);
+Listener	*(__thiscall *ScriptVariable::listenerValue)(ScriptVariable*_this);
 
 ScriptVariable::ScriptVariable()
 {
 	key = 0;
 	type = 0;
 	m_data.pointerValue = NULL;
+	sizeof(ScriptVariable);
 }
 
 ScriptVariable::ScriptVariable(const ScriptVariable& variable)
@@ -19,9 +25,20 @@ ScriptVariable::ScriptVariable(const ScriptVariable& variable)
 
 ScriptVariable::~ScriptVariable()
 {
-	ClearInternal();
+	ClearInternal(this);
 }
 
+void ScriptVariable::Init()
+{
+	ClearInternal = reinterpret_cast<void(__thiscall*)(ScriptVariable*__this)>(CLEARINTERNAL_ADDR);
+	listenerValue = reinterpret_cast<Listener*(__thiscall*)(ScriptVariable*__this)>(LISTENERVALUE_ADDR);
+}
+
+void ScriptVariable::Clear()
+{
+	ClearInternal(this);
+	type = 0;
+}
 
 
 
@@ -30,7 +47,7 @@ void ScriptVariable::CastBoolean(void)
 {
 	int newvalue = booleanValue();
 
-	ClearInternal();
+	ClearInternal(this);
 
 	type = VARIABLE_INTEGER;
 	m_data.intValue = newvalue;
@@ -53,70 +70,70 @@ void ScriptVariable::CastString(void)
 	setStringValue(stringValue());
 }
 
-
-void ScriptVariable::ClearInternal()
-{
-	switch (GetType())
-	{
-	case VARIABLE_STRING:
-		if (m_data.stringValue)
-		{
-			delete m_data.stringValue;
-			m_data.stringValue = NULL;
-		}
-
-		break;
-
-	case VARIABLE_ARRAY:
-		/*if (m_data.arrayValue->refCount) //FIXME
-		{
-			m_data.arrayValue->refCount--;
-		}
-		else
-		{
-			delete m_data.arrayValue;
-		}*/
-
-		m_data.arrayValue = NULL;
-		break;
-
-	case VARIABLE_CONSTARRAY:
-		/*if (m_data.constArrayValue->refCount) //FIXME
-		{
-			m_data.constArrayValue->refCount--;
-		}
-		else
-		{
-			delete m_data.constArrayValue;
-		}*/
-
-		m_data.constArrayValue = NULL;
-		break;
-
-	case VARIABLE_LISTENER:
-	case VARIABLE_SAFECONTAINER:
-		if (m_data.listenerValue)
-		{
-			delete m_data.listenerValue;
-			m_data.listenerValue = NULL;
-		}
-
-		break;
-
-	case VARIABLE_POINTER:
-		//m_data.pointerValue->remove(this); //FIXME
-		m_data.pointerValue = NULL;
-		break;
-
-	case VARIABLE_VECTOR:
-		delete[] m_data.vectorValue;
-		m_data.vectorValue = NULL;
-		break;
-
-	default:
-		break;
-	}
-}
+//
+//void ScriptVariable::ClearInternal(this)
+//{
+//	switch (GetType())
+//	{
+//	case VARIABLE_STRING:
+//		if (m_data.stringValue)
+//		{
+//			delete m_data.stringValue;
+//			m_data.stringValue = NULL;
+//		}
+//
+//		break;
+//
+//	case VARIABLE_ARRAY:
+//		/*if (m_data.arrayValue->refCount) //FIXME
+//		{
+//			m_data.arrayValue->refCount--;
+//		}
+//		else
+//		{
+//			delete m_data.arrayValue;
+//		}*/
+//
+//		m_data.arrayValue = NULL;
+//		break;
+//
+//	case VARIABLE_CONSTARRAY:
+//		/*if (m_data.constArrayValue->refCount) //FIXME
+//		{
+//			m_data.constArrayValue->refCount--;
+//		}
+//		else
+//		{
+//			delete m_data.constArrayValue;
+//		}*/
+//
+//		m_data.constArrayValue = NULL;
+//		break;
+//
+//	case VARIABLE_LISTENER:
+//	case VARIABLE_SAFECONTAINER:
+//		if (m_data.listenerValue)
+//		{
+//			delete m_data.listenerValue;
+//			m_data.listenerValue = NULL;
+//		}
+//
+//		break;
+//
+//	case VARIABLE_POINTER:
+//		//m_data.pointerValue->remove(this); //FIXME
+//		m_data.pointerValue = NULL;
+//		break;
+//
+//	case VARIABLE_VECTOR:
+//		delete[] m_data.vectorValue;
+//		m_data.vectorValue = NULL;
+//		break;
+//
+//	default:
+//		break;
+//	}
+//}
 
 const char *ScriptVariable::GetTypeName() const
 {
@@ -254,7 +271,7 @@ char ScriptVariable::charValue(void) const
 
 void ScriptVariable::setCharValue(char newvalue)
 {
-	ClearInternal();
+	ClearInternal(this);
 
 	type = VARIABLE_CHAR;
 	m_data.charValue = newvalue;
@@ -287,7 +304,7 @@ int ScriptVariable::intValue(void) const
 }
 void ScriptVariable::setIntValue(int newvalue)
 {
-	ClearInternal();
+	ClearInternal(this);
 	type = VARIABLE_INTEGER;
 	m_data.intValue = newvalue;
 }
@@ -320,9 +337,16 @@ float ScriptVariable::floatValue(void) const
 }
 void ScriptVariable::setFloatValue(float newvalue)
 {
-	ClearInternal();
+	ClearInternal(this);
 	type = VARIABLE_FLOAT;
 	m_data.floatValue = newvalue;
+}
+
+void ScriptVariable::setConstStringValue(const_str s)
+{
+	ClearInternal(this);
+	type = VARIABLE_CONSTSTRING;
+	m_data.intValue = s;
 }
 
 str ScriptVariable::stringValue(void) const
@@ -335,7 +359,7 @@ str ScriptVariable::stringValue(void) const
 		return "NIL";
 
 	case VARIABLE_CONSTSTRING:
-		return str("CONSTSTRING FIXME");
+		return Director::GetString(m_data.intValue);
 
 
 	case VARIABLE_STRING:
@@ -379,6 +403,7 @@ str ScriptVariable::stringValue(void) const
 
 	default:
 		//ScriptError("Cannot cast '%s' to string", typenames[GetType()]);//FIXME
+		return "ScriptVariable::stringValue() default";
 		break;
 	}
 
@@ -388,7 +413,7 @@ void ScriptVariable::setStringValue(str newvalue)
 {
 	str *s;
 
-	ClearInternal();
+	ClearInternal(this);
 	type = VARIABLE_STRING;
 
 	
@@ -463,10 +488,26 @@ Vector ScriptVariable::vectorValue(void) const
 }
 void ScriptVariable::setVectorValue(const Vector &newvector)
 {
-	ClearInternal();
+	ClearInternal(this);
 
 	type = VARIABLE_VECTOR;
 	
 	m_data.vectorValue = (float*)gi.Malloc(sizeof(float) * 3);
 	newvector.copyTo(m_data.vectorValue);
+}
+
+
+void ScriptVariable::setListenerValue(Listener *newvalue)
+{
+	ClearInternal(this);
+
+	type = VARIABLE_LISTENER;
+
+	m_data.listenerValue = new SafePtr< Listener >(newvalue);
+}
+
+
+Entity *ScriptVariable::entityValue(void)
+{
+	return (Entity *)listenerValue(this);
 }

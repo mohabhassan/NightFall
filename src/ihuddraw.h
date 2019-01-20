@@ -7,7 +7,7 @@ void iHudDrawShader(int cl_num, int info, const char *name);
 void iHudDrawAlign(int cl_num, int info, int horizontalAlign, int verticalAlign);
 void iHudDrawRect(int cl_num, int info, int x, int y, int width, int height);
 void iHudDrawVirtualSize(int cl_num, int info, int virtualScreen);
-void iHudDrawColor(int cl_num, int info, float *color);
+void iHudDrawColor(int cl_num, int info, float r, float g, float b);
 void iHudDrawAlpha(int cl_num, int info, float alpha);
 void iHudDrawString(int cl_num, int info, const char *string);
 void iHudDrawFont(int cl_num, int info, const char *fontName);

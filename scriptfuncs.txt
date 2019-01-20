@@ -1,0 +1,2 @@
+netname: use local.player.netname instead
+getentity: use getentbyentnum instead

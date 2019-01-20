@@ -56,11 +56,15 @@ public:
 
 	Entry();
 
-#ifndef NO_ARCHIVE
-	void			Archive( Archiver& arc );
-#endif
 };
 
+template< typename k, typename v >
+class Entry_index
+{
+public:
+	k						key;
+
+};
 template< typename k, typename v >
 class con_set
 {
@@ -85,9 +89,6 @@ public:
 	con_set();
 	~con_set();
 
-#ifndef NO_ARCHIVE
-	void						Archive( Archiver& arc );
-#endif
 
 	/*virtual*/ void				clear();//extra in opm
 	/*virtual*/ void				resize( int count = 0 );//extra in opm
@@ -138,9 +139,6 @@ private:
 	con_set< key, value > m_con_set;
 
 public:
-#ifndef NO_ARCHIVE
-	void		Archive( Archiver& arc );
-#endif
 
 	void			clear();
 	/*virtual*/ void	resize( int count = 0 );//extra in opm

@@ -5,8 +5,22 @@ ResponseDef<Player> *Player::Responses;
 
 CustomEventResponseSet<Player> Player::cerSet{};
 
+/* Offset updates:
+ * x-> opm size
+ * - : opm is larger
+ * + : opm is smaller
+ * 
+ * BT Player sizeof is 2404 (x-192)
+ * BT Sentient sizeof is 1504 (x+24) -> Fixed, no var added/removed
+ * BT Animate sizeof is 940 (x+24) -> Fixed, 2 dimmies added
+ * BT Entity sizeof is 652 (x+16) -> Fixed, no var added/removed.
+ * BT SimpleEntity sizeof is 68 (x-4) -> Remove Listener.m_EndList (-4)
+ * BT Listener sizeof is 20 (x-4) -> Remove m_EndList (-4)
+ * BT Class sizeof is 8
+ **/
 Player::Player()
 {
+	sizeof(gentity_t);
 }
 
 
@@ -15,19 +29,13 @@ Player::~Player()
 }
 
 
-void Player::Test(Event*ev)
-{
-	gentity_t *gent = G_GetEntityByClient(0);
-	gi.centerprintf(gent,"Player Test success");
-}
-
 void Player::Init()
 {
 	cerSet.AddEventResponse(new Event(
 		"ptest",
 		EV_DEFAULT,
-		NULL,
-		NULL,
+		"IFSB",
+		"test_int test_float test_string test_bool",
 		"PLAYER TEST COMMAND"
 	),
 		&Player::Test);
@@ -61,4 +69,11 @@ void Player::Shutdown()
 	}
 	//gi.Free(Responses);
 	delete Responses;
+}
+
+void Player::Test(Event*ev)
+{
+	str strTat = ev->GetString(2);
+	gentity_t *gent = G_GetEntityByClient(0);
+	gi.centerprintf(gent, "Player Test success");
 }

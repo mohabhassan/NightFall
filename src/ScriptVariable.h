@@ -4,6 +4,9 @@
 #include "gamex86.h"
 #include "short3.h"
 #include "str.h"
+#include "Listener.h"
+#include "Entity.h"
+#include "safeptr.h"
 enum variabletype
 {
 	VARIABLE_NONE,
@@ -53,7 +56,7 @@ public:
 		char						charValue;
 		float						floatValue;
 		int							intValue;
-		void /*SafePtr<Listener>*/	*listenerValue;
+		SafePtr<Listener>			*listenerValue;
 		str							*stringValue;
 		float						*vectorValue;
 
@@ -74,6 +77,12 @@ public:
 
 	~ScriptVariable();
 
+	static void				Init();
+
+	static void				( __thiscall *ClearInternal)(ScriptVariable*_this);
+	static Listener			*( __thiscall *listenerValue)(ScriptVariable*_this);
+	void					Clear();
+
 
 	void					CastBoolean(void);
 	//void					CastConstArrayValue(void);
@@ -82,7 +91,6 @@ public:
 	void					CastInteger(void);
 	void					CastString(void);
 
-	void					ClearInternal(void);
 
 	const char				*GetTypeName(void) const;
 	variabletype			GetType(void) const;
@@ -106,9 +114,14 @@ public:
 	void					setCharValue(char newvalue);
 	float					floatValue(void) const;
 	void					setFloatValue(float newvalue);
+	void					setConstStringValue(const_str s);
 	str						stringValue(void) const;
 	void					setStringValue(str newvalue);
 	Vector					vectorValue(void) const;
 	void					setVectorValue(const Vector &newvector);
+
+	void					setListenerValue(Listener * newvalue);
+
+	Entity * entityValue(void);
 
 };
