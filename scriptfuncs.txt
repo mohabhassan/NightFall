@@ -1,2 +1,12 @@
 netname: use local.player.netname instead
 getentity: use getentbyentnum instead
+fcopy: different output(nonbreaking change)
+freadall: no need for "rb" or "rb+"
+gettime: zero kept for compatibility
+gettimezone: zero kept for compatibility
+getdate: documentation mismatch http://www.x-null.net/wiki/index.php?title=Reborn_Scripting_Commands#getdate & https://www.x-null.net/forums/threads/1038-New-Scripting-Commands-Documentation
+		 also, %r shouldn't be in format specifier. !!!!FIXED!!!!
+addkills: already exists in bt
+adddeaths: already exists in bt
+isadmin: not implemented yet
+bindweap is not implemented as it is hack-ish

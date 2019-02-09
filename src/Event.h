@@ -1,10 +1,14 @@
 #pragma once
+#include "Listener.h"
 #include "ScriptVariable.h"
 #include "con_set.h"
 #include "Class.h"
 #include "Director.h"
 #include "Entity.h"
 #include <cstdint>
+
+
+
 // Event flags
 #define EV_CONSOLE				(1<<0)		// Allow entry from console
 #define EV_CHEAT				(1<<1)		// Only allow entry from console if cheats are enabled

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define _USE_MATH_DEFINES // for M_PI
 
-#include <cmath>
+#include <math.h>
 #include <cfloat>
 #include <cstdio>
 #include <cassert>

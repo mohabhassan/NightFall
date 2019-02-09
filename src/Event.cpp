@@ -18,8 +18,8 @@ Event::Event()
 
 Event::Event(const char * command, int flags, const char * formatspec, const char * argument_names, const char * documentation, uchar type)
 {
-	eventInfo_t *evi = (eventInfo_t *)gi.Malloc(sizeof(eventInfo_t)); // de alloced by mohaa
-
+	eventInfo_t *evi = (eventInfo_t *)MemoryMalloc(sizeof(eventInfo_t)); // de alloced by mohaa
+	memset(evi, 0, sizeof(eventInfo_t));
 	evi->ev = this;
 	evi->command = command;
 	evi->flags = flags;
@@ -269,7 +269,7 @@ ScriptVariable& Event::GetValue(int pos)
 	return data[pos - 1];
 }
 
-static ScriptVariable m_null;
+//static ScriptVariable m_null;
 
 /*
 =======================
@@ -278,17 +278,25 @@ GetValue
 */
 ScriptVariable& Event::GetValue(void)
 {
-	ScriptVariable *tmp = data;
-
-	data = new ScriptVariable[dataSize + 1];
-
-	if (tmp != NULL)
+	ScriptVariable *tmp;
+	if (fromScript)
 	{
-		for (int i = 0; i < dataSize; i++) {
-			data[i] = tmp[i];
-		}
+		return *data;
+	}
 
-		delete[] tmp;
+	if (dataSize % 3 == 0)
+	{
+		tmp = data;
+		data = (ScriptVariable*)MemoryMalloc(sizeof(ScriptVariable) * (dataSize + 1));
+		new (data) ScriptVariable();
+		if (tmp != NULL)
+		{
+			for (int i = 0; i < dataSize; i++) {
+				data[i] = tmp[i];
+			}
+
+			delete[] tmp;
+		}
 	}
 
 	dataSize++;

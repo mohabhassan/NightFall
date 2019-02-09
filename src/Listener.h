@@ -1,5 +1,9 @@
 #pragma once
 #include "Class.h"
+//#include "Event.h"
+
+class Event;
+
 class Listener : public Class
 {
 	//void *__vfptr;//Class vfptr is used instead
@@ -11,5 +15,8 @@ protected:
 public:
 	Listener();
 	~Listener();
+	static void Init();
+	static void(__thiscall * ExecuteScript_ptr) (Listener *_this, Event *ev);
+	void ExecuteScript(Event *ev);
 };
 

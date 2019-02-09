@@ -170,7 +170,7 @@ void *MEM_BlockAlloc< a, b >::Alloc( void )
 		else
 		{
 			m_BlockCount++;
-			used_block = ( block_s< a, b > * )gi.Malloc( sizeof( block_s< a, b > ) );
+			used_block = (block_s< a, b > *)gi.Malloc(sizeof(block_s< a, b >));
 
 			for( i = sizeof( b ) - 1; i; i-- )
 			{
@@ -260,7 +260,7 @@ void MEM_BlockAlloc< a, b >::Free( void *ptr )
 		if( m_FreeBlock )
 		{
 			m_BlockCount--;
-			gi.Free( m_FreeBlock );
+			gi.Free(m_FreeBlock);
 			m_FreeBlock = NULL;
 		}
 
@@ -353,7 +353,7 @@ void MEM_BlockAlloc< a, b >::FreeAll( void )
 	if( m_FreeBlock )
 	{
 		m_BlockCount--;
-		MEM_Free( m_FreeBlock );
+		gi.Free( m_FreeBlock );
 		m_FreeBlock = NULL;
 	}
 #endif

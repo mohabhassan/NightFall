@@ -46,4 +46,10 @@ public:
 	{
 		return cEvents.size();
 	}
+
+	void Clear()
+	{
+		cEvents.clear();
+		cResponseFuncs.clear();
+	}
 };

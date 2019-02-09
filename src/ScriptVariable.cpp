@@ -1,10 +1,9 @@
 #include "ScriptVariable.h"
 #include "Director.h"
-
+#include "Class.h"
 #define CLEARINTERNAL_ADDR 0x31058D60
 #define LISTENERVALUE_ADDR 0x3105A230
 
-void		(__thiscall *ScriptVariable::ClearInternal)(ScriptVariable*_this);
 Listener	*(__thiscall *ScriptVariable::listenerValue)(ScriptVariable*_this);
 
 ScriptVariable::ScriptVariable()
@@ -30,7 +29,6 @@ ScriptVariable::~ScriptVariable()
 
 void ScriptVariable::Init()
 {
-	ClearInternal = reinterpret_cast<void(__thiscall*)(ScriptVariable*__this)>(CLEARINTERNAL_ADDR);
 	listenerValue = reinterpret_cast<Listener*(__thiscall*)(ScriptVariable*__this)>(LISTENERVALUE_ADDR);
 }
 
@@ -70,70 +68,70 @@ void ScriptVariable::CastString(void)
 	setStringValue(stringValue());
 }
 
-//
-//void ScriptVariable::ClearInternal(this)
-//{
-//	switch (GetType())
-//	{
-//	case VARIABLE_STRING:
-//		if (m_data.stringValue)
-//		{
-//			delete m_data.stringValue;
-//			m_data.stringValue = NULL;
-//		}
-//
-//		break;
-//
-//	case VARIABLE_ARRAY:
-//		/*if (m_data.arrayValue->refCount) //FIXME
-//		{
-//			m_data.arrayValue->refCount--;
-//		}
-//		else
-//		{
-//			delete m_data.arrayValue;
-//		}*/
-//
-//		m_data.arrayValue = NULL;
-//		break;
-//
-//	case VARIABLE_CONSTARRAY:
-//		/*if (m_data.constArrayValue->refCount) //FIXME
-//		{
-//			m_data.constArrayValue->refCount--;
-//		}
-//		else
-//		{
-//			delete m_data.constArrayValue;
-//		}*/
-//
-//		m_data.constArrayValue = NULL;
-//		break;
-//
-//	case VARIABLE_LISTENER:
-//	case VARIABLE_SAFECONTAINER:
-//		if (m_data.listenerValue)
-//		{
-//			delete m_data.listenerValue;
-//			m_data.listenerValue = NULL;
-//		}
-//
-//		break;
-//
-//	case VARIABLE_POINTER:
-//		//m_data.pointerValue->remove(this); //FIXME
-//		m_data.pointerValue = NULL;
-//		break;
-//
-//	case VARIABLE_VECTOR:
-//		delete[] m_data.vectorValue;
-//		m_data.vectorValue = NULL;
-//		break;
-//
-//	default:
-//		break;
-//	}
-//}
+
+void ScriptVariable::ClearInternal(ScriptVariable * dummy)
+{
+	switch (GetType())
+	{
+	case VARIABLE_STRING:
+		if (m_data.stringValue)
+		{
+			delete m_data.stringValue;
+		}
+		m_data.stringValue = NULL;
+
+		break;
+
+	case VARIABLE_ARRAY:
+		if (m_data.arrayValue->refCount)
+		{
+			m_data.arrayValue->refCount--;
+		}
+		else
+		{
+			delete m_data.arrayValue;
+		}
+
+		m_data.arrayValue = NULL;
+		break;
+
+	case VARIABLE_CONSTARRAY:
+		if (m_data.constArrayValue->refCount)
+		{
+			m_data.constArrayValue->refCount--;
+		}
+		else
+		{
+			delete m_data.constArrayValue;
+		}
+
+		m_data.constArrayValue = NULL;
+		break;
+
+	case VARIABLE_LISTENER:
+	case VARIABLE_SAFECONTAINER:
+		if (m_data.listenerValue)
+		{
+			delete m_data.listenerValue;
+		}
+		m_data.listenerValue = NULL;
+
+		break;
+
+	case VARIABLE_POINTER:
+		m_data.pointerValue->remove(this);
+		m_data.pointerValue = NULL;
+		break;
+
+	case VARIABLE_VECTOR:
+		delete[] m_data.vectorValue;
+		m_data.vectorValue = NULL;
+		break;
+
+	default:
+		break;
+	}
+}
 
 const char *ScriptVariable::GetTypeName() const
 {
@@ -359,7 +357,7 @@ str ScriptVariable::stringValue(void) const
 		return "NIL";
 
 	case VARIABLE_CONSTSTRING:
-		return Director::GetString(m_data.intValue);
+		return DirectorClass::GetString(m_data.intValue);
 
 
 	case VARIABLE_STRING:
@@ -492,7 +490,7 @@ void ScriptVariable::setVectorValue(const Vector &newvector)
 
 	type = VARIABLE_VECTOR;
 	
-	m_data.vectorValue = (float*)gi.Malloc(sizeof(float) * 3);
+	m_data.vectorValue = (float*)MemoryMalloc(sizeof(float) * 3);
 	newvector.copyTo(m_data.vectorValue);
 }
 
@@ -510,4 +508,294 @@ void ScriptVariable::setListenerValue(Listener *newvalue)
 Entity *ScriptVariable::entityValue(void)
 {
 	return (Entity *)listenerValue(this);
+}
+
+
+void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
+{
+	int intValue;
+	str string;
+
+	switch (type)
+	{
+	case VARIABLE_VECTOR:
+		intValue = index.intValue();
+
+		if (intValue > 2) {
+			gi.Printf("Vector index '%d' out of range", intValue);
+			return;
+		}
+
+		m_data.vectorValue[intValue] = value.floatValue();
+		break;
+
+	case VARIABLE_REF:
+		return;
+
+	case VARIABLE_NONE:
+		type = VARIABLE_ARRAY;
+		
+		m_data.arrayValue = new ScriptArrayHolder;
+
+		if (value.GetType() != VARIABLE_NONE)
+		{
+			m_data.arrayValue->arrayValue[index] = value;
+		}
+
+		break;
+
+	case VARIABLE_ARRAY:
+		if (value.GetType() == VARIABLE_NONE)
+		{
+			m_data.arrayValue->arrayValue.remove(index);
+		}
+		else
+		{
+			m_data.arrayValue->arrayValue[index] = value;
+		}
+		break;
+
+	case VARIABLE_STRING:
+	case VARIABLE_CONSTSTRING:
+		intValue = index.intValue();
+		string = stringValue();
+
+		if (intValue >= strlen(string)) {
+			gi.Printf("String index '%d' out of range", intValue);
+			return;
+		}
+
+		string[intValue] = value.charValue();
+
+		setStringValue(string);
+
+		break;
+
+	case VARIABLE_CONSTARRAY:
+		intValue = index.intValue();
+
+		if (!intValue || intValue > m_data.constArrayValue->size) {
+			gi.Printf("array index %d out of range", intValue);
+			return;
+		}
+
+		if (value.GetType())
+		{
+			m_data.constArrayValue->constArrayValue[intValue] = value;
+		}
+		else {
+			m_data.constArrayValue->constArrayValue[intValue].Clear();
+		}
+
+		break;
+
+	default:
+		gi.Printf("[] applied to invalid type '%s'\n", typenames[GetType()]);
+		break;
+	}
+}
+
+static __inline int VectorCompare(const vec3_t v1, const vec3_t v2) {
+	if (v1[0] != v2[0] || v1[1] != v2[1] || v1[2] != v2[2]) {
+		return 0;
+	}
+	return 1;
+}
+
+bool ScriptVariable::operator==(const ScriptVariable &value)
+{
+	int type = GetType();
+
+	switch (type + value.GetType() * VARIABLE_MAX)
+	{
+	default:		// ( lval )	==	( nil )
+					// ( nil )	==	( rval )
+		Clear();
+		return false;
+
+	case VARIABLE_NONE + VARIABLE_NONE * VARIABLE_MAX: // ( nil ) == ( nil )
+		return true;
+
+	case VARIABLE_LISTENER + VARIABLE_LISTENER * VARIABLE_MAX: // ( listener ) == ( listener )
+	{
+		Class *lval = NULL;
+		Class *rval = NULL;
+
+		if (m_data.listenerValue)
+		{
+			lval = m_data.listenerValue->Pointer();
+		}
+
+		if (value.m_data.listenerValue)
+		{
+			rval = value.m_data.listenerValue->Pointer();
+		}
+
+		return lval == rval;
+	}
+
+	case VARIABLE_INTEGER + VARIABLE_INTEGER * VARIABLE_MAX: // ( int ) == ( int )
+		return m_data.intValue == value.m_data.intValue;
+
+	case VARIABLE_INTEGER + VARIABLE_FLOAT * VARIABLE_MAX: // ( int ) == ( float )
+		return m_data.intValue == value.m_data.floatValue;
+
+	case VARIABLE_FLOAT + VARIABLE_FLOAT * VARIABLE_MAX: // ( float ) == ( float )
+		return m_data.floatValue == value.m_data.floatValue;
+
+	case VARIABLE_FLOAT + VARIABLE_INTEGER * VARIABLE_MAX: // ( float ) == ( int )
+		return m_data.floatValue == value.m_data.intValue;
+
+	case VARIABLE_CONSTSTRING + VARIABLE_CONSTSTRING * VARIABLE_MAX:	// ( const string )		==		( const string )
+		return m_data.intValue == value.m_data.intValue;
+
+	case VARIABLE_STRING + VARIABLE_STRING * VARIABLE_MAX:				// ( string )			==		( string )
+	case VARIABLE_INTEGER + VARIABLE_STRING * VARIABLE_MAX:				// ( int )				==		( string )
+	case VARIABLE_FLOAT + VARIABLE_STRING * VARIABLE_MAX:				// ( float )			==		( string )
+	case VARIABLE_CHAR + VARIABLE_STRING * VARIABLE_MAX:				// ( char )				==		( string )
+	case VARIABLE_CONSTSTRING + VARIABLE_STRING * VARIABLE_MAX:			// ( const string )		==		( string )
+	case VARIABLE_LISTENER + VARIABLE_STRING * VARIABLE_MAX:			// ( listener )			==		( string )
+	case VARIABLE_VECTOR + VARIABLE_STRING * VARIABLE_MAX:				// ( vector )			==		( string )
+	case VARIABLE_STRING + VARIABLE_CONSTSTRING * VARIABLE_MAX:			// ( string )			==		( const string )
+	case VARIABLE_INTEGER + VARIABLE_CONSTSTRING * VARIABLE_MAX:		// ( int )				==		( const string )
+	case VARIABLE_FLOAT + VARIABLE_CONSTSTRING * VARIABLE_MAX:			// ( float )			==		( const string )
+	case VARIABLE_CHAR + VARIABLE_CONSTSTRING * VARIABLE_MAX:			// ( char )				==		( const string )
+	case VARIABLE_LISTENER + VARIABLE_CONSTSTRING * VARIABLE_MAX:		// ( listener )			==		( const string )
+	case VARIABLE_VECTOR + VARIABLE_CONSTSTRING * VARIABLE_MAX:			// ( vector )			==		( const string )
+	case VARIABLE_STRING + VARIABLE_INTEGER * VARIABLE_MAX:				// ( string )			==		( int )
+	case VARIABLE_CONSTSTRING + VARIABLE_INTEGER * VARIABLE_MAX:		// ( const string )		==		( int )
+	case VARIABLE_STRING + VARIABLE_FLOAT * VARIABLE_MAX:				// ( string )			==		( float )
+	case VARIABLE_CONSTSTRING + VARIABLE_FLOAT * VARIABLE_MAX:			// ( const string )		==		( float )
+	case VARIABLE_STRING + VARIABLE_CHAR * VARIABLE_MAX:				// ( string )			==		( char )
+	case VARIABLE_CONSTSTRING + VARIABLE_CHAR * VARIABLE_MAX:			// ( const string )		==		( char )
+	case VARIABLE_STRING + VARIABLE_LISTENER * VARIABLE_MAX:			// ( string )			==		( listener )
+	case VARIABLE_CONSTSTRING + VARIABLE_LISTENER * VARIABLE_MAX:		// ( const string )		==		( listener )
+	case VARIABLE_STRING + VARIABLE_VECTOR * VARIABLE_MAX:				// ( string )			==		( vector )
+	case VARIABLE_CONSTSTRING + VARIABLE_VECTOR * VARIABLE_MAX:			// ( const string )		==		( vector )
+	{
+		str lval = stringValue();
+		str rval = value.stringValue();
+
+		return (!lval.length() && !rval.length()) || (lval == rval);
+	}
+
+	case VARIABLE_VECTOR + VARIABLE_VECTOR * VARIABLE_MAX: // ( vector ) == ( vector )
+		return VectorCompare(m_data.vectorValue, value.m_data.vectorValue) ? true : false;
+	}
+}
+
+
+template<>
+int HashCode< ScriptVariable >(const ScriptVariable& key)
+{
+	Entity *e;
+
+	switch (key.GetType())
+	{
+	case VARIABLE_STRING:
+	case VARIABLE_CONSTSTRING:
+		return HashCode< str >(key.stringValue());
+
+	case VARIABLE_INTEGER:
+		return key.m_data.intValue;
+
+	case VARIABLE_LISTENER:
+		e = (Entity *)key.listenerValue((ScriptVariable*)&key);
+
+		if (e->checkEntity())
+		{
+			return e->entnum;
+		}
+
+
+	default:
+		gi.Printf("Bad hash code value: %s", key.stringValue().c_str());
+	}
+}
+
+
+
+ScriptConstArrayHolder::ScriptConstArrayHolder()
+{
+	refCount = 0;
+	size = 0;
+	constArrayValue = NULL;
+}
+
+ScriptConstArrayHolder::~ScriptConstArrayHolder()
+{
+	if (constArrayValue)
+	{
+		delete[](constArrayValue + 1);
+	}
+}
+
+
+bool ScriptVariable::operator=(const ScriptVariable &variable)
+{
+	ClearInternal(this);
+
+	type = variable.GetType();
+
+	switch (type)
+	{
+	case VARIABLE_NONE:
+		return false;
+
+	case VARIABLE_CONSTSTRING:
+		m_data.intValue = variable.m_data.intValue;
+		return true;
+
+	case VARIABLE_STRING:
+		m_data.stringValue = new str(variable.stringValue());
+		return true;
+
+	case VARIABLE_FLOAT:
+		m_data.floatValue = variable.m_data.floatValue;
+		return true;
+
+	case VARIABLE_CHAR:
+		m_data.charValue = variable.m_data.charValue;
+		return true;
+
+	case VARIABLE_INTEGER:
+		m_data.intValue = variable.m_data.intValue;
+		return true;
+
+	case VARIABLE_LISTENER:
+		m_data.listenerValue = new SafePtr< Listener >(*variable.m_data.listenerValue);
+		return true;
+
+	case VARIABLE_ARRAY:
+		m_data.arrayValue = variable.m_data.arrayValue;
+		m_data.arrayValue->refCount++;
+		return true;
+
+	case VARIABLE_CONSTARRAY:
+		m_data.constArrayValue = variable.m_data.constArrayValue;
+		m_data.constArrayValue->refCount++;
+		return true;
+
+	case VARIABLE_CONTAINER:
+		m_data.containerValue = new Container< SafePtr< Listener > >(*variable.m_data.containerValue);
+		return true;
+
+	case VARIABLE_SAFECONTAINER:
+		m_data.safeContainerValue = new SafePtr< ConList >(*variable.m_data.safeContainerValue);
+		return true;
+
+	case VARIABLE_POINTER:
+		m_data.pointerValue = variable.m_data.pointerValue;
+		m_data.pointerValue->add(this);
+		return true;
+
+	case VARIABLE_VECTOR:
+		m_data.vectorValue = (float *)new float[3];
+		m_data.vectorValue[0] = variable.m_data.vectorValue[0];
+		m_data.vectorValue[2] = variable.m_data.vectorValue[1];
+		m_data.vectorValue[2] = variable.m_data.vectorValue[2];
+		return true;
+	}
+
+	return true;
 }

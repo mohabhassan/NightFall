@@ -28,7 +28,32 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "mem_blockalloc.h"
 
 class Class;
-
+static int con_set_primes[24] = {
+	7,
+	17,
+	37,
+	79,
+	163,
+	331,
+	673,
+	1361,
+	2729,
+	5471,
+	10949,
+	21911,
+	43853,
+	87719,
+	175447,
+	350899,
+	701819,
+	1403641,
+	2807303,
+	5614657,
+	11229331,
+	22458671,
+	44917381,
+	89834777
+};
 template< typename key, typename value >
 class con_map_enum;
 
@@ -272,7 +297,7 @@ void con_set< key, value >::resize( int count )
 	int oldTableLength = tableLength;
 	int i, index;
 
-	if( count > 0 )
+	/*if( count > 0 )
 	{
 		tableLength += count;
 		threshold = tableLength;
@@ -287,11 +312,15 @@ void con_set< key, value >::resize( int count )
 		}
 
 		tableLength += threshold;
-	}
+	}*/
+
+	tableLength = con_set_primes[tableLengthIndex++];
 
 	// allocate a new table
 	table = new Entry< key, value > *[tableLength]();
 	memset( table, 0, tableLength * sizeof( Entry< key, value > * ) );
+
+	threshold = (unsigned int)((float)tableLength * 0.75);
 
 	// rehash the table
 	for( i = oldTableLength - 1; i >= 0; i-- )
@@ -309,7 +338,7 @@ void con_set< key, value >::resize( int count )
 		}
 	}
 
-	if( oldTableLength > 1 )
+	if( oldTableLength != 1 )
 	{
 		// delete the previous table
 		delete[] oldTable;
@@ -350,6 +379,7 @@ template< typename k, typename v >
 Entry< k, v > *con_set< k, v >::addNewKeyEntry( const k& key )
 {
 	Entry< k, v > *entry;
+
 	int index;
 
 	if( count >= threshold )
@@ -359,24 +389,18 @@ Entry< k, v > *con_set< k, v >::addNewKeyEntry( const k& key )
 
 	index = HashCode< k >( key ) % tableLength;
 
-	count++;
 	
 	entry = new Entry < k, v >;
 
-	if( defaultEntry == NULL )
+	if (entry)
 	{
-		defaultEntry = entry;
-		entry->next = NULL;
+		entry->next = table[index];
+		entry->key = key;
 	}
-	else
-	{
-		entry->next = table[ index ];
-	}
-
-	entry->key = key;
 
 	table[ index ] = entry;
 
+	count++;
 	return entry;
 }
 

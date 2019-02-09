@@ -109,7 +109,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>src;libs/Detours/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;GAMEX86_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -129,7 +129,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>detours.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>detours.lib;wolfssl.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)\dgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\src\dgamex86.def</ModuleDefinitionFile>
@@ -139,7 +139,7 @@
       <ImportLibrary>.\release/gamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>libs/Detours/lib.X86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -156,16 +156,25 @@
     <ClCompile Include="src\con_set.cpp" />
     <ClCompile Include="src\CustomEventResponseSet.cpp" />
     <ClCompile Include="src\Director.cpp" />
+    <ClCompile Include="src\DM_Team.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Event.cpp" />
     <ClCompile Include="src\gamex86.cpp" />
     <ClCompile Include="src\g_misc.cpp" />
     <ClCompile Include="src\ihuddraw.cpp" />
     <ClCompile Include="src\Listener.cpp" />
+    <ClCompile Include="src\Memory.cpp" />
     <ClCompile Include="src\misc.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\PlayerMisc.cpp" />
     <ClCompile Include="src\qcommon.cpp" />
+    <ClCompile Include="src\ScriptedEvent.cpp" />
     <ClCompile Include="src\ScriptThread.cpp" />
+    <ClCompile Include="src\ScriptThreadFileSystem.cpp" />
+    <ClCompile Include="src\ScriptThreadiHudDraw.cpp" />
+    <ClCompile Include="src\ScriptThreadMaths.cpp" />
+    <ClCompile Include="src\ScriptThreadMisc.cpp" />
+    <ClCompile Include="src\ScriptThreadScriptedEvents.cpp" />
     <ClCompile Include="src\ScriptVariable.cpp" />
     <ClCompile Include="src\Sentient.cpp" />
     <ClCompile Include="src\SimpleEntity.cpp" />
@@ -180,10 +189,13 @@
     <ClInclude Include="src\Animate.h" />
     <ClInclude Include="src\Class.h" />
     <ClInclude Include="src\ClassDef.h" />
+    <ClInclude Include="src\Container.h" />
+    <ClInclude Include="src\ContainerClass.h" />
     <ClInclude Include="src\con_arrayset.h" />
     <ClInclude Include="src\CustomEventResponseSet.h" />
     <ClInclude Include="src\dbgheap.h" />
     <ClInclude Include="src\Director.h" />
+    <ClInclude Include="src\DM_Team.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\gamex86.h" />
@@ -196,6 +208,7 @@
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\qcommon.h" />
     <ClInclude Include="src\safeptr.h" />
+    <ClInclude Include="src\ScriptedEvent.h" />
     <ClInclude Include="src\ScriptThread.h" />
     <ClInclude Include="src\ScriptVariable.h" />
     <ClInclude Include="src\Sentient.h" />

@@ -76,5 +76,12 @@ public:
 public:
 	Entity();
 	~Entity();
+	static void Init();
+	static void Shutdown();
+	static void(__thiscall *DamageEvent_Orignal)(Entity*_this, Event *ev);
+
+	qboolean checkEntity();
 };
 
+
+void DamageEvent(Entity *_this, Event * ev);
