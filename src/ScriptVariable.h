@@ -7,6 +7,9 @@
 #include "Listener.h"
 #include "Entity.h"
 #include "safeptr.h"
+#include "con_set.h"
+#include "Container.h"
+#include "ContainerClass.h"
 enum variabletype
 {
 	VARIABLE_NONE,
@@ -45,7 +48,61 @@ static const char *typenames[] =
 	"vector",
 	"double"
 };
+class ScriptVariable;
+class ScriptArrayHolder {
+public:
+	con_map< ScriptVariable, ScriptVariable > arrayValue;
+	unsigned int	refCount;
 
+public:
+	/*void			Archive(Archiver& arc);
+	static void		Archive(Archiver& arc, ScriptArrayHolder *& arrayValue);*/
+};
+
+class ScriptConstArrayHolder {
+public:
+	ScriptVariable			*constArrayValue;
+	unsigned int			refCount;
+	unsigned int			size;
+
+public:
+	ScriptConstArrayHolder();
+	~ScriptConstArrayHolder();
+	/*void			Archive(Archiver& arc);
+	static void		Archive(Archiver& arc, ScriptConstArrayHolder *& constArrayValue);
+
+	ScriptConstArrayHolder(ScriptVariable *pVar, unsigned int size);
+	ScriptConstArrayHolder(unsigned int size);
+	ScriptConstArrayHolder();
+	~ScriptConstArrayHolder();*/
+};
+
+class ScriptPointer {
+public:
+	Container< ScriptVariable * > list;
+
+public:
+	void			Archive(Archiver& arc);
+	static void		Archive(Archiver& arc, ScriptPointer *& pointerValue);
+
+	/*void		Clear();
+
+	void		add(ScriptVariable *var);
+	void		setValue(const ScriptVariable& var);*/
+	void remove(ScriptVariable *var)
+	{
+		list.RemoveObject(var);
+
+		if (!list.NumObjects()) {
+			delete this;
+		}
+	}
+
+	void add(ScriptVariable *var)
+	{
+		list.AddObject(var);
+	}
+};
 class ScriptVariable
 {
 public:
@@ -62,13 +119,13 @@ public:
 
 		ScriptVariable				*refValue;
 
-		void /*ScriptArrayHolder*/			*arrayValue;
-		void /*ScriptConstArrayHolder*/		*constArrayValue;
+		ScriptArrayHolder			*arrayValue;
+		ScriptConstArrayHolder		*constArrayValue;
 
-		void /*Container< SafePtr< Listener > >*/					*containerValue;
-		void /*SafePtr< ContainerClass< SafePtr< Listener > > >*/	*safeContainerValue;
+		Container< SafePtr< Listener > >					*containerValue;
+		SafePtr< ContainerClass< SafePtr< Listener > > >	*safeContainerValue;
 
-		void /*ScriptPointer*/								*pointerValue;
+		ScriptPointer					*pointerValue;
 	} m_data;
 
 
@@ -79,7 +136,7 @@ public:
 
 	static void				Init();
 
-	static void				( __thiscall *ClearInternal)(ScriptVariable*_this);
+	void					ClearInternal(ScriptVariable*_this);
 	static Listener			*( __thiscall *listenerValue)(ScriptVariable*_this);
 	void					Clear();
 
@@ -124,4 +181,8 @@ public:
 
 	Entity * entityValue(void);
 
+	void setArrayAtRef(ScriptVariable & index, ScriptVariable & value);
+
+	bool operator==(const ScriptVariable &value);
+	bool operator=(const ScriptVariable &value);
 };

@@ -99,7 +99,7 @@ char *Info_ValueForKey(const char *s, const char *key) {
 	valueindex ^= 1;
 	if (*s == '\\')
 		s++;
-	while (1)
+	while (true)
 	{
 		o = pkey;
 		while (*s != '\\')

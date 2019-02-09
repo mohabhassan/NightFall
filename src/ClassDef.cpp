@@ -53,8 +53,8 @@ void ClassDef::BuildExtendedResponseList(ResponseDef<Class> exResponses[], int e
 	
 	size_t size = num * sizeof(ResponseDef< Class > *);
 
-	_this->responseLookup = (ResponseDef< Class > **)gi.Malloc(size);
-	sizeof(ClassDef);
+	_this->responseLookup = (ResponseDef< Class > **)MemoryMalloc(size);
+
 	superC = _this->super;
 
 	if (superC)

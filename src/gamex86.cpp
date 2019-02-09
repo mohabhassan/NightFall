@@ -9,12 +9,15 @@
 #include "Player.h"
 #include "ScriptThread.h"
 #include "Director.h"
+#include "ScriptedEvent.h"
 
 //#include "hooks/script.h"
-
+#define BEGININTERMISSION_ADDR 0x3111E910
+#define CMDFUNCTIONS_ADDR 0x5E1C38
 
 #ifdef _WIN32
 	HMODULE hmod; //Windows
+	HMODULE systemHMOD;
 #else
 	#define _GNU_SOURCE
 	void *hmod = 0; //*Nix
@@ -27,6 +30,20 @@
 
 typedef gameExport_t *(*pGetGameAPI_spec)( gameImport_t *import );
 pGetGameAPI_spec pGetGameAPI;
+
+
+typedef void (*pG_BeginIntermission_spec)(const char *map_name, INTTYPE_e transtype, bool shouldFade);
+pG_BeginIntermission_spec G_BeginIntermission_original;
+
+typedef void *(*pMemoryMalloc_spec)(int size);
+pMemoryMalloc_spec pMemoryMalloc;
+
+typedef void (*pMemoryFree_spec)(void *);
+pMemoryFree_spec pMemoryFree;
+
+xcommand_t SV_MapRestart_original;
+xcommand_t SV_Map_original;
+xcommand_t SV_GameMap_original;
 
 gameImport_t	gi;
 gameExport_t	*globals;
@@ -44,7 +61,68 @@ int start, middle, end;
 //-----------------------	    End	   -----------------------\\
 */
 
+bool Cmd_HookCommand(const char* cmd_name, xcommand_t *oldFunc, xcommand_t newFunc)
+{
+	static cmd_function_t **cmd_functions = reinterpret_cast<cmd_function_t **>(CMDFUNCTIONS_ADDR);
+	cmd_function_t	*cmd;
+	for (cmd = *cmd_functions; cmd; cmd = cmd->next)
+	{
+		if (!strcmp(cmd_name, cmd->name)) 
+		{
+			*oldFunc = cmd->function;
+			cmd->function = newFunc;
+			return true;
+		}
+	}
+	return false;
+}
 
+bool Cmd_UnHookCommand(xcommand_t oldFunc, xcommand_t newFunc)
+{
+	static cmd_function_t **cmd_functions = reinterpret_cast<cmd_function_t **>(CMDFUNCTIONS_ADDR);
+	cmd_function_t	*cmd;
+	for (cmd = *cmd_functions; cmd; cmd = cmd->next)
+	{
+		if (cmd->function == newFunc)
+		{
+			cmd->function = oldFunc;
+			return true;
+		}
+	}
+	return false;
+}
+
+void SV_MapRestart()
+{
+	ScriptedEvent sev(SEV_INTERMISSION);
+	if (sev.isRegistered())
+	{
+		sev.Trigger({ INTERM_RESTART });
+	}
+	SV_MapRestart_original();
+}
+
+void SV_Map()
+{
+	ScriptedEvent sev(SEV_INTERMISSION);
+
+	if (sev.isRegistered())
+	{
+		sev.Trigger({ INTERM_MAP });
+	}
+	SV_Map_original();
+}
+
+void SV_GameMap()
+{
+	ScriptedEvent sev(SEV_INTERMISSION);
+
+	if (sev.isRegistered())
+	{
+		sev.Trigger({ INTERM_MAP });
+	}
+	SV_GameMap_original();
+}
 
 /*
 ===========
@@ -68,6 +146,13 @@ void G_ClientBegin( gentity_t *ent, userCmd_t *cmd )
 	//gi.Printf("Player Name: %s : %d\n", ent->client->pers.netname, ent->client->ps.clientNum);
 
 	globals_backup.ClientBegin( ent, cmd );
+
+	ScriptedEvent sev(SEV_CONNECTED);
+
+	if (sev.isRegistered())
+	{
+		sev.Trigger({ (Entity*)ent->entity });
+	}
 }
 
 /*
@@ -106,6 +191,17 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 	return globals_backup.ClientConnect( clientNum, firstTime );
 }
 
+void G_ClientDisconnect(gentity_t *ent)
+{
+
+	ScriptedEvent sev(SEV_DISCONNECTED);
+
+	if (sev.isRegistered())
+	{
+		sev.Trigger({ (Entity*)ent->entity });
+	}
+	globals_backup.ClientDisconnect(ent);
+}
 /*
 ==============
 ClientThink
@@ -327,12 +423,53 @@ once for each server frame, which makes for smooth demo recording.
 void  G_ClientCommand ( gentity_t *ent ){
 	//gi.Argv(0) dmmessage Gi.Argv(1) 0 gi,Argv(2) blah gi.Args() 0 blah test
 	//gi.Printf("\ngi.Argv(0) %s Gi.Argv(1) %s gi,Argv(2) %s gi.Args() %s\n", gi.Argv(0) ,gi.Argv(1) ,gi.Argv(2) ,gi.Args());
-	if(!strcmp(gi.Argv(0),"dmmessage"))
+	char *cmd = gi.Argv(0);
+	if(!strcmp(cmd,"dmmessage"))
 	{
 		if(strHasIP(gi.Args()))
 		{
 			gi.Printf("IP Typed Here !\n");
 			return;
+		}
+	}
+	else if (!strcmp(cmd, "keyp"))
+	{
+		char *idStr = gi.Argv(1);
+		if (idStr)
+		{
+			long int id = strtol(idStr, NULL, 0);
+			if (errno == ERANGE)
+			{
+				id = 0;
+			}
+
+			ScriptedEvent sev(SEV_KEYPRESS);
+
+			if (sev.isRegistered())
+			{
+				sev.Trigger({ (Entity*)ent->entity, id});
+			}
+		}
+	}
+	else if (!strcmp(cmd, "scmd"))
+	{
+		int numArgs = gi.Argc();
+		str cmdStr = gi.Argv(1);
+		if (cmdStr)
+		{
+			str argsStr = "";
+			for (size_t i = 2; i < numArgs; i++)
+			{
+				argsStr += gi.Argv(i);
+				argsStr += i==numArgs-1 ? "" : " ";
+			}
+
+			ScriptedEvent sev(SEV_KEYPRESS);
+
+			if (sev.isRegistered())
+			{
+				sev.Trigger({ (Entity*)ent->entity, cmdStr, argsStr });
+			}
 		}
 	}
 	globals_backup.ClientCommand(ent);
@@ -354,41 +491,78 @@ void G_ClientUserinfoChanged(gentity_t *ent, char *userInfo)
 	}
 	globals_backup.ClientUserinfoChanged(ent,userInfo);
 }
+void __fastcall G_BeginIntermission(const char *map_name, INTTYPE_e transtype, bool shouldFade)
+{
+
+	ScriptedEvent sev(SEV_INTERMISSION);
+
+	if (sev.isRegistered())
+	{
+		sev.Trigger({ INTERM_SCREEN });
+	}
+	G_BeginIntermission_original(map_name, transtype, shouldFade);
+}
 
 void initScriptHooks()
 {
+	G_BeginIntermission_original = reinterpret_cast<pG_BeginIntermission_spec>(BEGININTERMISSION_ADDR);
+	bool success = Cmd_HookCommand("restart", &SV_MapRestart_original, &SV_MapRestart);
+	if (!success)
+	{
+		gi.Printf("newpatchname INIT ERROR: failed to hook SV_MapRestart !\n");
+	}
+	success = Cmd_HookCommand("map", &SV_Map_original, &SV_Map);
+	if (!success)
+	{
+		gi.Printf("newpatchname INIT ERROR: failed to hook SV_Map !\n");
+	}
+	success = Cmd_HookCommand("gamemap", &SV_GameMap_original, &SV_GameMap);
+	if (!success)
+	{
+		gi.Printf("newpatchname INIT ERROR: failed to hook SV_GameMap !\n");
+	}
 	Event::Init();
 	ClassDef::Init();
-	Director::Init();
+	Listener::Init();
+	DirectorClass::Init();
 	ScriptVariable::Init();
 
+	Entity::Init();
 	Player::Init();
 	ScriptThread::Init();
 
 	LONG ret = DetourTransactionBegin();
-	gi.Printf("DetourTransactionBegin(): %ld\n", ret);
 	ret = DetourUpdateThread(GetCurrentThread());
-	gi.Printf("DetourUpdateThread(GetCurrentThread()): %ld\n", ret);
 	ret = DetourAttach(&(PVOID&)(ClassDef::BuildResponseList_Orignal), (PVOID)(&BuildResponseListHook));
-	gi.Printf("DetourAttach(): %ld\n", ret);
 	ret = DetourTransactionCommit();
-	gi.Printf("DetourTransactionCommit(): %ld\n", ret);
+
+	ret = DetourTransactionBegin();
+	ret = DetourUpdateThread(GetCurrentThread());
+	ret = DetourAttach(&(PVOID&)(G_BeginIntermission_original), (PVOID)(&G_BeginIntermission));
+	ret = DetourTransactionCommit();
+
+
 }
 
 void shutdownScriptHooks()
 {
+	Cmd_UnHookCommand(SV_GameMap_original, &SV_GameMap);
+	Cmd_UnHookCommand(SV_Map_original, &SV_Map);
+	Cmd_UnHookCommand(SV_MapRestart_original, &SV_MapRestart);
 
+	Entity::Shutdown();
 	Player::Shutdown();
 	ScriptThread::Shutdown();
 
 	LONG ret = DetourTransactionBegin();
-	gi.Printf("DetourTransactionBegin(): %ld\n", ret);
 	ret = DetourUpdateThread(GetCurrentThread());
-	gi.Printf("DetourUpdateThread(GetCurrentThread()): %ld\n", ret);
 	ret = DetourDetach(&(PVOID&)(ClassDef::BuildResponseList_Orignal), (PVOID)(&BuildResponseListHook));
-	gi.Printf("DetourDetach(): %ld\n", ret);
 	ret = DetourTransactionCommit();
-	gi.Printf("DetourTransactionCommit(): %ld\n", ret);
+
+	ret = DetourTransactionBegin();
+	ret = DetourUpdateThread(GetCurrentThread());
+	ret = DetourDetach(&(PVOID&)(G_BeginIntermission_original), (PVOID)(&G_BeginIntermission));
+	ret = DetourTransactionCommit();
 }
 extern int classcount;
 /*
@@ -422,12 +596,13 @@ Needed to unload fgamededmohaa.so on mapchange!
 */
 void	G_Shutdown (void)
 {
-	sizeof(gameImport_t);
-	gi.Printf("==== Wrapper Shutdown ==== \n");
-	globals_backup.Shutdown();
 
+	gi.Printf("==== Wrapper Shutdown ==== \n");
 	shutDownIPBlocker();
 	shutdownScriptHooks();
+
+	globals_backup.Shutdown();
+
 	#ifndef _WIN32
 		// linux
 		dlerror();
@@ -438,7 +613,7 @@ void	G_Shutdown (void)
 			
 	#endif	
 }
- 
+
 
 gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 {
@@ -466,6 +641,11 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 	globals							= pGetGameAPI( import );
 	globals_backup					= *globals;
 
+	if (!systemHMOD)
+	{
+		gi.Error(ERR_DROP, "newpatchaname: Failed to load memory management routines!");
+		return NULL;
+	}
 	/*Game Exports*/
 /*
 	globals->AllowPaused			= G_AllowPaused;	
@@ -485,7 +665,7 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 	globals->ClientCommand			= G_ClientCommand;
 	globals->ClientConnect			= G_ClientConnect;
 
-//	globals->ClientDisconnect		= G_ClientDisconnect;
+	globals->ClientDisconnect		= G_ClientDisconnect;
 //	globals->ClientThink			= G_ClientThink;
 
 	globals->ClientUserinfoChanged	= G_ClientUserinfoChanged;
@@ -585,6 +765,10 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 		}
 		pGetGameAPI = (pGetGameAPI_spec)GetProcAddress( hmod,"GetGameAPI" );
 
+		systemHMOD = LoadLibrary("system86tt.dll");
+		pMemoryMalloc = (pMemoryMalloc_spec)GetProcAddress(systemHMOD, "MemoryMalloc");
+		pMemoryFree = (pMemoryFree_spec)GetProcAddress(systemHMOD, "MemoryFree");
+
 		//initscriptfuncs();
 
 		return TRUE; 
@@ -597,7 +781,14 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 
 	else if( dwReason == DLL_PROCESS_DETACH ) 
     {
-		FreeLibrary(hmod);
+		if (hmod)
+		{
+			FreeLibrary(hmod);
+		}
+		if (systemHMOD)
+		{
+			FreeLibrary(systemHMOD);
+		}
 		return 0;
     }
 
@@ -607,3 +798,13 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 }
 
 #endif
+
+void *MemoryMalloc(int size)
+{
+	return pMemoryMalloc(size);
+}
+
+void MemoryFree(void *ptr)
+{
+	pMemoryFree(ptr);
+}

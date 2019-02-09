@@ -1,7 +1,7 @@
 #pragma once
 #include "Animate.h"
-
-#define MAX_ACTIVE_WEAPONS 2
+#include "Container.h"
+#define MAX_ACTIVE_WEAPONS WEAPON_ERROR
 #define MAX_DAMAGE_MULTIPLIERS 19
 
 typedef int WeaponPtr[4];//FIXME
@@ -20,7 +20,7 @@ public:
 class Sentient : public Animate
 {
 protected:
-	Vector /*Container<int>*/ inventory;//FIXME
+	Container<int> inventory;
 	Vector /*Container<Ammo *>*/ ammo_inventory;//FIXME
 	float LMRF;
 	WeaponPtr newWeapon;
@@ -86,5 +86,6 @@ public:
 public:
 	Sentient();
 	~Sentient();
+	Animate * GetActiveWeapon(weaponhand_t hand);
 };
 

@@ -52,7 +52,7 @@
 //#include <ucontext.h>
 
 
-typedef DWORD solid_t;
+typedef unsigned long solid_t;
 
 #define	CVAR_ARCHIVE			1
 #define	CVAR_USERINFO			2
@@ -1171,6 +1171,13 @@ typedef struct poly_s
 
 } poly_t;
 
+typedef struct cmd_function_s
+{
+	struct cmd_function_s	*next;
+	const char				*name;
+	xcommand_t				function;
+} cmd_function_t;
+
 typedef struct client_persistant_s
 {
 	char userinfo[MAX_INFOSTRING];
@@ -1210,20 +1217,20 @@ typedef struct outPacket_s
 
 } outPacket_t;
 
-typedef struct trace_s
-{
-	qboolean allSolid;
-	qboolean startSolid;
-	float fraction;
-	vec3_t endPos;
-	cplane_t plane;
-	int surfaceFlags;
-	int shaderNum;
-	int contents;
-	int entityNum;
-	int location;
-	struct gentity_s *ent;
+// a trace is returned when a box is swept through the world
+typedef struct {
+	qboolean	allsolid;	// if true, plane is not valid
+	qboolean	startsolid;	// if true, the initial point was in a solid area
+	float		fraction;	// time completed, 1.0 = didn't hit anything
+	vec3_t		endpos;		// final position
+	cplane_t	plane;		// surface normal at impact, transformed to world space
+	int			surfaceFlags;	// surface hit
+	int			shaderNum;
+	int			contents;	// contents on other side of surface hit
+	int			entityNum;	// entity the contacted surface is a part of
 
+	int			location;
+	struct gentity_s *ent;
 } trace_t;
 
 typedef struct playerState_s
@@ -1270,7 +1277,7 @@ typedef struct playerState_s
 	vec3_t cameraPosOfs;//12 - 624
 	int cameraFlags;//4 - 636
 	vec3_t damageAngles;//12 - 640
-	byte filler1[8];//8 - 652  ////////////bt
+	unsigned char filler1[8];//8 - 652  ////////////bt
 	int ping;//4 - 660
 	vec3_t eyePos;//12 - 664
 	//?? - 676
@@ -4539,3 +4546,15 @@ extern	gameImport_t	gi;
 extern	gameExport_t	*globals;
 extern	gameExport_t	globals_backup;
 
+
+enum INTTYPE_e { TRANS_BSP, TRANS_LEVEL, TRANS_MISSION, TRANS_MISSION_FAILED };
+
+enum SEV_INTERMISSION_TYPE
+{
+	INTERM_SCREEN,
+	INTERM_MAP,
+	INTERM_RESTART,
+};
+
+void *MemoryMalloc(int size);
+void MemoryFree(void *);

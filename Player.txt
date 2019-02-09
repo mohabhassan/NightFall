@@ -1,0 +1,167 @@
+Player::statemap_Legs offset: 1504
+Player::statemap_Torso offset: 1508
+Player::currentState_Legs offset: 1512
+Player::currentState_Torso offset: 1516
+Player::last_torso_anim_name offset: 1520
+Player::last_leg_anim_name offset: 1524
+Player::partAnim offset: 1528
+Player::m_iPartSlot offset: 1536
+Player::m_fPartBlends offset: 1544
+Player::partOldAnim offset: 1552
+Player::partBlendMult offset: 1560
+Player::animdone_Legs offset: 1568
+Player::animdone_Torso offset: 1569
+Player::legs_conditionals offset: 1572
+Player::torso_conditionals offset: 1584
+Player::m_pLegsPainCond offset: 1596
+Player::m_pTorsoPainCond offset: 1600
+Player::m_fLastDeltaTime offset: 1604 // should be 1612
+Player::movecontrol offset: 1732 // should be 1616
+Player::m_iMovePosFlags offset: 1736 // should be 1620
+Player::last_camera_type offset: 1740 // should be 1624
+Player::oldvelocity offset: 1744 // should be 1628
+Player::old_v_angle offset: 1756 // should be 1640
+Player::oldorigin offset: 1768
+Player::animspeed offset: 1780
+Player::airspeed offset: 1784
+Player::m_vPushVelocity offset: 1788
+Player::blend offset: 1800
+Player::fov offset: 1816
+Player::selectedfov offset: 1820
+Player::m_iInZoomMode offset: 1824
+Player::v_angle offset: 1828 // should be 1712
+Player::buttons offset: 1864 // should be 1724
+Player::new_buttons offset: 1868 // should be 1728
+Player::server_new_buttons offset: 1872 // should be 1732
+Player::respawn_time offset: 1876 // should be 1736
+Player::last_attack_button offset: 1880 // should be 1740
+Player::damage_blood offset: 1884
+Player::damage_alpha offset: 1888
+Player::damage_blend offset: 1892 // should be 1752
+Player::damage_from offset: 1904
+Player::damage_angles offset: 1916
+Player::damage_count offset: 1928
+Player::damage_yaw offset: 1932 // should be 1792
+Player::next_painsound_time offset: 1936 // should be 1796
+Player::waitForState offset: 1940 // should be 1800
+//3 ints should be here
+Player::camera offset: 1944 // should be 1816 or 1804 ?
+//1 int should be here(mistake)
+Player::actor_camera offset: 1956 // should be 1832
+//1 int should be here(mistake)
+Player::actor_to_watch offset: 1968 // should be 1848
+Player::actor_camera_right offset: 1980 // should be 1852
+Player::starting_actor_camera_right offset: 1984 // should be 1856
+Player::music_current_mood offset: 1988 // should be 1860
+Player::music_fallback_mood offset: 1992 // should be 1864
+Player::music_current_volume offset: 1996 // should be 1868
+Player::music_saved_volume offset: 2000 // should be 1872
+Player::music_volume_fade_time offset: 2004 // should be 1876
+Player::reverb_type offset: 2008 // should be 1880
+Player::reverb_level offset: 2012 // should be 1884
+Player::gibbed offset: 2016
+Player::pain offset: 2020
+Player::pain_dir offset: 2024 // should be 1896
+Player::pain_type offset: 2028 // should be 1900
+Player::pain_location offset: 2032 // should be 1904
+Player::take_pain offset: 2036
+Player::nextpaintime offset: 2040 // should be 1912
+Player::knockdown offset: 2044
+Player::canfall offset: 2045 // should be 1930
+Player::falling offset: 2046
+Player::feetfalling offset: 2048
+Player::falldir offset: 2052
+Player::mediumimpact offset: 2064
+Player::hardimpact offset: 2065
+Player::music_forced offset: 2068 // should be 1952
+Player::last_ucmd offset: 2072 // should be 1956
+Player::yaw_forward offset: 2108 // should be 1976
+Player::yaw_left offset: 2120 // expected is 1988
+//1 vector should be here
+Player::atobject offset: 2132 // should be 2012
+Player::atobject_dist offset: 2148 // should be 2016
+Player::atobject_dir offset: 2152 // should be 2020
+Player::toucheduseanim offset: 2164
+Player::useanim_numloops offset: 2180
+Player::useitem_in_use offset: 2184
+Player::move_left_vel offset: 2200
+Player::move_right_vel offset: 2204
+Player::move_backward_vel offset: 2208
+Player::move_forward_vel offset: 2212
+Player::move_up_vel offset: 2216
+Player::move_down_vel offset: 2220
+Player::moveresult offset: 2224 // should be 2092
+Player::damage_multiplier offset: 2228 // should be 2096
+Player::m_voiceType offset: 2232 // should be 2100
+Player::num_deaths offset: 2236 // should be 2108
+Player::num_kills offset: 2240 // should be 2112
+Player::num_won_matches offset: 2244 // should be 2116
+Player::num_lost_matches offset: 2248 // should be 2120
+//3 ints should be here
+Player::m_bTempSpectator offset: 2252 // should be 2132
+Player::m_bSpectator offset: 2253 // should be 2133
+//1 bool should be here
+Player::m_bAllowFighting offset: 2254 // should be 2135
+Player::m_bReady offset: 2255  // should be 2136
+Player::m_iPlayerSpectating offset: 2256 // should be 2140
+Player::dm_team offset: 2260
+Player::current_team offset: 2264 // should be 2160
+Player::m_fTeamSelectTime offset: 2280
+Player::m_pLastSpawnpoint offset: 2284
+Player::voted offset: 2288
+Player::votecount offset: 2292
+Player::m_fWeapSelectTime offset: 2296
+Player::fAttackerDispTime offset: 2300
+Player::pAttackerDistPointer offset: 2304
+Player::m_iInfoClient offset: 2320
+Player::m_iInfoClientHealth offset: 2324
+Player::m_fInfoClientTime offset: 2328
+Player::m_iNumObjectives offset: 2332
+Player::m_iObjectivesCompleted offset: 2336
+Player::m_sPerferredWeaponOverride offset: 2340
+Player::mvTrail offset: 2344
+Player::mvTrailEyes offset: 2368
+Player::mCurTrailOrigin offset: 2392
+Player::mLastTrailTime offset: 2396
+Player::m_iNumHitsTaken offset: 2400
+Player::m_iNumEnemiesKilled offset: 2404
+Player::m_iNumObjectsDestroyed offset: 2408
+Player::m_iNumShotsFired offset: 2412
+Player::m_iNumHits offset: 2416
+Player::m_fAccuracy offset: 2420
+Player::m_fTimeUsed offset: 2424
+Player::m_iNumHeadShots offset: 2428
+Player::m_iNumTorsoShots offset: 2432
+Player::m_iNumLeftLegShots offset: 2436
+Player::m_iNumRightLegShots offset: 2440
+Player::m_iNumGroinShots offset: 2444
+Player::m_iNumLeftArmShots offset: 2448
+Player::m_iNumRightArmShots offset: 2452
+
+
+Player::m_vViewPos offset: 1840 // should be 2248
+Player::m_vViewAng offset: 1852 // should be 2260
+
+
+__________________________
+
+removed:
+
+Player::m_bActionAnimPlaying offset: 1608 // not used
+Player::m_iBaseActionAnimSlot offset: 1612 // not used
+Player::m_sActionAnimName offset: 1616 // not used
+Player::m_iActionAnimType offset: 1620 // not used
+Player::m_bActionAnimDone offset: 1624 // not used
+Player::m_sOldActionAnimName offset: 1628 // not used
+Player::m_fOldActionAnimWeight offset: 1632 // not used
+Player::m_fOldActionAnimFadeTime offset: 1636 // not used
+Player::m_iOldActionAnimType offset: 1640 // not used
+Player::m_bMovementAnimPlaying offset: 1644 // not used
+Player::m_iBaseMovementAnimSlot offset: 1648 // not used
+Player::m_sMovementAnimName offset: 1652 // not used
+Player::m_sOldMovementAnimName offset: 1656 // not used
+Player::m_fOldMovementWeight offset: 1660 // not used
+Player::m_fOldMovementFadeTime offset: 1664 // not used
+Player::m_sSlotAnimNames offset: 1668 // not used
+Player::last_eyeinfo offset: 2092 // not used
+Player::animheight offset: 2104 // not used

@@ -1,3 +1,6 @@
 [submodule "libs/Detours"]
 	path = libs/Detours
 	url = https://github.com/Microsoft/Detours.git
+[submodule "libs/wolfSSL"]
+	path = libs/wolfSSL
+	url = https://github.com/wolfSSL/wolfssl.git
