@@ -14,7 +14,3 @@ I am not guaranteeing anything, but it'll probably work.
 
 
 Have fun ! ;)
-
-## License
-
-**MIT**
