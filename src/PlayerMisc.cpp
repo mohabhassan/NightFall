@@ -57,7 +57,7 @@ void Player::MiscInit()
 		"Returns player's userinfo.",
 		EV_GETTER
 	),
-		&Player::SecFireHeldEvent);
+		&Player::GetUserInfoEvent);
 	cerSet.AddEventResponse(new Event(
 		"inventory",
 		EV_DEFAULT,

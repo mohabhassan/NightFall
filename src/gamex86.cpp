@@ -509,17 +509,17 @@ void initScriptHooks()
 	bool success = Cmd_HookCommand("restart", &SV_MapRestart_original, &SV_MapRestart);
 	if (!success)
 	{
-		gi.Printf("newpatchname INIT ERROR: failed to hook SV_MapRestart !\n");
+		gi.Printf(PATCH_NAME " INIT ERROR: failed to hook SV_MapRestart !\n");
 	}
 	success = Cmd_HookCommand("map", &SV_Map_original, &SV_Map);
 	if (!success)
 	{
-		gi.Printf("newpatchname INIT ERROR: failed to hook SV_Map !\n");
+		gi.Printf(PATCH_NAME " INIT ERROR: failed to hook SV_Map !\n");
 	}
 	success = Cmd_HookCommand("gamemap", &SV_GameMap_original, &SV_GameMap);
 	if (!success)
 	{
-		gi.Printf("newpatchname INIT ERROR: failed to hook SV_GameMap !\n");
+		gi.Printf(PATCH_NAME " INIT ERROR: failed to hook SV_GameMap !\n");
 	}
 	Event::Init();
 	ClassDef::Init();

@@ -136,8 +136,10 @@ public:
 
 	static void				Init();
 
-	void					ClearInternal(ScriptVariable*_this);
-	static Listener			*( __thiscall *listenerValue)(ScriptVariable*_this);
+	void					ClearInternal();
+	static Listener			*(__thiscall *listenerValue)(ScriptVariable*_this);
+	static void				(__thiscall *RealClearInternal)(ScriptVariable*_this);
+	static void				(__thiscall *setArrayAtRefReal)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value);
 	void					Clear();
 
 

@@ -3,8 +3,11 @@
 #include "Class.h"
 #define CLEARINTERNAL_ADDR 0x31058D60
 #define LISTENERVALUE_ADDR 0x3105A230
+#define SETARRAYATREF_ADDR 0x3105D280
 
 Listener	*(__thiscall *ScriptVariable::listenerValue)(ScriptVariable*_this);
+void		(__thiscall *ScriptVariable::RealClearInternal)(ScriptVariable*_this);
+void		(__thiscall *ScriptVariable::setArrayAtRefReal)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value);
 
 ScriptVariable::ScriptVariable()
 {
@@ -24,17 +27,19 @@ ScriptVariable::ScriptVariable(const ScriptVariable& variable)
 
 ScriptVariable::~ScriptVariable()
 {
-	ClearInternal(this);
+	ClearInternal();
 }
 
 void ScriptVariable::Init()
 {
 	listenerValue = reinterpret_cast<Listener*(__thiscall*)(ScriptVariable*__this)>(LISTENERVALUE_ADDR);
+	RealClearInternal = reinterpret_cast<void(__thiscall*)(ScriptVariable*__this)>(CLEARINTERNAL_ADDR);
+	setArrayAtRefReal = reinterpret_cast<void(__thiscall*)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value)>(SETARRAYATREF_ADDR);
 }
 
 void ScriptVariable::Clear()
 {
-	ClearInternal(this);
+	ClearInternal();
 	type = 0;
 }
 
@@ -45,7 +50,7 @@ void ScriptVariable::CastBoolean(void)
 {
 	int newvalue = booleanValue();
 
-	ClearInternal(this);
+	ClearInternal();
 
 	type = VARIABLE_INTEGER;
 	m_data.intValue = newvalue;
@@ -69,8 +74,11 @@ void ScriptVariable::CastString(void)
 }
 
 
-void ScriptVariable::ClearInternal(ScriptVariable * dummy)
+void ScriptVariable::ClearInternal()
 {
+	RealClearInternal(this);
+	return;
+	///////////////////////////////////////////////
 	switch (GetType())
 	{
 	case VARIABLE_STRING:
@@ -269,7 +277,7 @@ char ScriptVariable::charValue(void) const
 
 void ScriptVariable::setCharValue(char newvalue)
 {
-	ClearInternal(this);
+	ClearInternal();
 
 	type = VARIABLE_CHAR;
 	m_data.charValue = newvalue;
@@ -302,7 +310,7 @@ int ScriptVariable::intValue(void) const
 }
 void ScriptVariable::setIntValue(int newvalue)
 {
-	ClearInternal(this);
+	ClearInternal();
 	type = VARIABLE_INTEGER;
 	m_data.intValue = newvalue;
 }
@@ -335,14 +343,14 @@ float ScriptVariable::floatValue(void) const
 }
 void ScriptVariable::setFloatValue(float newvalue)
 {
-	ClearInternal(this);
+	ClearInternal();
 	type = VARIABLE_FLOAT;
 	m_data.floatValue = newvalue;
 }
 
 void ScriptVariable::setConstStringValue(const_str s)
 {
-	ClearInternal(this);
+	ClearInternal();
 	type = VARIABLE_CONSTSTRING;
 	m_data.intValue = s;
 }
@@ -411,7 +419,7 @@ void ScriptVariable::setStringValue(str newvalue)
 {
 	str *s;
 
-	ClearInternal(this);
+	ClearInternal();
 	type = VARIABLE_STRING;
 
 	
@@ -486,7 +494,7 @@ Vector ScriptVariable::vectorValue(void) const
 }
 void ScriptVariable::setVectorValue(const Vector &newvector)
 {
-	ClearInternal(this);
+	ClearInternal();
 
 	type = VARIABLE_VECTOR;
 	
@@ -497,7 +505,7 @@ void ScriptVariable::setVectorValue(const Vector &newvector)
 
 void ScriptVariable::setListenerValue(Listener *newvalue)
 {
-	ClearInternal(this);
+	ClearInternal();
 
 	type = VARIABLE_LISTENER;
 
@@ -513,9 +521,12 @@ Entity *ScriptVariable::entityValue(void)
 
 void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 {
+	setArrayAtRefReal(this, &index, &value);
+	return;
+	//////////////////////////////////////////////
 	int intValue;
 	str string;
-
+	sizeof(ScriptVariable);
 	switch (type)
 	{
 	case VARIABLE_VECTOR:
@@ -534,7 +545,8 @@ void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 
 	case VARIABLE_NONE:
 		type = VARIABLE_ARRAY;
-		
+		sizeof(ScriptArrayHolder);//28
+
 		m_data.arrayValue = new ScriptArrayHolder;
 
 		if (value.GetType() != VARIABLE_NONE)
@@ -733,7 +745,7 @@ ScriptConstArrayHolder::~ScriptConstArrayHolder()
 
 bool ScriptVariable::operator=(const ScriptVariable &variable)
 {
-	ClearInternal(this);
+	ClearInternal();
 
 	type = variable.GetType();
 
@@ -763,9 +775,12 @@ bool ScriptVariable::operator=(const ScriptVariable &variable)
 		return true;
 
 	case VARIABLE_LISTENER:
+		sizeof(SafePtr< Listener >);//16
 		m_data.listenerValue = new SafePtr< Listener >(*variable.m_data.listenerValue);
 		return true;
-
+	case VARIABLE_REF:
+		m_data.refValue = variable.m_data.refValue;
+		return true;
 	case VARIABLE_ARRAY:
 		m_data.arrayValue = variable.m_data.arrayValue;
 		m_data.arrayValue->refCount++;
@@ -777,10 +792,12 @@ bool ScriptVariable::operator=(const ScriptVariable &variable)
 		return true;
 
 	case VARIABLE_CONTAINER:
-		m_data.containerValue = new Container< SafePtr< Listener > >(*variable.m_data.containerValue);
+		//m_data.containerValue = new Container< SafePtr< Listener > >(*variable.m_data.containerValue);
+		m_data.containerValue = variable.m_data.containerValue;// BT
 		return true;
 
 	case VARIABLE_SAFECONTAINER:
+		sizeof(SafePtr< ConList >);//16
 		m_data.safeContainerValue = new SafePtr< ConList >(*variable.m_data.safeContainerValue);
 		return true;
 
@@ -790,7 +807,7 @@ bool ScriptVariable::operator=(const ScriptVariable &variable)
 		return true;
 
 	case VARIABLE_VECTOR:
-		m_data.vectorValue = (float *)new float[3];
+		m_data.vectorValue = new float[3];
 		m_data.vectorValue[0] = variable.m_data.vectorValue[0];
 		m_data.vectorValue[2] = variable.m_data.vectorValue[1];
 		m_data.vectorValue[2] = variable.m_data.vectorValue[2];

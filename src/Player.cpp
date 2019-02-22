@@ -210,6 +210,7 @@ void Player::Init()
 	),
 		&Player::Test);
 
+	MiscInit();
 
 	int rscount = cerSet.size()+1;
 	size_t sz = sizeof(ResponseDef<Player>) * rscount;
@@ -274,7 +275,7 @@ void Player::Test(Event*ev)
 	gi.centerprintf(gent, "Player Test success");
 }
 
-void Respawn(Player *_this,Event * ev)
+void __fastcall Respawn(Player *_this,Event * ev)
 {
 	ScriptedEvent sev(SEV_SPAWN);
 
@@ -285,7 +286,7 @@ void Respawn(Player *_this,Event * ev)
 	_this->Respawn_Orignal(_this, ev);
 }
 
-void Killed(Player *_this, Event * ev)
+void __fastcall Killed(Player *_this, Event * ev)
 {
 	ScriptedEvent sev(SEV_KILL);
 

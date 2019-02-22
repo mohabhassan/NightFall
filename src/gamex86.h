@@ -14,6 +14,7 @@
 #include <errno.h>
 #include "vector.h"
 #include "str.h"
+#include "Version.h"
 
 #define MOHBT
 #if defined(_WIN32) || defined(__MINGW32__)

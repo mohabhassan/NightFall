@@ -40,27 +40,27 @@ void ScriptThread::RegisterevEvent(Event*ev)
 	ScriptedEventType type;
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for registerev!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for registerev!\n");
 		return;
 	}
 
 	eventname = ev->GetString(1);
 	if (eventname == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL eventname passed to registerev!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL eventname passed to registerev!\n");
 		return;
 	}
 
 	scriptname = ev->GetString(2);
 	if (scriptname == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL scriptname passed to registerev!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL scriptname passed to registerev!\n");
 		return;
 	}
 	type = ScriptedEvent::ParseType(eventname);
 	if (type == SEV_UNK)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: invalid eventname passed to registerev: %s !\n", eventname.c_str());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid eventname passed to registerev: %s !\n", eventname.c_str());
 		return;
 	}
 
@@ -70,7 +70,7 @@ void ScriptThread::RegisterevEvent(Event*ev)
 
 	if (exists)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: registerev: event %s is already registered with script: %s !\n", eventname.c_str(), sev.GetScript().c_str());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: registerev: event %s is already registered with script: %s !\n", eventname.c_str(), sev.GetScript().c_str());
 		ev->AddInteger(SEVR_ALREADEXISTS);
 		return;
 	}
@@ -85,21 +85,21 @@ void ScriptThread::UnregisterevEvent(Event*ev)
 	ScriptedEventType type;
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for unregisterev!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for unregisterev!\n");
 		return;
 	}
 
 	eventname = ev->GetString(1);
 	if (eventname == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL eventname passed to unregisterev!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL eventname passed to unregisterev!\n");
 		return;
 	}
 
 	type = ScriptedEvent::ParseType(eventname);
 	if (type == SEV_UNK)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: invalid eventname passed to unregisterev: %s !\n", eventname.c_str());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid eventname passed to unregisterev: %s !\n", eventname.c_str());
 		return;
 	}
 
@@ -109,7 +109,7 @@ void ScriptThread::UnregisterevEvent(Event*ev)
 
 	if (exists)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: unregisterev: event %s is already unregistered!\n", eventname.c_str());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: unregisterev: event %s is already unregistered!\n", eventname.c_str());
 		ev->AddInteger(SEVR_ALREADEXISTS);
 		return;
 	}

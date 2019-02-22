@@ -43,5 +43,5 @@ public:
 	void GetInventoryEvent(Event * ev);
 };
 
-void Respawn(Player *_this, Event * ev);
-void Killed(Player *_this, Event * ev);
+void __fastcall Respawn(Player *_this, Event * ev);
+void __fastcall Killed(Player *_this, Event * ev);

@@ -193,7 +193,7 @@ void ScriptThread::ConprintfEvent(Event *ev)
 {
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for conprintf!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for conprintf!\n");
 	}
 	else
 	{
@@ -268,14 +268,14 @@ void ScriptThread::GetEntityEvent(Event *ev)
 
 	if (entnum < 0 || entnum > globals->max_entities)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Entity number %d out of scope!\n", entnum);
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Entity number %d out of scope!\n", entnum);
 	}
 	else
 	{
 		ent = G_GetEntity(entnum);
 		if (!ent)
 		{
-			gi.Printf("newpatchname SCRIPT ERROR: Entity not found!\n");
+			gi.Printf(PATCH_NAME " SCRIPT ERROR: Entity not found!\n");
 		}
 		else
 		{
@@ -299,7 +299,7 @@ void ScriptThread::GetTimeEvent(Event *ev)
 
 	if (strftime(buff, 1024, "%H:%M:%S", timeinfo) == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: gettime: failed to create time string!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: gettime: failed to create time string!\n");
 	}
 	else
 	{
@@ -357,7 +357,7 @@ void ScriptThread::GetDateFormattedEvent(Event *ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for getdate!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for getdate!\n");
 		return;
 	}
 
@@ -378,7 +378,7 @@ void ScriptThread::Md5Event(Event *ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for md5string!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for md5string!\n");
 		return;
 	}
 	text = ev->GetString(1);
@@ -407,14 +407,14 @@ void ScriptThread::Md5fileEvent(Event *ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for md5file!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for md5file!\n");
 		return;
 	}
 	filename = ev->GetString(1);
 	err = fopen_s(&fp, filename.c_str(), "rb");
 	if (err != 0)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: md5file: couldn't open file: %s error code: %i !\n", filename.c_str(), err);
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't open file: %s error code: %i !\n", filename.c_str(), err);
 		return;
 	}
 
@@ -428,7 +428,7 @@ void ScriptThread::Md5fileEvent(Event *ev)
 	}
 	catch (std::bad_alloc &e)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: md5file: couldn't load file: %s error: %s !\n", filename.c_str(), e.what());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't load file: %s error: %s !\n", filename.c_str(), e.what());
 		return;
 	}
 
@@ -441,7 +441,7 @@ void ScriptThread::Md5fileEvent(Event *ev)
 	{
 		delete[] buff;
 		fclose(fp); 
-		gi.Printf("newpatchname SCRIPT ERROR: md5file: couldn't load file: %s error2: %i !\n", filename.c_str(), bytesread);
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't load file: %s error2: %i !\n", filename.c_str(), bytesread);
 		return;
 	}
 
@@ -464,7 +464,7 @@ void ScriptThread::TypeofEvent(Event *ev)
 	int numargs = ev->NumArgs();
 	if (numargs != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for typeof!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for typeof!\n");
 		return;
 	}
 	ScriptVariable& var = ev->GetValue(1);
@@ -498,7 +498,7 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 
 	if (numArgs < 2 || numArgs > 6)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for traced!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for traced!\n");
 		return;
 	}
 

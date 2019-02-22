@@ -217,6 +217,7 @@
     <ClInclude Include="src\slre.h" />
     <ClInclude Include="src\str.h" />
     <ClInclude Include="src\vector.h" />
+    <ClInclude Include="src\Version.h" />
     <ClInclude Include="src\xtrace.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

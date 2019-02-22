@@ -1,0 +1,254 @@
+main:
+	wait 10
+	//waitthread fopen_fclose_test : success
+	//waitthread feof_test : success
+	//waitthread fseek_ftell_test : success
+	//waitthread frewind_test : success
+	//waitthread fputc_test : success
+	//waitthread fputs_test : success
+	//waitthread fgetc_test : success
+	//waitthread fgets_test : success
+	//waitthread ferror_test : success
+	//cant see a proper test for fflush, but it should work
+	//waitthread fexists_test : success
+	//waitthread freadall_test : success
+	//waitthread fsaveall_test : success
+	//waitthread fremove_test : success
+	//waitthread frename_test : success
+	//waitthread fcopy_test : success
+	//waitthread freadpak_test : success
+	//waitthread flist_test : success
+	
+end
+
+fopen_fclose_test:
+
+	println("\n\n~~~~~~~Testing fopen~~~~~~~~~~~")
+	local.file = fopen "test.txt" "w"
+	println ("~~local.file~~")
+	println local.file
+	
+	println("\n\n~~~~~~~Testing fclose~~~~~~~~~~~")
+	local.result = fclose local.file
+	println ("~~local.result~~")
+	println local.result
+	
+	
+	println("\n\n~~~~~~~Opening 32 files~~~~~~~~~~~")
+	for(local.i = 0; local.i <32; local.i++)
+	{
+		local.files[local.i] = fopen ("test"+local.i) "w"
+		println ("~~local.files[" + local.i + "]~~")
+		println (local.files[local.i])
+	}
+	println("\n\n~~~~~~~Opening 33rd file~~~~~~~~~~~")
+	local.file = fopen "test.txt" "w"
+	println ("~~local.file~~")
+	println local.file
+	local.result = fclose local.file
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Closing 32 files~~~~~~~~~~~")
+	for(local.i = 0; local.i <32; local.i++)
+	{
+		local.result = fclose local.files[local.i]
+		println ("~~local.result for i=" + local.i + "~~")
+		println (local.result)
+	}
+end
+fseek_ftell_test:
+	local.file = fopen "test.txt" "r"
+	println("\n\n~~~~~~~Testing fseek~~~~~~~~~~~")
+	local.result = fseek local.file 5 0
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing ftell~~~~~~~~~~~")
+	local.result = ftell local.file
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+frewind_test:
+	local.file = fopen "test.txt" "r"
+	local.result = fseek local.file 5 0
+	println("\n\n~~~~~~~Testing frewind : ftell pre~~~~~~~~~~~")
+	local.result = ftell local.file
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing frewind~~~~~~~~~~~")
+	local.result = frewind local.file
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing frewind : ftell post~~~~~~~~~~~")
+	local.result = ftell local.file
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+feof_test:
+	local.file = fopen "test.txt" "r"
+	println("\n\n~~~~~~~Testing feof~~~~~~~~~~~")
+	local.result = feof local.file
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+fputc_test:
+	local.file = fopen "test.txt" "w"
+	println("\n\n~~~~~~~Testing fputc~~~~~~~~~~~")
+	local.result = fputc local.file "a"
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+fputs_test:
+	local.file = fopen "test.txt" "w"
+	println("\n\n~~~~~~~Testing fputs~~~~~~~~~~~")
+	local.result = fputs local.file "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+fgetc_test:
+	local.file = fopen "test.txt" "r"
+	println("\n\n~~~~~~~Testing fgetc~~~~~~~~~~~")
+	local.result = fgetc local.file
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+fgets_test:
+	local.file = fopen "test.txt" "r"
+	println("\n\n~~~~~~~Testing fgets~~~~~~~~~~~")
+	local.result = fgets local.file 256
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+ferror_test:
+	local.file = fopen "test.txt" "r"
+	local.result = fputc local.file "a" // force error, can't write into file opened with "r"
+	println("\n\n~~~~~~~Testing ferror~~~~~~~~~~~")
+	local.result = ferror local.file
+	println ("~~local.result~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+fexists_test:
+	println("\n\n~~~~~~~Testing fexists: test.txt~~~~~~~~~~~")
+	local.result = fexists "test.txt"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing fexists: test2222.txt~~~~~~~~~~~")
+	local.result = fexists "test2222.txt"
+	println ("~~local.result~~")
+	println local.result
+end
+freadall_test:
+	local.file = fopen "test.txt" "rb"
+	println("\n\n~~~~~~~Testing freadall~~~~~~~~~~~")
+	local.result = freadall local.file
+	println ("~~local.result~~")
+	println local.result
+	local.result = ferror local.file
+	println ("~~local.result ferror~~")
+	println local.result
+	local.result = feof local.file
+	println ("~~local.result feof~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+fsaveall_test:
+	local.file = fopen "test.txt" "w"
+	println("\n\n~~~~~~~Testing fsaveall~~~~~~~~~~~")
+	local.result = fsaveall local.file "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+	println ("~~local.result~~")
+	println local.result
+	local.result = ferror local.file
+	println ("~~local.result ferror~~")
+	println local.result
+	local.result = feof local.file
+	println ("~~local.result feof~~")
+	println local.result
+	local.result = fclose local.file
+	println ("~~local.result fclose~~")
+	println local.result
+end
+fremove_test:
+	println("\n\n~~~~~~~Testing fremove: test.txt~~~~~~~~~~~")
+	local.result = fremove "test.txt"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing fremove: test2222.txt~~~~~~~~~~~")
+	local.result = fremove "test2222.txt"
+	println ("~~local.result~~")
+	println local.result
+end
+frename_test:
+	println("\n\n~~~~~~~Testing frename: test.txt~~~~~~~~~~~")
+	local.result = frename "test - Copy.txt" "test.txt"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing frename: test2222.txt~~~~~~~~~~~")
+	local.result = frename "test - Copy.txt" "test.txt"
+	println ("~~local.result~~")
+	println local.result
+end
+fcopy_test:
+	println("\n\n~~~~~~~Testing fcopy: test.txt~~~~~~~~~~~")
+	local.result = fcopy "test.txt" "test - Copy.txt"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing fcopy: test2222.txt~~~~~~~~~~~")
+	local.result = fcopy "test2222.txt" "test - Copy.txt"
+	println ("~~local.result~~")
+	println local.result
+end
+freadpak_test:
+	println("\n\n~~~~~~~Testing freadpak: freadpak_test.txt~~~~~~~~~~~")
+	local.result = freadpak "freadpak_test.txt"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing freadpak: freadpak_test22222.txt~~~~~~~~~~~")
+	local.result = freadpak "freadpak_test22222.txt"
+	println ("~~local.result~~")
+	println local.result
+end
+flist_test:
+	println("\n\n~~~~~~~Testing flist: tests \"\" 1~~~~~~~~~~~")
+	local.result = flist "tests" "" 1
+	println ("~~local.result~~")
+	println local.result
+	println ("size: " + local.result.size)
+	for(local.i = 0; local.i < local.result.size; local.i++)
+	{
+		println("local.result[" + local.i + "]=" + local.result[local.i]);
+	}
+	println("\n\n~~~~~~~Testing flist: maintt/tests \"\" 0~~~~~~~~~~~")
+	local.result = flist "tests" "" 0
+	println ("~~local.result~~")
+	println local.result
+	println ("size: " + local.result.size)
+	for(local.i = 0; local.i < local.result.size; local.i++)
+	{
+		println("local.result[" + local.i + "]=" + local.result[local.i]);
+	}
+end
