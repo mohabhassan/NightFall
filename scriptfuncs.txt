@@ -9,4 +9,4 @@ getdate: documentation mismatch http://www.x-null.net/wiki/index.php?title=Rebor
 addkills: already exists in bt
 adddeaths: already exists in bt
 isadmin: not implemented yet
-bindweap is not implemented as it is hack-ish
+bindweap is not implemented as it is hack-ish. it is also possible via script.

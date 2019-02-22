@@ -220,13 +220,13 @@ void ScriptThread::FOpenEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fopen!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fopen!\n");
 		return;
 	}
 
 	if (scriptFiles.size() == MAX_SCRIPTFILES)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fopen: Maximum number of concurrently open files exceed!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fopen: Maximum number of concurrently open files exceed!\n");
 		return;
 	}
 
@@ -238,7 +238,7 @@ void ScriptThread::FOpenEvent(Event *ev)
 	if (err != 0)
 	{
 		fp = NULL;
-		gi.Printf("newpatchname SCRIPT ERROR: fopen: could not open file: %s with access: %s ! error code: %d\n", filename.c_str(), a_type.c_str(), err);
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fopen: could not open file: %s with access: %s ! error code: %d\n", filename.c_str(), a_type.c_str(), err);
 	}
 	else
 	{
@@ -260,7 +260,7 @@ void ScriptThread::FCloseEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fclose!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fclose!\n");
 		return;
 	}
 
@@ -269,7 +269,7 @@ void ScriptThread::FCloseEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fclose: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fclose: invalid file handle!\n");
 	}
 	else
 	{
@@ -291,7 +291,7 @@ void ScriptThread::FEOFEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for feof!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for feof!\n");
 		return;
 	}
 
@@ -300,7 +300,7 @@ void ScriptThread::FEOFEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: feof: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: feof: invalid file handle!\n");
 	}
 	else
 	{
@@ -322,7 +322,7 @@ void ScriptThread::FSeekEvent(Event *ev)
 
 	if (argnum != 3)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fseek!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fseek!\n");
 		return;
 	}
 
@@ -331,7 +331,7 @@ void ScriptThread::FSeekEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fseek: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fseek: invalid file handle!\n");
 	}
 	else
 	{
@@ -356,7 +356,7 @@ void ScriptThread::FTellEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for ftell!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ftell!\n");
 		return;
 	}
 
@@ -365,7 +365,7 @@ void ScriptThread::FTellEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: ftell: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: ftell: invalid file handle!\n");
 	}
 	else
 	{
@@ -384,7 +384,7 @@ void ScriptThread::FRewindEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for frewind!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for frewind!\n");
 		return;
 	}
 
@@ -393,7 +393,7 @@ void ScriptThread::FRewindEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: frewind: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: frewind: invalid file handle!\n");
 	}
 	else
 	{
@@ -414,7 +414,7 @@ void ScriptThread::FPutcEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fputc!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fputc!\n");
 		return;
 	}
 
@@ -423,7 +423,7 @@ void ScriptThread::FPutcEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fputc: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fputc: invalid file handle!\n");
 	}
 	else
 	{
@@ -446,7 +446,7 @@ void ScriptThread::FPutsEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fputs!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fputs!\n");
 		return;
 	}
 
@@ -455,7 +455,7 @@ void ScriptThread::FPutsEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fputs: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fputs: invalid file handle!\n");
 	}
 	else
 	{
@@ -477,7 +477,7 @@ void ScriptThread::FGetcEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fgetc!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fgetc!\n");
 		return;
 	}
 
@@ -486,7 +486,7 @@ void ScriptThread::FGetcEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fgetc: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fgetc: invalid file handle!\n");
 	}
 	else
 	{
@@ -511,7 +511,7 @@ void ScriptThread::FGetsEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fgets!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fgets!\n");
 		return;
 	}
 
@@ -520,14 +520,14 @@ void ScriptThread::FGetsEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fgets: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fgets: invalid file handle!\n");
 	}
 	else
 	{
 		slen = ev->GetInteger(2);
 		if (slen <=0)
 		{
-			gi.Printf("newpatchname SCRIPT ERROR: fgets: invalid buffer size: %d!\n", slen);
+			gi.Printf(PATCH_NAME " SCRIPT ERROR: fgets: invalid buffer size: %d!\n", slen);
 		}
 		else
 		{
@@ -538,7 +538,7 @@ void ScriptThread::FGetsEvent(Event *ev)
 			}
 			catch (const std::bad_alloc& e)
 			{
-				gi.Printf("newpatchname SCRIPT ERROR: fgets: memory allocation error: %s !\n", e.what());
+				gi.Printf(PATCH_NAME " SCRIPT ERROR: fgets: memory allocation error: %s !\n", e.what());
 				ev->AddInteger(-1);
 				delete Str;
 				return;
@@ -569,7 +569,7 @@ void ScriptThread::FErrorEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for ferror!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ferror!\n");
 		return;
 	}
 
@@ -578,7 +578,7 @@ void ScriptThread::FErrorEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: ferror: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: ferror: invalid file handle!\n");
 	}
 	else
 	{
@@ -598,7 +598,7 @@ void ScriptThread::FFlushEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fflush!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fflush!\n");
 		return;
 	}
 
@@ -607,7 +607,7 @@ void ScriptThread::FFlushEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fflush: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fflush: invalid file handle!\n");
 	}
 	else
 	{
@@ -628,14 +628,14 @@ void ScriptThread::FExistsEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fexists!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fexists!\n");
 		return;
 	}
 
 	filename = ev->GetString(1);
 	if (filename == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL filename passed to fexists!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL filename passed to fexists!\n");
 		return;
 	}
 
@@ -665,7 +665,7 @@ void ScriptThread::FReadAllEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for freadall!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for freadall!\n");
 		return;
 	}
 
@@ -674,7 +674,7 @@ void ScriptThread::FReadAllEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: freadall: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: freadall: invalid file handle!\n");
 	}
 	else
 	{
@@ -693,7 +693,7 @@ void ScriptThread::FReadAllEvent(Event *ev)
 		Str = new (std::nothrow) char[size+1];
 		if (!Str)
 		{
-			gi.Printf("newpatchname SCRIPT ERROR: freadall: memory allocation error!\n");
+			gi.Printf(PATCH_NAME " SCRIPT ERROR: freadall: memory allocation error!\n");
 			delete Str;
 			return;
 		}
@@ -717,7 +717,7 @@ void ScriptThread::FSaveAllEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fsaveall!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fsaveall!\n");
 		return;
 	}
 
@@ -726,7 +726,7 @@ void ScriptThread::FSaveAllEvent(Event *ev)
 	it = find(scriptFiles.begin(), scriptFiles.end(), fp);
 	if (it == scriptFiles.end())
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: fsaveall: invalid file handle!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fsaveall: invalid file handle!\n");
 	}
 	else
 	{
@@ -735,7 +735,7 @@ void ScriptThread::FSaveAllEvent(Event *ev)
 		if (content == NULL)
 		{
 			ret = -1;
-			gi.Printf("newpatchname SCRIPT ERROR: fsaveall: content is NULL!\n");
+			gi.Printf(PATCH_NAME " SCRIPT ERROR: fsaveall: content is NULL!\n");
 		}
 		else
 		{
@@ -758,7 +758,7 @@ void ScriptThread::FRemoveEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fremove!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fremove!\n");
 		return;
 	}
 
@@ -766,7 +766,7 @@ void ScriptThread::FRemoveEvent(Event *ev)
 	
 	if (filename == NULL )
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL filename passed to fremove!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL filename passed to fremove!\n");
 		return;
 	}
 	ret = remove(filename.c_str());
@@ -784,7 +784,7 @@ void ScriptThread::FRenameEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for frename!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for frename!\n");
 		return;
 	}
 
@@ -793,11 +793,11 @@ void ScriptThread::FRenameEvent(Event *ev)
 
 	if (oldname == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL oldname passed to frename!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL oldname passed to frename!\n");
 	}
 	else if(newname == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL newname passed to frename!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL newname passed to frename!\n");
 	}
 	else
 	{
@@ -818,7 +818,7 @@ void ScriptThread::FCopyEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fcopy!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fcopy!\n");
 		return;
 	}
 
@@ -827,11 +827,11 @@ void ScriptThread::FCopyEvent(Event *ev)
 
 	if (from == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL oldname passed to fcopy!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL oldname passed to fcopy!\n");
 	}
 	else if (to == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL newname passed to fcopy!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL newname passed to fcopy!\n");
 	}
 	else
 	{
@@ -841,7 +841,7 @@ void ScriptThread::FCopyEvent(Event *ev)
 		}
 		catch (const std::exception& e)
 		{
-			gi.Printf("newpatchname SCRIPT ERROR: fcopy error: %s !\n", e.what());
+			gi.Printf(PATCH_NAME " SCRIPT ERROR: fcopy error: %s !\n", e.what());
 		}
 
 		ev->AddInteger(ret);
@@ -859,7 +859,7 @@ void ScriptThread::FReadPakEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for freadpak!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for freadpak!\n");
 		return;
 	}
 
@@ -867,7 +867,7 @@ void ScriptThread::FReadPakEvent(Event *ev)
 
 	if (filename == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL filename passed to freadpak!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL filename passed to freadpak!\n");
 		return;
 	}
 
@@ -897,7 +897,7 @@ void ScriptThread::FListEvent(Event *ev)
 
 	if (argnum != 3)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for flist!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for flist!\n");
 		return;
 	}
 
@@ -905,7 +905,7 @@ void ScriptThread::FListEvent(Event *ev)
 
 	if (path == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL path passed to flist!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL path passed to flist!\n");
 		return;
 	}
 
@@ -913,7 +913,7 @@ void ScriptThread::FListEvent(Event *ev)
 
 	if (filter == NULL)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: NULL filter passed to flist!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL filter passed to flist!\n");
 		return;
 	}
 
@@ -932,7 +932,7 @@ void ScriptThread::FListEvent(Event *ev)
 		sizeof(ScriptVariable);
 		index.setIntValue(i);
 		value.setStringValue(list[i]);
-
+		sizeof(block_s<Entry<ScriptVariable,ScriptVariable>, MEM_BLOCKSIZE>);
 		array.setArrayAtRef(index, value);
 	}
 

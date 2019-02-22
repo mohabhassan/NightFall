@@ -1,0 +1,23 @@
+main:
+	while(!$player) waitframe;
+	wait 1
+	iprintln "starting tests in"
+	for(local.i = 1; local.i <= 20; local.i++)
+	{
+		wait 1
+		iprintln local.i
+	}
+	waitthread userinfo_test
+end
+
+
+userinfo_test:
+	iprintln("\n\n~~~~~~~Testing userinfo: $player[1]~~~~~~~~~~~")
+	local.result = $player[1].userinfo
+	iprintln ("~~local.result~~")
+	iprintln local.result
+	iprintln("\n\n~~~~~~~Testing userinfo: $player[1]~~~~~~~~~~~")
+	local.result = $player[1].userinfo
+	iprintln ("~~local.result~~")
+	iprintln local.result
+end

@@ -1,0 +1,14 @@
+main:
+	wait 10
+	//waitthread md5file_test : success
+end
+md5file_test:
+	println("\n\n~~~~~~~Testing md5file: test.txt~~~~~~~~~~~")
+	local.result = md5file "test.txt"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing md5file: test2222.txt~~~~~~~~~~~")
+	local.result = md5file "test2222.txt"
+	println ("~~local.result~~")
+	println local.result
+end

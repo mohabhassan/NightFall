@@ -1,0 +1,4 @@
+main:
+	//exec tests/filesystem.scr : total success
+	exec tests/playermisc.scr
+end

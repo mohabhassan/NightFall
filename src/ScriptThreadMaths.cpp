@@ -220,7 +220,7 @@ void ScriptThread::MSinEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for sin!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for sin!\n");
 		return;
 	}
 
@@ -234,7 +234,7 @@ void ScriptThread::MCosEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for cos!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for cos!\n");
 		return;
 	}
 
@@ -248,7 +248,7 @@ void ScriptThread::MTanEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for tan!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for tan!\n");
 		return;
 	}
 
@@ -262,7 +262,7 @@ void ScriptThread::MASinEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for asin!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for asin!\n");
 		return;
 	}
 
@@ -276,7 +276,7 @@ void ScriptThread::MACosEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for acos!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for acos!\n");
 		return;
 	}
 
@@ -290,7 +290,7 @@ void ScriptThread::MATanEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for atan!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for atan!\n");
 		return;
 	}
 
@@ -304,7 +304,7 @@ void ScriptThread::MATan2Event(Event*ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for atan2!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for atan2!\n");
 		return;
 	}
 
@@ -318,7 +318,7 @@ void ScriptThread::MSinhEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for sinh!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for sinh!\n");
 		return;
 	}
 
@@ -332,7 +332,7 @@ void ScriptThread::MCoshEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for cosh!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for cosh!\n");
 		return;
 	}
 
@@ -346,7 +346,7 @@ void ScriptThread::MTanhEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for tanh!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for tanh!\n");
 		return;
 	}
 
@@ -360,7 +360,7 @@ void ScriptThread::MExpEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for exp!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for exp!\n");
 		return;
 	}
 
@@ -377,7 +377,7 @@ void ScriptThread::MFrexpEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for frexp!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for frexp!\n");
 		return;
 	}
 
@@ -402,7 +402,7 @@ void ScriptThread::MLdexpEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for ldexp!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ldexp!\n");
 		return;
 	}
 
@@ -419,7 +419,7 @@ void ScriptThread::MLogEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for log!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for log!\n");
 		return;
 	}
 
@@ -435,7 +435,7 @@ void ScriptThread::MLog10Event(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for log10!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for log10!\n");
 		return;
 	}
 
@@ -454,7 +454,7 @@ void ScriptThread::MModfEvent(Event*ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for modf!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for modf!\n");
 		return;
 	}
 
@@ -479,7 +479,7 @@ void ScriptThread::MPowEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for pow!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for pow!\n");
 		return;
 	}
 
@@ -496,7 +496,7 @@ void ScriptThread::MSqrtEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for sqrt!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for sqrt!\n");
 		return;
 	}
 
@@ -512,7 +512,7 @@ void ScriptThread::MCeilEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for ceil!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ceil!\n");
 		return;
 	}
 
@@ -528,7 +528,7 @@ void ScriptThread::MFloorEvent(Event *ev)
 
 	if (argnum != 1)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for floor!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for floor!\n");
 		return;
 	}
 
@@ -545,7 +545,7 @@ void ScriptThread::MFmodEvent(Event *ev)
 
 	if (argnum != 2)
 	{
-		gi.Printf("newpatchname SCRIPT ERROR: Wrong number of arguments for fmod!\n");
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fmod!\n");
 		return;
 	}
 
