@@ -59,7 +59,7 @@ void ClassDef::BuildExtendedResponseList(ResponseDef<Class> exResponses[], int e
 
 	if (superC)
 	{
-		BuildResponseListHook(superC);
+		BuildResponseListHook(superC, NULL);
 		memcpy(_this->responseLookup, superC->responseLookup, size);
 	}
 	else
