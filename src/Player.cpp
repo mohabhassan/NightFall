@@ -275,7 +275,7 @@ void Player::Test(Event*ev)
 	gi.centerprintf(gent, "Player Test success");
 }
 
-void __fastcall Respawn(Player *_this,Event * ev)
+void __fastcall Respawn(Player *_this, void * edx, Event * ev)
 {
 	ScriptedEvent sev(SEV_SPAWN);
 
@@ -286,7 +286,7 @@ void __fastcall Respawn(Player *_this,Event * ev)
 	_this->Respawn_Orignal(_this, ev);
 }
 
-void __fastcall Killed(Player *_this, Event * ev)
+void __fastcall Killed(Player *_this, void * edx, Event * ev)
 {
 	ScriptedEvent sev(SEV_KILL);
 

@@ -221,7 +221,7 @@ void ClassDef::BuildExtendedResponseList(ResponseDef<Class> exResponses[], int e
 }
 */
 int classcount = 0;
-void __fastcall BuildResponseListHook(ClassDef*_this)
+void __fastcall BuildResponseListHook(ClassDef*_this, void * edx)
 {
 	if (!strcmp(_this->classname, "Player"))
 	{
