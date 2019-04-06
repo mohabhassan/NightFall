@@ -38,7 +38,7 @@ qboolean Entity::checkEntity()
 	return entnum > 0 && entnum < globals->num_entities && (Entity *)globals->gentities[entnum].entity == this;
 }
 
-void DamageEvent(Entity * _this, Event * ev)
+void __fastcall DamageEvent(Entity * _this, void* edx, Event * ev)
 {
 	ScriptedEvent sev(SEV_DAMAGE);
 	if (sev.isRegistered())

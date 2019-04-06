@@ -84,4 +84,4 @@ public:
 };
 
 
-void DamageEvent(Entity *_this, Event * ev);
+void __fastcall DamageEvent(Entity *_this, void* edx, Event * ev);

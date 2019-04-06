@@ -32,7 +32,7 @@ typedef gameExport_t *(*pGetGameAPI_spec)( gameImport_t *import );
 pGetGameAPI_spec pGetGameAPI;
 
 
-typedef void (*pG_BeginIntermission_spec)(const char *map_name, INTTYPE_e transtype, bool shouldFade);
+typedef void (__cdecl*pG_BeginIntermission_spec)(const char *map_name, INTTYPE_e transtype, bool shouldFade);
 pG_BeginIntermission_spec G_BeginIntermission_original;
 
 typedef void *(*pMemoryMalloc_spec)(int size);
@@ -491,7 +491,7 @@ void G_ClientUserinfoChanged(gentity_t *ent, char *userInfo)
 	}
 	globals_backup.ClientUserinfoChanged(ent,userInfo);
 }
-void __fastcall G_BeginIntermission(const char *map_name, INTTYPE_e transtype, bool shouldFade)
+void __cdecl G_BeginIntermission(const char *map_name, INTTYPE_e transtype, bool shouldFade)
 {
 
 	ScriptedEvent sev(SEV_INTERMISSION);

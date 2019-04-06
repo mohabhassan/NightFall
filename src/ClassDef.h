@@ -41,4 +41,4 @@ public:
 	static void		Init();
 };
 
-void  __fastcall  BuildResponseListHook(ClassDef*_this);
+void  __fastcall  BuildResponseListHook(ClassDef*_this, void * edx);
