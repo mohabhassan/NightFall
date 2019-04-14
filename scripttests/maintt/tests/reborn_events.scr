@@ -9,6 +9,7 @@ local.kill_event = registerev "kill" global/reborn_events.scr::kill //same bugg 
 local.spawn_event = registerev "spawn" global/reborn_events.scr::spawn //gets triggered but dont let player spawn
 local.intermission_event = registerev "intermission" global/reborn_events.scr::intermission //crash server
 local.scmd_event = registerev "servercommand" global/reborn_events.scr::cmd_press // dont get triggered
+local.key_event = registerev "keypress" global/reborn_events.scr::key_press // crash server
 
 
 level.registed = 1
