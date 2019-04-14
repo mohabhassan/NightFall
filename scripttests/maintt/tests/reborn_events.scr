@@ -1,0 +1,108 @@
+main:
+
+if(level.registed != 1)
+{
+local.connected_event = registerev "connected" global/reborn_events.scr::connected // crash server
+local.disconnected_event = registerev "disconnected" global/reborn_events.scr::disconnected // crash server
+local.damage_event = registerev "damage" global/reborn_events.scr::damage //dont get triggered
+local.kill_event = registerev "kill" global/reborn_events.scr::kill //same bugg as the one fixed
+local.spawn_event = registerev "spawn" global/reborn_events.scr::spawn //gets triggered but dont let player spawn
+local.intermission_event = registerev "intermission" global/reborn_events.scr::intermission //crash server
+local.scmd_event = registerev "servercommand" global/reborn_events.scr::cmd_press // dont get triggered
+
+
+level.registed = 1
+}
+end
+
+damage local.target local.inflictor local.damage local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.entity:
+
+iprintln ("Target: " + local.target)
+iprintln ("Inflictor: " + local.inflictor)
+iprintln ("Damage: " + local.damage)
+iprintln ("Position: " + local.position)
+iprintln ("Direction: " + local.direction)
+iprintln ("Normal: " + local.normal)
+iprintln ("Knockback: " + local.knockback)
+iprintln ("Damageflags: " + local.damageflags)
+iprintln ("MeansofDeath: " + local.meansofdeath)
+iprintln ("Location: " + local.location)
+iprintln ("Entity: " + local.entity) 
+
+
+end
+
+kill local.target local.inflictor local.damage local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.entity:
+
+iprintln ("Target: " + local.target)
+iprintln ("Inflictor: " + local.inflictor)
+iprintln ("Damage: " + local.damage)
+iprintln ("Position: " + local.position)
+iprintln ("Direction: " + local.direction)
+iprintln ("Normal: " + local.normal)
+iprintln ("Knockback: " + local.knockback)
+iprintln ("Damageflags: " + local.damageflags)
+iprintln ("MeansofDeath: " + local.meansofdeath)
+iprintln ("Location: " + local.location)
+iprintln ("Entity: " + local.entity) 
+
+
+end
+
+spawn local.player:
+
+local.player iprint "You have Spawn!"
+
+end
+
+connected local.player:
+
+local.name = local.player.netname
+
+//local.player iprint "You have connected!"
+conprintf("Player " + local.name + " have connected to the server!")
+
+end
+
+disconnected local.player:
+
+local.name = local.player.netname
+
+//local.player iprint "You have connected!"
+conprintf("Player " + local.name + " have disconnected from server!")
+
+end
+
+
+key_press local.player local.key:
+
+
+local.player iprint ("KEY: " + local.key)
+
+end
+
+cmd_press local.player local.command local.args:
+
+
+local.player iprint ("CMD: " + local.command + " " + local.args)
+
+end
+
+intermission local.type:
+
+if(local.type == 0)
+{
+conprintf("Player Intermission Triggered\n")
+}
+else if(local.type == 1)
+{
+conprintf("Map change Intermission triggered!\n")
+}
+else if(local.type == 2)
+{
+conprintf("Map Restart Intermission triggered!\n")
+}
+
+
+end
+
