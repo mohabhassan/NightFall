@@ -75,6 +75,7 @@ public:
 	static int *totalevents;
 	static int NumEventCommands();
 	EventDef * getInfo();
+	static void(__thiscall *AddListener_Real)(Event* _this, Listener *listener);
 	static void Init();
 
 	Event();

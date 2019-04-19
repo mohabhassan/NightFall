@@ -7,17 +7,20 @@
 #include "gamex86.h"
 #define BUTTONS_OFFSET 1724
 #define NUM_DEATHS_OFFSET 2108
+#define PLAYER_SIZE 2404
+
 class Player : public Sentient //1504
 {
 	// can't bother to fix the offsets, I'll use direct offests & dummies
 	// for info about offsets, check Player.txt
 	// 
 	
-	uint8_t filler1[BUTTONS_OFFSET - sizeof(Sentient)];
+	uint8_t pfiller1[BUTTONS_OFFSET - sizeof(Sentient)];
 	int buttons;
-	uint8_t filler2[NUM_DEATHS_OFFSET - BUTTONS_OFFSET - sizeof(buttons)];
+	uint8_t pfiller2[NUM_DEATHS_OFFSET - BUTTONS_OFFSET - sizeof(buttons)];
 	int num_deaths;
 	int num_kills;
+	uint8_t pfiller3[PLAYER_SIZE - sizeof(num_kills) - sizeof(num_deaths) - NUM_DEATHS_OFFSET];
 public:
 	Player();
 	~Player();
