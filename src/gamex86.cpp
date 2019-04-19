@@ -525,6 +525,7 @@ void initScriptHooks()
 	ClassDef::Init();
 	Listener::Init();
 	DirectorClass::Init();
+	Sentient::Init();
 	ScriptVariable::Init();
 
 	Entity::Init();
@@ -643,7 +644,7 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 
 	if (!systemHMOD)
 	{
-		gi.Error(ERR_DROP, "newpatchaname: Failed to load memory management routines!");
+		gi.Error(ERR_DROP, PATCH_NAME ": Failed to load memory management routines!");
 		return NULL;
 	}
 	/*Game Exports*/

@@ -3,10 +3,12 @@
 #define LASTEVENT_ADDR 0x31276F70
 #define TOTALEVENTS_ADDR 0x31276ED8
 #define EVENTDEFLIST_ADDR 0x31276C80
+#define ADDLISTENER_ADDR 0x3113CCE0
 
 static eventInfo_t **lastEvent = NULL;
 int *Event::totalevents = NULL;
 con_map< Event *, EventDef > * Event::eventDefList = NULL;
+void(__thiscall *Event::AddListener_Real)(Event* _this, Listener *listener);
 
 Event::Event()
 {
@@ -99,8 +101,7 @@ AddListener
 */
 void Event::AddListener(Listener * listener)
 {
-	ScriptVariable& variable = GetValue();
-	variable.setListenerValue(listener);
+	AddListener_Real(this, listener);
 }
 
 /*
@@ -340,4 +341,5 @@ void Event::Init()
 	lastEvent = reinterpret_cast<eventInfo_t**>(LASTEVENT_ADDR);
 	totalevents = reinterpret_cast<int*>(TOTALEVENTS_ADDR);
 	eventDefList = reinterpret_cast<con_map< Event *, EventDef > *>(EVENTDEFLIST_ADDR);
+	AddListener_Real = reinterpret_cast<void(__thiscall *)(Event*_this, Listener* listener)>(ADDLISTENER_ADDR);
 }

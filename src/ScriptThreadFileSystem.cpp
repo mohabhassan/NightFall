@@ -929,10 +929,10 @@ void ScriptThread::FListEvent(Event *ev)
 	for (int i = 0; i < numFiles; i++)
 	{
 		ScriptVariable index, value;
-		sizeof(ScriptVariable);
+		//sizeof(ScriptVariable);
 		index.setIntValue(i);
 		value.setStringValue(list[i]);
-		sizeof(block_s<Entry<ScriptVariable,ScriptVariable>, MEM_BLOCKSIZE>);
+		//sizeof(block_s<Entry<ScriptVariable,ScriptVariable>, MEM_BLOCKSIZE>);
 		array.setArrayAtRef(index, value);
 	}
 
