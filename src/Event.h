@@ -1,12 +1,96 @@
 #pragma once
 #include "Listener.h"
 #include "ScriptVariable.h"
-#include "con_set.h"
 #include "Class.h"
 #include "Director.h"
 #include "Entity.h"
 #include <cstdint>
+class EventDef {
+public:
+	//int				dummy;//Extra in BT
+	str		 		command;
+	int				flags;
+	const char		*formatspec;
+	const char		*argument_names;
+	const char		*documentation;
+	uint8_t			type;
+	//void /*Container<EventArgDef>*/ *definition; //Extra in opm
 
+	//EventDef() { definition = NULL; } //Extra in opm
+	/*
+		void Error(const char *format, ...);
+
+		void PrintDocumentation(FILE *event_file, bool html);
+		void PrintEventDocumentation(FILE *event_file, bool html);
+
+		void DeleteDocumentation(void);
+		void SetupDocumentation(void);
+	*/
+};
+//template< typename k = Event * , typename v = EventDef>
+class Entry_eventdeflist
+{
+public:
+	Event *						key;
+	EventDef					value;
+	//unsigned int			index;//Not used in BT
+	Entry_eventdeflist			*next;
+	/*
+public:
+	void *operator new(size_t size)
+	{
+
+	}
+	void operator delete(void *ptr)
+	{
+
+	}
+
+	Entry_eventdeflist()
+	{
+
+	}
+	*/
+};
+class con_set_eventdeflist
+{
+	Entry_eventdeflist			**table;
+	unsigned int				tableLength;
+	unsigned int				threshold;
+	unsigned int				count;
+	short unsigned int			tableLengthIndex;
+	Entry_eventdeflist			*defaultEntry;
+public:
+	Entry_eventdeflist *findKeyEntry(const Event * key) const
+	{
+		Entry_eventdeflist *entry;
+
+		entry = table[(int)key % tableLength];
+
+		for (; entry != NULL; entry = entry->next)
+		{
+			if (entry->key == key) {
+				return entry;
+			}
+		}
+
+		return NULL;
+	}
+	int getTableLength() const
+	{
+		return tableLength;
+	}
+};
+
+class con_map_eventdeflist
+{
+	con_set_eventdeflist m_con_set;
+public:
+	const con_set_eventdeflist &getConSet() const
+	{
+		return m_con_set;
+	}
+};
 
 
 // Event flags
@@ -41,28 +125,6 @@ typedef struct eventInfo_s
 	struct eventInfo_s	*prev;
 } eventInfo_t;
 
-class EventDef {
-public:
-	//int				dummy;//Extra in BT
-	str		 		command;
-	int				flags;
-	const char		*formatspec;
-	const char		*argument_names;
-	const char		*documentation;
-	uint8_t			type;
-	//void /*Container<EventArgDef>*/ *definition; //Extra in opm
-
-	//EventDef() { definition = NULL; } //Extra in opm
-	/*
-		void Error(const char *format, ...);
-
-		void PrintDocumentation(FILE *event_file, bool html);
-		void PrintEventDocumentation(FILE *event_file, bool html);
-
-		void DeleteDocumentation(void);
-		void SetupDocumentation(void);
-	*/
-};
 class Event : public Class
 {
 public:
@@ -71,11 +133,12 @@ public:
 	short unsigned int	dataSize;
 	ScriptVariable		*data;
 
-	static con_map< Event *, EventDef > *eventDefList;
+	static con_map_eventdeflist *eventDefList;
 	static int *totalevents;
 	static int NumEventCommands();
-	EventDef * getInfo();
+	//EventDef * getInfo();
 	static void(__thiscall *AddListener_Real)(Event* _this, Listener *listener);
+	static ScriptVariable*(__thiscall *GetValue_Real)(Event* _this);
 	static void Init();
 
 	Event();

@@ -1,13 +1,12 @@
 #pragma once
 #include "Animate.h"
-#include "Container.h"
 #define MAX_ACTIVE_WEAPONS WEAPON_ERROR
 #define MAX_DAMAGE_MULTIPLIERS 19
 
 #define ACTIVEWEAPONLIST_OFFSET 1036
 #define SENTEINT_SIZE 1504
 
-typedef SafePtr<Animate> WeaponPtr;//FIXME
+typedef int WeaponPtr[4];//FIXME
 typedef int VehiclePtr[4];//FIXME
 typedef int TurretGunPtr[4];//FIXME
 
@@ -19,12 +18,35 @@ public:
 	void Archive(Archiver &arc);
 };
 
+class Container_Inventory
+{
+	int	*objlist;
+	int		numobjects;
+	int		maxobjects;
+public:
+	int NumObjects() const
+	{
+		return numobjects;
+	}
+	int & ObjectAt(int index) const
+	{
+		if ((index <= 0) || (index > numobjects)) {
+			gi.Error(ERR_DROP, "Container::ObjectAt : index out of range");
+		}
+
+		return objlist[index - 1];
+	}
+	int & operator[](int index) const
+	{
+		return ObjectAt(index + 1);
+	}
+};
 
 class Sentient : public Animate
 {
 protected:
 	//Can't bother, more info is found inside Sentient.txt
-	Container<int> inventory;
+	Container_Inventory /*Container<int>*/ inventory;
 	uint8_t sfiller1[ACTIVEWEAPONLIST_OFFSET - sizeof(inventory) - sizeof(Animate)];
 	WeaponPtr activeWeaponList[MAX_ACTIVE_WEAPONS];
 	uint8_t sfiller2[SENTEINT_SIZE - sizeof(activeWeaponList) - ACTIVEWEAPONLIST_OFFSET];

@@ -73,6 +73,7 @@ void ScriptThread::MiscInit()
 	),
 		&ScriptThread::GetTimeZoneEvent);
 
+	/*
 	cerSet.AddEventResponse(new Event(
 		"getdate",
 		EV_DEFAULT,
@@ -82,7 +83,7 @@ void ScriptThread::MiscInit()
 		EV_RETURN
 	),
 		&ScriptThread::GetDateEvent);
-
+	*/
 	cerSet.AddEventResponse(new Event(
 		"getdate",
 		EV_DEFAULT,
@@ -171,7 +172,7 @@ void ScriptThread::MiscInit()
 void ScriptThread::PlayerNetNameEvent(Event * ev)
 {
 	Entity *ent = NULL;
-	str netname = "";
+	str netname("");
 
 	ent = (Entity*)ev->GetEntity(1);
 
@@ -236,7 +237,7 @@ void ScriptThread::PlayerGetPingEvent(Event * ev)
 
 	if (ent != NULL && ent->client != NULL)
 	{
-		ping = ent->client->ping;
+		ping = ent->client->ps.ping;
 	}
 
 	ev->AddString(ping);
@@ -331,10 +332,19 @@ void ScriptThread::GetTimeZoneEvent(Event *ev)
 	gmttime = ptm->tm_hour;
 
 	timediff = local - gmttime;
+	//fix: gmt-22 -> gmt+2
+	if (timediff < 12)
+	{
+		timediff = 24 + timediff;
+	}
+	else if (timediff > 12)
+	{
+		timediff = 24 - timediff;
+	}
 
 	ev->AddInteger(timediff);
 }
-
+/*
 void ScriptThread::GetDateEvent(Event *ev)
 {
 	char buff[1024];
@@ -348,7 +358,7 @@ void ScriptThread::GetDateEvent(Event *ev)
 
 	ev->AddString(buff);
 }
-
+*/
 void ScriptThread::GetDateFormattedEvent(Event *ev)
 {
 	char buff[1024] = {0};
@@ -364,7 +374,14 @@ void ScriptThread::GetDateFormattedEvent(Event *ev)
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
 
-	strftime(buff, 1024, ev->GetString(1).c_str(), timeinfo);
+	if (ev->GetValue(1).GetType() == VARIABLE_INTEGER)
+	{
+		strftime(buff, 1024, "%d.%m.%Y", timeinfo);
+	}
+	else
+	{
+		strftime(buff, 1024, ev->GetString(1).c_str(), timeinfo);
+	}
 
 	ev->AddString(buff);
 }
@@ -457,6 +474,7 @@ void ScriptThread::Md5fileEvent(Event *ev)
 	for (int di = 0; di < MD5_DIGEST_SIZE; ++di)
 		sprintf(md5Str + di * 2, "%02x", md5sum[di]);
 	ev->AddString(md5Str);
+	delete[] buff;
 }
 
 void ScriptThread::TypeofEvent(Event *ev)
@@ -481,7 +499,7 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 	trace_t trace;
 	Vector vecStart, vecEnd, vecMins, vecMaxs;
 	Entity *entity;
-
+	//todo : remove all these vars and add one for index and one for value
 	ScriptVariable array;
 	ScriptVariable allSolidIndex, allSolidValue;
 	ScriptVariable startSolidIndex, startSolidValue;

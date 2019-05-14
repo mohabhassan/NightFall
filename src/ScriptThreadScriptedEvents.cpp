@@ -7,7 +7,8 @@ enum SevReturnType
 {
 	SEVR_SUCCESS,
 	SEVR_ALREADEXISTS,
-	SEVR_MALLOC//not used
+	SEVR_MALLOC,//not used
+	SEVR_INVALID
 };
 
 void ScriptThread::ScriptedEventsInit()
@@ -36,7 +37,10 @@ void ScriptThread::ScriptedEventsInit()
 void ScriptThread::RegisterevEvent(Event*ev)
 {
 	int argnum = ev->NumArgs();
-	str eventname, scriptname;
+	str eventname;
+	ScriptVariable script;
+	ScriptVariable *file, *label;
+	str fileStr, labelStr;
 	ScriptedEventType type;
 	if (argnum != 2)
 	{
@@ -51,12 +55,8 @@ void ScriptThread::RegisterevEvent(Event*ev)
 		return;
 	}
 
-	scriptname = ev->GetString(2);
-	if (scriptname == NULL)
-	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL scriptname passed to registerev!\n");
-		return;
-	}
+	script = ev->GetValue(2);
+
 	type = ScriptedEvent::ParseType(eventname);
 	if (type == SEV_UNK)
 	{
@@ -66,11 +66,29 @@ void ScriptThread::RegisterevEvent(Event*ev)
 
 	ScriptedEvent sev(type);
 
-	bool exists = !sev.Register(scriptname.c_str());
+	if (script.GetType() == VARIABLE_CONSTARRAY)
+	{
+		file = script[1];
+		label = script[2];
+		file->CastString();
+		label->CastString();
+	}
+	else if (script.GetType() == VARIABLE_CONSTSTRING)
+	{
+		script.CastString();
+	}
+	else if(script.GetType() != VARIABLE_STRING)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: registerev: invalid script %s of type  for event %s: of!\n", script.stringValue(), script.GetTypeName(), eventname.c_str());
+		ev->AddInteger(SEVR_INVALID);
+		return;
+	}
+
+	bool exists = !sev.Register(script);
 
 	if (exists)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: registerev: event %s is already registered with script: %s !\n", eventname.c_str(), sev.GetScript().c_str());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: registerev: event %s is already registered !\n", eventname.c_str());
 		ev->AddInteger(SEVR_ALREADEXISTS);
 		return;
 	}

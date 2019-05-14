@@ -1,6 +1,53 @@
 main:
-	wait 10
+	wait 1
+	//waitthread stuffsrv_test
+	//waitthread conprintf_test
+	//waitthread md5string_test : success
 	//waitthread md5file_test : success
+	//waitthread gettime_test : success
+	//waitthread gettimezone_test : success
+	//waitthread getdate_test : success
+	//waitthread getdate2_test : success
+	//waitthread typeof_test : success
+	
+	//while(!$player) waitframe;
+	//waitthread getentity_test
+	//waitthread netname_test : success
+	//waitthread getip_test : success
+	//thread getping_test : success
+	//waitthread getclientnum_test : success
+end
+stuffsrv_test:
+	println("\n\n~~~~~~~Testing stuffsrv: say blah~~~~~~~~~~~")
+	stuffsrv "say blah;"
+	println("\n\n~~~~~~~Testing stuffsrv: say bwwaaah bew~~~~~~~~~~~")
+	stuffsrv "say bwwaaah bew;"
+end
+conprintf_test:
+	println("\n\n~~~~~~~Testing conprintf: \"sfgfgdfgdgh\\n\\n\\n\"~~~~~~~~~~~")
+	conprintf "sfgfgdfgdgh\n\n\n"
+	println("\n\n~~~~~~~Testing conprintf: \"sfgfgdfgdgh \\n\\n\\n sagfdgfsg\"~~~~~~~~~~~")
+	conprintf "sfgfgdfgdgh \n\n\n sagfdgfsg"
+end
+getentity_test:
+	println("\n\n~~~~~~~Testing getentity 0~~~~~~~~~~~")
+	local.result = getentity 0
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing getentity 1~~~~~~~~~~~")
+	local.result = getentity 1
+	println ("~~local.result~~")
+	println local.result
+end
+md5string_test:
+	println("\n\n~~~~~~~Testing md5string: teststr~~~~~~~~~~~")
+	local.result = md5string "teststr"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing md5string: teststrssss~~~~~~~~~~~")
+	local.result = md5string "teststrssss"
+	println ("~~local.result~~")
+	println local.result
 end
 md5file_test:
 	println("\n\n~~~~~~~Testing md5file: test.txt~~~~~~~~~~~")
@@ -9,6 +56,116 @@ md5file_test:
 	println local.result
 	println("\n\n~~~~~~~Testing md5file: test2222.txt~~~~~~~~~~~")
 	local.result = md5file "test2222.txt"
+	println ("~~local.result~~")
+	println local.result
+end
+gettime_test:
+	println("\n\n~~~~~~~Testing gettime~~~~~~~~~~~")
+	local.result = gettime 0
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing gettime~~~~~~~~~~~")
+	local.result = gettime 0
+	println ("~~local.result~~")
+	println local.result
+end
+gettimezone_test:
+	println("\n\n~~~~~~~Testing gettimezone~~~~~~~~~~~")
+	local.result = gettimezone 0
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing gettimezone~~~~~~~~~~~")
+	local.result = gettimezone 0
+	println ("~~local.result~~")
+	println local.result
+end
+getdate_test:
+	println("\n\n~~~~~~~Testing getdate 0~~~~~~~~~~~")
+	local.result = getdate 0
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing getdate 0~~~~~~~~~~~")
+	local.result = getdate 0
+	println ("~~local.result~~")
+	println local.result
+end
+getdate2_test:
+	println("\n\n~~~~~~~Testing getdate Now it's %I:%M%p.~~~~~~~~~~~")
+	local.result = getdate "Now it's %I:%M%p."
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing getdate Now it's %I:%M%p.~~~~~~~~~~~")
+	local.result = getdate "Now it's %I:%M%p."
+	println ("~~local.result~~")
+	println local.result
+end
+typeof_test:
+	println("\n\n~~~~~~~Testing typeof 1~~~~~~~~~~~")
+	local.t = 1
+	local.result = typeof local.t
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing typeof 2.0~~~~~~~~~~~")
+	local.t = 2.0
+	local.result = typeof local.t
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing typeof false~~~~~~~~~~~")
+	local.t = false
+	local.result = typeof local.t
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing typeof \"ttt\"~~~~~~~~~~~")
+	local.t = "ttt"
+	local.result = typeof local.t
+	println ("~~local.result~~")
+	println local.result
+end
+
+
+netname_test:
+	println("\n\n~~~~~~~Testing netname~~~~~~~~~~~")
+	local.result = netname $player[1]
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing netname~~~~~~~~~~~")
+	local.result = netname $player[1]
+	println ("~~local.result~~")
+	println local.result
+end
+getip_test:
+	println("\n\n~~~~~~~Testing getip~~~~~~~~~~~")
+	local.result = getip $player[1]
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing getip~~~~~~~~~~~")
+	local.result = getip $player[1]
+	println ("~~local.result~~")
+	println local.result
+end
+getping_test:
+	println("\n\n~~~~~~~Testing getping~~~~~~~~~~~")
+	local.result = getping $player[1]
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing getping~~~~~~~~~~~")
+	local.result = getping $player[1]
+	println ("~~local.result~~")
+	println local.result
+	while($player[1])
+	{
+		local.result = getping $player[1]
+		iprintln "ping: " local.result
+		wait 1
+	}
+end
+getclientnum_test:
+	println("\n\n~~~~~~~Testing getclientnum~~~~~~~~~~~")
+	local.result = getclientnum $player[1]
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing getclientnum~~~~~~~~~~~")
+	local.result = getclientnum $player[1]
 	println ("~~local.result~~")
 	println local.result
 end

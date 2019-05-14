@@ -461,11 +461,11 @@ void ScriptThread::MModfEvent(Event*ev)
 	frac = modf(ev->GetFloat(1), &intpart);
 
 	index.setStringValue("intpart");
-	value.setFloatValue(intpart);
+	value.setIntValue(intpart);
 	array.setArrayAtRef(index, value);
 
 	index.setStringValue("fractional");
-	value.setIntValue(frac);
+	value.setFloatValue(frac);
 	array.setArrayAtRef(index, value);
 
 	ev->AddValue(array);

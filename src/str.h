@@ -35,6 +35,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 void TestStringClass ();
+extern void *MemoryMalloc(int size);
+extern void MemoryFree(void*);
 
 class strdata
    {
@@ -42,8 +44,8 @@ class strdata
       strdata () : len( 0 ), refcount ( 0 ), data ( NULL ), alloced ( 0 ) {}
       ~strdata () 
          {
-         if ( data )
-            delete [] data;
+		  if (data)
+			MemoryFree(data);//delete[] data;
          }
 
       void AddRef () { refcount++; }
@@ -59,6 +61,18 @@ class strdata
          return false;
          }
 
+	  void* operator new(size_t n)
+	  {
+		  return MemoryMalloc(n);
+	  }
+	  void operator delete(void* n)
+	  {
+		  MemoryFree(n);
+	  }
+	  void operator delete[](void* n)
+	  {
+		  MemoryFree(n);
+	  }
       char *data;
       int refcount;
       size_t alloced;
@@ -128,6 +142,11 @@ class str
 		friend	bool		operator!=(	const char *a, const str& b );
 
                         operator const char * () const;
+
+						void* operator new(size_t n)
+						{
+							return MemoryMalloc(n);
+						}
 
                int      icmpn( const char *text, size_t n ) const;
 			   int      icmpn( const str& text, size_t n ) const;
@@ -467,7 +486,7 @@ inline void str::operator=
 		m_data = new strdata;
 		m_data->len = len;
 		m_data->alloced = len + 1;
-		m_data->data = new char[ len + 1 ];
+		m_data->data = (char*)MemoryMalloc(sizeof(char) * (len + 1));//new char[len + 1];
 		strcpy( m_data->data, text );
 	}
 }

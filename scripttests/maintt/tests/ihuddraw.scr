@@ -1,0 +1,67 @@
+main:
+	while(!$player) waitframe;
+	wait 5
+	local.player = $player[1];
+	local.huddrawIndex = 32;
+	local.color[0] = 0;
+	local.color[1] = 0;
+	local.color[2] = 0;
+	ihuddraw_align local.player local.huddrawIndex l t
+	ihuddraw_font local.player local.huddrawIndex "courier-20"
+	ihuddraw_rect local.player local.huddrawIndex 20 400 600 64
+	ihuddraw_color local.player local.huddrawIndex local.color[0] local.color[1] local.color[2]
+	ihuddraw_alpha local.player local.huddrawIndex 1
+	ihuddraw_shader local.player local.huddrawIndex "textures/common/black"
+	ihuddraw_virtualsize local.player local.huddrawIndex 1
+	///////////////////////////////////////////////////////
+
+	local.huddrawIndex++;
+	local.color[0] = 0;
+	local.color[1] = 0;
+	local.color[2] = 0;
+	ihuddraw_align local.player local.huddrawIndex l t
+	ihuddraw_font local.player local.huddrawIndex "courier-20"
+	ihuddraw_rect local.player local.huddrawIndex 20 100 600 64
+	ihuddraw_color local.player local.huddrawIndex local.color[0] local.color[1] local.color[2]
+	ihuddraw_alpha local.player local.huddrawIndex 1
+	ihuddraw_shader local.player local.huddrawIndex "textures/common/black"
+	ihuddraw_virtualsize local.player local.huddrawIndex 1
+	///////////////////////////////////////////////////////
+
+	local.huddrawIndex++;
+	local.color[0] = 1;
+	local.color[1] = 1;
+	local.color[2] = 1;
+	ihuddraw_align local.player local.huddrawIndex c t
+	ihuddraw_font local.player local.huddrawIndex "courier-20"
+	ihuddraw_rect local.player local.huddrawIndex 0 125 550 64
+	ihuddraw_color local.player local.huddrawIndex local.color[0] local.color[1] local.color[2]
+	ihuddraw_alpha local.player local.huddrawIndex 1
+	ihuddraw_virtualsize local.player local.huddrawIndex 1
+	ihuddraw_string local.player local.huddrawIndex "PLEASE DO NOT FIRE.YOU ARE BEING CHECKED BY ADMIN."
+	///////////////////////////////////////////////////////
+
+	local.huddrawIndex++;
+	local.color[0] = 1;
+	local.color[1] = 1;
+	local.color[2] = 1;
+	ihuddraw_align local.player local.huddrawIndex c t
+	ihuddraw_font local.player local.huddrawIndex "courier-20"
+	ihuddraw_rect local.player local.huddrawIndex 0 432 420 64
+	ihuddraw_color local.player local.huddrawIndex local.color[0] local.color[1] local.color[2]
+	ihuddraw_alpha local.player local.huddrawIndex 1
+	ihuddraw_virtualsize local.player local.huddrawIndex 1
+	ihuddraw_string local.player local.huddrawIndex "MATDRB4 NAR.EL ADMIN BY3ML CHECK 3LEEK."
+	///////////////////////////////////////////////////////
+	local.huddrawIndex++;
+	local.color[0] = 0;
+	local.color[1] = 1;
+	local.color[2] = 0;
+	ihuddraw_align local.player local.huddrawIndex l t
+	ihuddraw_font local.player local.huddrawIndex "courier-20"
+	ihuddraw_rect local.player local.huddrawIndex 320 240 600 64
+	ihuddraw_color local.player local.huddrawIndex local.color[0] local.color[1] local.color[2]
+	ihuddraw_alpha local.player local.huddrawIndex 1
+	ihuddraw_shader local.player local.huddrawIndex "textures/common/caulk"
+	ihuddraw_virtualsize local.player local.huddrawIndex 1
+end

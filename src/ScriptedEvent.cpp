@@ -1,8 +1,8 @@
 #include "ScriptedEvent.h"
 #include "Director.h"
 #include "Event.h"
-std::string ScriptedEvent::eventScripts[SEV_MAX];
-bool ScriptedEvent::eventSet[SEV_MAX] = { false };
+ScriptVariable *ScriptedEvent::eventScripts[SEV_MAX] = { NULL };
+bool ScriptedEvent::eventRegistered[SEV_MAX] = { false };
 
 extern DirectorClass *Director;
 
@@ -55,18 +55,32 @@ ScriptedEventType ScriptedEvent::ParseType(str type)
 	}
 }
 
+//used to solve ScriptVariable deallocated after dgamex86mohbt is unloaded
+void ScriptedEvent::Shutdown()
+{
+	for (int i = SEV_CONNECTED; i < SEV_MAX; i++)
+	{
+		if (eventScripts[i])
+		{
+			delete eventScripts[i];
+		}
+	}
+}
+
 void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args)
 {
 	Event ev;
 	ScriptVariable thread;
+	ScriptVariable *file, *label;
+	str fileStr, labelStr;
 	
-	//check ommited, happens before trigger is called instead (for efficiency)
-	//if (!eventSet[m_Type]) // don't execute an unregistered event
+	//check ommited, happens before trigger is called instead (for efficiency by not passing args)
+	//if (!eventRegistered[m_Type]) // don't execute an unregistered event
 	//{
 	//return;
 	//}
 
-	thread.setStringValue(eventScripts[m_Type].c_str());
+	thread = *eventScripts[m_Type];
 
 	ev.AddValue(thread);
 
@@ -75,10 +89,28 @@ void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args)
 		ev.AddValue(arg.getValue());
 	}
 
-	Director->ExecuteScript(&ev);
+	if (thread.GetType() == VARIABLE_CONSTARRAY)
+	{
+		file = thread[1];
+		label = thread[2];
+		fileStr = file->stringValue();
+		labelStr = label->stringValue();
+		//fileStr2 = Director->GetString(file->constStringValue());
+		//labelStr2 = Director->GetString(label->constStringValue());
+	}
+
+	try
+	{
+		Director->ExecuteScript(&ev);
+	}
+	catch (const ScriptException& e)
+	{
+		str wht = e.string;
+		throw;//shouldn't interfere with mohbt
+	}
 }
 
-bool ScriptedEvent::Register(std::string script)
+bool ScriptedEvent::Register(ScriptVariable script)
 {
 	if (isRegistered())
 	{
@@ -86,8 +118,8 @@ bool ScriptedEvent::Register(std::string script)
 	}
 	else
 	{
-		eventSet[m_Type] = true;
-		eventScripts[m_Type] = script;
+		eventRegistered[m_Type] = true;
+		eventScripts[m_Type] = new ScriptVariable(script);
 		return true;
 	}
 
@@ -101,20 +133,17 @@ bool ScriptedEvent::UnRegister()
 	}
 	else
 	{
-		eventSet[m_Type] = false;
-		eventScripts[m_Type].clear();
+		eventRegistered[m_Type] = false;
+		delete eventScripts[m_Type];
+		eventScripts[m_Type] = NULL;
 		return true;
 	}
 }
 
-str ScriptedEvent::GetScript()
-{
-	return eventScripts[m_Type].c_str();
-}
 
 bool ScriptedEvent::isRegistered()
 {
-	return eventSet[m_Type];
+	return eventRegistered[m_Type];
 }
 
 

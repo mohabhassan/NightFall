@@ -153,13 +153,12 @@
     <ClCompile Include="src\Animate.cpp" />
     <ClCompile Include="src\Class.cpp" />
     <ClCompile Include="src\ClassDef.cpp" />
-    <ClCompile Include="src\con_set.cpp" />
     <ClCompile Include="src\CustomEventResponseSet.cpp" />
+    <ClCompile Include="src\dgamex86.cpp" />
     <ClCompile Include="src\Director.cpp" />
     <ClCompile Include="src\DM_Team.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Event.cpp" />
-    <ClCompile Include="src\gamex86.cpp" />
     <ClCompile Include="src\g_misc.cpp" />
     <ClCompile Include="src\ihuddraw.cpp" />
     <ClCompile Include="src\Listener.cpp" />
@@ -183,15 +182,9 @@
     <ClCompile Include="src\xtrace.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\dgamex86.def" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\Animate.h" />
     <ClInclude Include="src\Class.h" />
     <ClInclude Include="src\ClassDef.h" />
-    <ClInclude Include="src\Container.h" />
-    <ClInclude Include="src\ContainerClass.h" />
-    <ClInclude Include="src\con_arrayset.h" />
     <ClInclude Include="src\CustomEventResponseSet.h" />
     <ClInclude Include="src\dbgheap.h" />
     <ClInclude Include="src\Director.h" />
@@ -201,13 +194,10 @@
     <ClInclude Include="src\gamex86.h" />
     <ClInclude Include="src\g_misc.h" />
     <ClInclude Include="src\ihuddraw.h" />
-    <ClInclude Include="src\Linklist.h" />
     <ClInclude Include="src\Listener.h" />
-    <ClInclude Include="src\mem_blockalloc.h" />
     <ClInclude Include="src\misc.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\qcommon.h" />
-    <ClInclude Include="src\safeptr.h" />
     <ClInclude Include="src\ScriptedEvent.h" />
     <ClInclude Include="src\ScriptThread.h" />
     <ClInclude Include="src\ScriptVariable.h" />

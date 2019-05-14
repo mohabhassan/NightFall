@@ -126,7 +126,7 @@ void ScriptThread::iHudDrawAlignEvent(Event *ev)
 		h_align = 2;
 		break;
 	default:
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid h_align value\n", h_alignstr.c_str());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid h_align value: %s\n", h_alignstr.c_str());
 		return;
 		break;
 	}

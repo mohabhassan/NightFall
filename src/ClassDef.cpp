@@ -7,7 +7,7 @@
 #define	ADDNEWKEYENTRY_ADDR 0x310FF160
 
 void(__thiscall *ClassDef::BuildResponseList_Orignal)(ClassDef*_this);
-using addNewKeyEntryPtr = Entry< Event *, EventDef > *(__thiscall *)(con_map< Event *, EventDef > *_this, void*r, unsigned int loc);
+using addNewKeyEntryPtr = Entry_eventdeflist *(__thiscall *)(con_map_eventdeflist *_this, void*r, unsigned int loc);
 static addNewKeyEntryPtr addNewKeyEntry;
 
 
@@ -24,7 +24,7 @@ ClassDef::~ClassDef()
 }
 EventDef* getInfo(ResponseDef<Class>* r)
 {
-	Entry< Event *, EventDef > *entry = Event::eventDefList->getConSet().findKeyEntry(r->event);
+	Entry_eventdeflist *entry = Event::eventDefList->getConSet().findKeyEntry(r->event);
 
 	if (entry != NULL) {
 		return &entry->value;

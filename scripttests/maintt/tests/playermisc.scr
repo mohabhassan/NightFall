@@ -10,12 +10,10 @@ main:
 	//waitthread userinfo_test : success
 	//waitthread getdeaths_test : success
 	//waitthread getkills_test : success
+	//waitthread getactiveweap_test : success
+	//waitthread secfireheld_test : success
+	//waitthread inventory_test : success
 	
-	
-	
-	
-	//errors:
-	//waitthread getactiveweap_test
 end
 
 
@@ -55,10 +53,34 @@ getactiveweap_test:
 	iprintln("\n\n~~~~~~~Testing getactiveweap: $player[1]~~~~~~~~~~~")
 	local.result = $player[1] getactiveweap 0
 	iprintln ("~~local.result~~")
-	iprintln local.result
-	$player[1] adddeaths 18
+	iprintln local.result.model
 	iprintln("\n\n~~~~~~~Testing getactiveweap: $player[1]~~~~~~~~~~~")
 	local.result = $player[1] getactiveweap 1
 	iprintln ("~~local.result~~")
+	iprintln local.result.model
+end
+secfireheld_test:
+	iprintln("\n\n~~~~~~~Testing secfireheld_test: $player[1]~~~~~~~~~~~")
+	iprintln("\n\n~~~~~~~waiting till secfireheld~~~~~~~~~~~")
+	while($player)
+	{
+		waitframe;
+		if($player[1].secfireheld)
+		{
+			iprintln("secfireheld!");
+		}
+	}
+end
+inventory_test:
+	iprintln("\n\n~~~~~~~Testing inventory: $player[1]~~~~~~~~~~~")
+	local.result = $player[1].inventory
+	iprintln ("~~local.result~~")
 	iprintln local.result
+	if(local.result)
+	{
+		for(local.i = 0; local.i < local.result.size; local.i++)
+		{
+			iprintln(local.result[local.i].model);
+		}
+	}
 end

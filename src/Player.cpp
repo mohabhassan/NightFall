@@ -292,9 +292,12 @@ void __fastcall Killed(Player *_this, void * edx, Event * ev)
 
 	if (sev.isRegistered())
 	{
+		//	"eievvviiii",
+		//  "attacker damage inflictor position direction normal knockback damageflags meansofdeath location",
+
 		sev.Trigger({
 			ev->GetEntity(1),
-			ev->GetFloat(2),
+			ev->GetInteger(2),
 			ev->GetEntity(3),
 			ev->GetVector(4),
 			ev->GetVector(5),

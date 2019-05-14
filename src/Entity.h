@@ -1,12 +1,11 @@
 #pragma once
 #include "SimpleEntity.h"
 #include "gamex86.h"
-#include "safeptr.h"
 #define MAX_MODEL_CHILDREN 16
 #define MAX_GLUE_CHILDREN 8
 
 class Entity;
-typedef SafePtr<Entity> EntityPtr;
+typedef int EntityPtr[4];
 
 
 class pathway_ref {
@@ -78,10 +77,10 @@ public:
 	~Entity();
 	static void Init();
 	static void Shutdown();
-	static void(__thiscall *DamageEvent_Orignal)(Entity*_this, Event *ev);
+	static void(__thiscall *Damage_Orignal)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location);
 
 	qboolean checkEntity();
 };
 
 
-void __fastcall DamageEvent(Entity *_this, void* edx, Event * ev);
+void __fastcall Damage(Entity *_this, void* edx, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location);

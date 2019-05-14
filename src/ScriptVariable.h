@@ -6,10 +6,7 @@
 #include "str.h"
 #include "Listener.h"
 #include "Entity.h"
-#include "safeptr.h"
-#include "con_set.h"
-#include "Container.h"
-#include "ContainerClass.h"
+//#include "safeptr.h"
 enum variabletype
 {
 	VARIABLE_NONE,
@@ -51,7 +48,7 @@ static const char *typenames[] =
 class ScriptVariable;
 class ScriptArrayHolder {
 public:
-	con_map< ScriptVariable, ScriptVariable > arrayValue;
+	int /*con_map< ScriptVariable, ScriptVariable > */arrayValue[8];
 	unsigned int	refCount;
 
 public:
@@ -64,6 +61,7 @@ public:
 	ScriptVariable			*constArrayValue;
 	unsigned int			refCount;
 	unsigned int			size;
+	//unsigned int			dummy;
 
 public:
 	ScriptConstArrayHolder();
@@ -79,7 +77,7 @@ public:
 
 class ScriptPointer {
 public:
-	Container< ScriptVariable * > list;
+	int /*Container< ScriptVariable * >*/ list[3];
 
 public:
 	void			Archive(Archiver& arc);
@@ -88,7 +86,7 @@ public:
 	/*void		Clear();
 
 	void		add(ScriptVariable *var);
-	void		setValue(const ScriptVariable& var);*/
+	void		setValue(const ScriptVariable& var);
 	void remove(ScriptVariable *var)
 	{
 		list.RemoveObject(var);
@@ -101,7 +99,7 @@ public:
 	void add(ScriptVariable *var)
 	{
 		list.AddObject(var);
-	}
+	}*/
 };
 class ScriptVariable
 {
@@ -113,7 +111,7 @@ public:
 		char						charValue;
 		float						floatValue;
 		int							intValue;
-		SafePtr<Listener>			*listenerValue;
+		int /*SafePtr<Listener>			**/listenerValue/*[4]*/;
 		str							*stringValue;
 		float						*vectorValue;
 
@@ -122,8 +120,8 @@ public:
 		ScriptArrayHolder			*arrayValue;
 		ScriptConstArrayHolder		*constArrayValue;
 
-		Container< SafePtr< Listener > >					*containerValue;
-		SafePtr< ContainerClass< SafePtr< Listener > > >	*safeContainerValue;
+		int /*Container< SafePtr< Listener > >					**/containerValue/*[3]*/;
+		int /*SafePtr< ContainerClass< SafePtr< Listener > > >	**/safeContainerValue/*[4]*/;
 
 		ScriptPointer					*pointerValue;
 	} m_data;
@@ -140,6 +138,12 @@ public:
 	static Listener			*(__thiscall *listenerValue)(ScriptVariable*_this);
 	static void				(__thiscall *RealClearInternal)(ScriptVariable*_this);
 	static void				(__thiscall *setArrayAtRefReal)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value);
+	static void				(__thiscall *stringValueReal)(const ScriptVariable*_this, str* in);
+	static bool				(__thiscall *booleanValueReal)(const ScriptVariable*_this);
+	static void				(__thiscall *setListenerValueReal)(const ScriptVariable*_this, Listener* newValue);
+	static bool				(__thiscall *ScriptVariable::operatorEquReal)(const ScriptVariable*_this, const ScriptVariable* var);
+	static bool				(__thiscall *ScriptVariable::operatorEquEquReal)(const ScriptVariable*_this, const ScriptVariable* var);
+
 	void					Clear();
 
 
@@ -174,6 +178,7 @@ public:
 	float					floatValue(void) const;
 	void					setFloatValue(float newvalue);
 	void					setConstStringValue(const_str s);
+	const_str				constStringValue() const;
 	str						stringValue(void) const;
 	void					setStringValue(str newvalue);
 	Vector					vectorValue(void) const;
@@ -187,4 +192,5 @@ public:
 
 	bool operator==(const ScriptVariable &value);
 	bool operator=(const ScriptVariable &value);
+	ScriptVariable *operator[](unsigned index) const;
 };

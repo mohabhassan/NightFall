@@ -86,7 +86,7 @@ public:
 	void		GetEntityEvent(Event * ev);
 	void		GetTimeEvent(Event * ev);
 	void		GetTimeZoneEvent(Event * ev);
-	void		GetDateEvent(Event * ev);
+	//void		GetDateEvent(Event * ev);
 	void		GetDateFormattedEvent(Event * ev);
 	void		Md5Event(Event * ev);
 	void		Md5fileEvent(Event * ev);
