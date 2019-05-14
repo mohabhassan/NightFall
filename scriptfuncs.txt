@@ -9,4 +9,7 @@ getdate: documentation mismatch http://www.x-null.net/wiki/index.php?title=Rebor
 addkills: already exists in bt
 adddeaths: already exists in bt
 isadmin: not implemented yet
-bindweap is not implemented as it is hack-ish. it is also possible via script.
+bindweap is not implemented as it is hack-ish, it is also possible via script
+scripted event damage: if any of inflictor or attacker is NULL, it's considered world
+regiserev: will return 3 if invalid parameter
+scripted event keypress: try to avoid id 0 as it's an error indicator

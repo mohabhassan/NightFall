@@ -32,8 +32,8 @@ public:
 
 class ScriptedEvent
 {
-	static std::string eventScripts[SEV_MAX];
-	static bool eventSet[SEV_MAX];
+	static ScriptVariable *eventScripts[SEV_MAX];
+	static bool eventRegistered[SEV_MAX];
 
 	ScriptedEventType m_Type;
 public:
@@ -42,11 +42,30 @@ public:
 	~ScriptedEvent();
 
 	static ScriptedEventType ParseType(str type);
-	void Trigger(std::vector<ScriptedEventArgument> args);
-	bool Register(std::string script);
-	bool UnRegister();
+	static void Shutdown();
 
-	str GetScript();
+	void Trigger(std::vector<ScriptedEventArgument> args);
+	bool Register(ScriptVariable script);
+	bool UnRegister();
 	bool isRegistered();
 };
 
+
+class ScriptException
+{
+public:
+	str		string;
+	int		bAbort;
+	int		bIsForAnim;
+
+private:
+	//void CreateException(const char *data);
+
+public:
+	//ScriptException(str text);
+	//ScriptException(const char *format, ...);
+	//ScriptException(char *text);
+
+	static int next_abort;
+	static int next_bIsForAnim;
+};

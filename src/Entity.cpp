@@ -2,8 +2,8 @@
 #include "ScriptedEvent.h"
 #include "detours.h"
 #include "Event.h"
-#define DAMAGE_ADDR 0x31112370
-void(__thiscall *Entity::DamageEvent_Orignal)(Entity*_this, Event *ev);
+#define DAMAGE_ADDR 0x31112130
+void(__thiscall *Entity::Damage_Orignal)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location);
 
 
 Entity::Entity()
@@ -18,10 +18,10 @@ Entity::~Entity()
 
 void Entity::Init()
 {
-	DamageEvent_Orignal = reinterpret_cast<void(__thiscall *)(Entity*_this, Event*)>(DAMAGE_ADDR);
+	Damage_Orignal = reinterpret_cast<void(__thiscall *)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)>(DAMAGE_ADDR);
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourAttach(&(PVOID&)(Entity::DamageEvent_Orignal), (PVOID)(&DamageEvent));
+	ret = DetourAttach(&(PVOID&)(Entity::Damage_Orignal), (PVOID)(&Damage));
 	ret = DetourTransactionCommit();
 }
 
@@ -29,7 +29,7 @@ void Entity::Shutdown()
 {
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourDetach(&(PVOID&)(Entity::DamageEvent_Orignal), (PVOID)(&DamageEvent));
+	ret = DetourDetach(&(PVOID&)(Entity::Damage_Orignal), (PVOID)(&Damage));
 	ret = DetourTransactionCommit();
 }
 
@@ -37,25 +37,54 @@ qboolean Entity::checkEntity()
 {
 	return entnum > 0 && entnum < globals->num_entities && (Entity *)globals->gentities[entnum].entity == this;
 }
+//
+//void Entity_Damage_hook(void *pThis, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
 
-void __fastcall DamageEvent(Entity * _this, void* edx, Event * ev)
+qboolean MOD_matches(int incoming_damage, int damage_type)
 {
-	ScriptedEvent sev(SEV_DAMAGE);
-	if (sev.isRegistered())
+	if (damage_type == -1)
 	{
-		sev.Trigger({
-			ev->GetEntity(1),
-			ev->GetFloat(2),
-			ev->GetEntity(3),
-			ev->GetVector(4),
-			ev->GetVector(5),
-			ev->GetVector(6),
-			ev->GetInteger(7),
-			ev->GetInteger(8),
-			ev->GetInteger(9),
-			ev->GetInteger(10),
-			_this
-		});
+		return true;
 	}
-	_this->DamageEvent_Orignal(_this, ev);
+	else
+	{
+		return incoming_damage == damage_type;
+	}
+}
+
+//TODO: make better hook by hooking the event itself.
+void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
+{
+	if (MOD_matches(meansofdeath, _this->damage_type))
+	{
+		ScriptedEvent sev(SEV_DAMAGE);
+		if (sev.isRegistered())
+		{
+			//Entity target, Entity inflictor, Float damage, Vector position, Vector direction, Vector normal, Integer knockback, Integer damageflags, Integer meansofdeath, Integer location, Entity entity
+			sev.Trigger({
+				pTargetEntity,
+				pInflictorEntity,
+				damage,
+				Vector(vectPositionx,	vectPositiony,	vectPositionz),
+				Vector(vectDirectionx,	vectDirectiony, vectDirectionz),
+				Vector(vectNormalx,		vectNormaly,	vectNormalz),
+				knockback,
+				damageflags,
+				meansofdeath,
+				location,
+				_this
+				});
+		}
+	}
+	_this->Damage_Orignal(_this, pTargetEntity,
+		pInflictorEntity,
+		damage, 
+		vectPositionx, vectPositiony, vectPositionz,
+		vectDirectionx, vectDirectiony, vectDirectionz,
+		vectNormalx, vectNormaly, vectNormalz,
+		knockback,
+		damageflags,
+		meansofdeath,
+		location
+	);
 }

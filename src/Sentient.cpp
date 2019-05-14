@@ -92,6 +92,7 @@ Animate *Sentient::GetActiveWeapon
 
 {
 	return GetActiveWeapon_real(this, hand);
+	/*
 	////////////////////////////////////////////
 	if ((hand > MAX_ACTIVE_WEAPONS) || (hand < 0))
 	{
@@ -101,11 +102,12 @@ Animate *Sentient::GetActiveWeapon
 	else
 	{
 		sizeof(Sentient);
-		/*
-		int off = classOffsetOf(&Sentient::activeWeaponList);
-		int off2 = classOffsetOf(&Sentient::blood_model);
-		int off3 = classOffsetOf(&Sentient::charge_start_time);
-		int off4 = classOffsetOf(&Sentient::m_bDontDropWeapons);*/
+		
+		//int off = classOffsetOf(&Sentient::activeWeaponList);
+		//int off2 = classOffsetOf(&Sentient::blood_model);
+		//int off3 = classOffsetOf(&Sentient::charge_start_time);
+		//int off4 = classOffsetOf(&Sentient::m_bDontDropWeapons);
 		return (Animate*)(activeWeaponList[hand].Pointer());
 	}
+	*/
 }

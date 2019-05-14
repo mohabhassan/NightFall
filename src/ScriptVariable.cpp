@@ -1,20 +1,30 @@
 #include "ScriptVariable.h"
 #include "Director.h"
 #include "Class.h"
-#define CLEARINTERNAL_ADDR 0x31058D60
-#define LISTENERVALUE_ADDR 0x3105A230
-#define SETARRAYATREF_ADDR 0x3105D280
+#define CLEARINTERNAL_ADDR			0x31058D60
+#define LISTENERVALUE_ADDR			0x3105A230
+#define SETARRAYATREF_ADDR			0x3105D280
+#define STRINGVALUE_ADDR			0x31059160
+#define BOOLEANVALUE_ADDR			0x31059D00
+#define SETLISENERVALUEVALUE_ADDR	0x31059E60
+#define OPERATOREQU_ADDR			0x3105A350
+#define OPERATOREQUEQU_ADDR			0x3105A570
 
 Listener	*(__thiscall *ScriptVariable::listenerValue)(ScriptVariable*_this);
 void		(__thiscall *ScriptVariable::RealClearInternal)(ScriptVariable*_this);
 void		(__thiscall *ScriptVariable::setArrayAtRefReal)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value);
+void		(__thiscall *ScriptVariable::stringValueReal)(const ScriptVariable*_this, str* in);
+bool		(__thiscall *ScriptVariable::booleanValueReal)(const ScriptVariable*_this);
+void		(__thiscall *ScriptVariable::setListenerValueReal)(const ScriptVariable*_this, Listener* newValue);
+bool		(__thiscall *ScriptVariable::operatorEquReal)(const ScriptVariable*_this, const ScriptVariable* var);
+bool		(__thiscall *ScriptVariable::operatorEquEquReal)(const ScriptVariable*_this, const ScriptVariable* var);
 
+//correct sizeof = 8
 ScriptVariable::ScriptVariable()
 {
 	key = 0;
 	type = 0;
 	m_data.pointerValue = NULL;
-	sizeof(ScriptVariable);
 }
 
 ScriptVariable::ScriptVariable(const ScriptVariable& variable)
@@ -35,6 +45,11 @@ void ScriptVariable::Init()
 	listenerValue = reinterpret_cast<Listener*(__thiscall*)(ScriptVariable*__this)>(LISTENERVALUE_ADDR);
 	RealClearInternal = reinterpret_cast<void(__thiscall*)(ScriptVariable*__this)>(CLEARINTERNAL_ADDR);
 	setArrayAtRefReal = reinterpret_cast<void(__thiscall*)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value)>(SETARRAYATREF_ADDR);
+	stringValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, str*in)>(STRINGVALUE_ADDR);
+	booleanValueReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this)>(BOOLEANVALUE_ADDR);
+	setListenerValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, Listener*)>(SETLISENERVALUEVALUE_ADDR);
+	operatorEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>(OPERATOREQU_ADDR);
+	operatorEquEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>(OPERATOREQUEQU_ADDR);
 }
 
 void ScriptVariable::Clear()
@@ -76,9 +91,16 @@ void ScriptVariable::CastString(void)
 
 void ScriptVariable::ClearInternal()
 {
-	RealClearInternal(this);
+	//todo: must take care of script variables that are auto-deallocated after dgamex86mohbt.dll is unloaded.
+	//prolly should make the dynamically allocated
+	if (type != VARIABLE_NONE)
+	{
+		ScriptVariable*_this = this;
+		RealClearInternal(this);
+	}
 	return;
 	///////////////////////////////////////////////
+	/*
 	switch (GetType())
 	{
 	case VARIABLE_STRING:
@@ -139,6 +161,7 @@ void ScriptVariable::ClearInternal()
 	default:
 		break;
 	}
+	*/
 }
 
 const char *ScriptVariable::GetTypeName() const
@@ -188,6 +211,8 @@ void ScriptVariable::SetTrue(void)
 
 bool ScriptVariable::booleanValue(void) const
 {
+	return booleanValueReal(this);
+	/*
 	switch (GetType())
 	{
 	case VARIABLE_NONE:
@@ -216,6 +241,7 @@ bool ScriptVariable::booleanValue(void) const
 	default:
 		return true;
 	}
+	}*/
 }
 
 bool ScriptVariable::booleanNumericValue(void)
@@ -305,6 +331,7 @@ int ScriptVariable::intValue(void) const
 
 	default:
 		//ScriptError("Cannot cast '%s' to int", typenames[type]);//FIXME
+		throw 0;
 		return 0;
 	}
 }
@@ -338,6 +365,7 @@ float ScriptVariable::floatValue(void) const
 
 	default:
 		//ScriptError("Cannot cast '%s' to float", typenames[type]);//FIXME
+		throw 0;
 		return 0;
 	}
 }
@@ -355,10 +383,17 @@ void ScriptVariable::setConstStringValue(const_str s)
 	m_data.intValue = s;
 }
 
+const_str ScriptVariable::constStringValue() const
+{
+	return m_data.intValue;
+}
+
 str ScriptVariable::stringValue(void) const
 {
 	str string;
-
+	stringValueReal(this, &string);
+	return string;
+	/////////////////////////////////////////
 	switch (GetType())
 	{
 	case VARIABLE_NONE:
@@ -409,7 +444,7 @@ str ScriptVariable::stringValue(void) const
 
 	default:
 		//ScriptError("Cannot cast '%s' to string", typenames[GetType()]);//FIXME
-		return "ScriptVariable::stringValue() default";
+		return "ScriptVariable::11stringValue22() default";
 		break;
 	}
 
@@ -492,6 +527,7 @@ Vector ScriptVariable::vectorValue(void) const
 
 	}
 }
+
 void ScriptVariable::setVectorValue(const Vector &newvector)
 {
 	ClearInternal();
@@ -505,11 +541,14 @@ void ScriptVariable::setVectorValue(const Vector &newvector)
 
 void ScriptVariable::setListenerValue(Listener *newvalue)
 {
+	setListenerValueReal(this, newvalue);
+	/*
 	ClearInternal();
 
 	type = VARIABLE_LISTENER;
 
 	m_data.listenerValue = new SafePtr< Listener >(newvalue);
+	*/
 }
 
 
@@ -524,6 +563,7 @@ void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 	setArrayAtRefReal(this, &index, &value);
 	return;
 	//////////////////////////////////////////////
+	/*
 	int intValue;
 	str string;
 	sizeof(ScriptVariable);
@@ -605,6 +645,7 @@ void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 		gi.Printf("[] applied to invalid type '%s'\n", typenames[GetType()]);
 		break;
 	}
+	}*/
 }
 
 static __inline int VectorCompare(const vec3_t v1, const vec3_t v2) {
@@ -616,6 +657,8 @@ static __inline int VectorCompare(const vec3_t v1, const vec3_t v2) {
 
 bool ScriptVariable::operator==(const ScriptVariable &value)
 {
+	return operatorEquEquReal(this, &value);
+	/*
 	int type = GetType();
 
 	switch (type + value.GetType() * VARIABLE_MAX)
@@ -694,9 +737,10 @@ bool ScriptVariable::operator==(const ScriptVariable &value)
 	case VARIABLE_VECTOR + VARIABLE_VECTOR * VARIABLE_MAX: // ( vector ) == ( vector )
 		return VectorCompare(m_data.vectorValue, value.m_data.vectorValue) ? true : false;
 	}
+	}*/
 }
 
-
+/*
 template<>
 int HashCode< ScriptVariable >(const ScriptVariable& key)
 {
@@ -724,7 +768,7 @@ int HashCode< ScriptVariable >(const ScriptVariable& key)
 		gi.Printf("Bad hash code value: %s", key.stringValue().c_str());
 	}
 }
-
+*/
 
 
 ScriptConstArrayHolder::ScriptConstArrayHolder()
@@ -745,6 +789,9 @@ ScriptConstArrayHolder::~ScriptConstArrayHolder()
 
 bool ScriptVariable::operator=(const ScriptVariable &variable)
 {
+	return operatorEquReal(this, &variable);
+	sizeof(ScriptConstArrayHolder);
+	/*
 	ClearInternal();
 
 	type = variable.GetType();
@@ -815,4 +862,10 @@ bool ScriptVariable::operator=(const ScriptVariable &variable)
 	}
 
 	return true;
+	*/
+}
+
+ScriptVariable *ScriptVariable::operator[](unsigned index) const
+{
+	return &m_data.constArrayValue->constArrayValue[index];
 }

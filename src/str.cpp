@@ -465,7 +465,7 @@ void str::EnsureAlloced
 		{
 			m_data = new strdata;
 
-			m_data->data = new char[ amount ];
+			m_data->data = (char*)MemoryMalloc(sizeof(char)* amount);// new char[amount];
 			m_data->alloced = amount;
 
 			m_data->data[ 0 ] = '\0';
@@ -508,7 +508,7 @@ void str::EnsureAlloced
 		m_data->alloced = newsize;
 	}
 
-	newbuffer = new char[ m_data->alloced ];
+	newbuffer = (char*)MemoryMalloc(sizeof(char)* m_data->alloced);// new char[ m_data->alloced ];
 
 	if( wasalloced && keepold )
 	{
@@ -517,7 +517,7 @@ void str::EnsureAlloced
 
 	if( m_data->data )
 	{
-		delete[] m_data->data;
+		MemoryFree(m_data->data);//delete[] m_data->data;
 	}
 
 	m_data->data = newbuffer;

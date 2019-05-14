@@ -4,11 +4,13 @@
 #define TOTALEVENTS_ADDR 0x31276ED8
 #define EVENTDEFLIST_ADDR 0x31276C80
 #define ADDLISTENER_ADDR 0x3113CCE0
+#define GETVALUE_ADDR 0x3113CB20
 
 static eventInfo_t **lastEvent = NULL;
 int *Event::totalevents = NULL;
-con_map< Event *, EventDef > * Event::eventDefList = NULL;
+con_map_eventdeflist * Event::eventDefList = NULL;
 void(__thiscall *Event::AddListener_Real)(Event* _this, Listener *listener);
+ScriptVariable*(__thiscall *Event::GetValue_Real)(Event* _this);
 
 Event::Event()
 {
@@ -279,6 +281,8 @@ GetValue
 */
 ScriptVariable& Event::GetValue(void)
 {
+	return *GetValue_Real(this);
+	///////////////////////////////////////////////
 	ScriptVariable *tmp;
 	if (fromScript)
 	{
@@ -288,8 +292,9 @@ ScriptVariable& Event::GetValue(void)
 	if (dataSize % 3 == 0)
 	{
 		tmp = data;
-		data = (ScriptVariable*)MemoryMalloc(sizeof(ScriptVariable) * (dataSize + 1));
-		new (data) ScriptVariable();
+		data = new ScriptVariable[dataSize + 1];
+		//data = (ScriptVariable*)MemoryMalloc(sizeof(ScriptVariable) * (dataSize + 1));
+		//new (data) ScriptVariable();
 		if (tmp != NULL)
 		{
 			for (int i = 0; i < dataSize; i++) {
@@ -317,29 +322,30 @@ int Event::NumEventCommands()
 {
 	return *totalevents;
 }
-
+/*
 template<>
 int HashCode< Event * >(Event * const& key)
 {
 	// can't use key->eventnum because eventnum will be assigned from con_set
 	return (int)key;
 }
-
+*/
 /*
 =======================
 getInfo
 =======================
-*/
 EventDef *Event::getInfo()
 {
-	sizeof(con_map< Event *, EventDef >);
+	//sizeof(con_map< Event *, EventDef >);
 	return &((*eventDefList)[this]);
 }
 
+*/
 void Event::Init()
 {
 	lastEvent = reinterpret_cast<eventInfo_t**>(LASTEVENT_ADDR);
 	totalevents = reinterpret_cast<int*>(TOTALEVENTS_ADDR);
-	eventDefList = reinterpret_cast<con_map< Event *, EventDef > *>(EVENTDEFLIST_ADDR);
+	eventDefList = reinterpret_cast<con_map_eventdeflist *>(EVENTDEFLIST_ADDR);
 	AddListener_Real = reinterpret_cast<void(__thiscall *)(Event*_this, Listener* listener)>(ADDLISTENER_ADDR);
+	GetValue_Real = reinterpret_cast<ScriptVariable*(__thiscall *)(Event*_this)>(GETVALUE_ADDR);
 }

@@ -1,0 +1,57 @@
+main:
+	wait 1
+	//total success
+	local.t = sin(180)
+	println("sin 180 = " + local.t)
+	local.t = cos(180)
+	println("cos 180 = " + local.t)
+	local.t = tan(180)
+	println("tan 180 = " + local.t)
+	local.t = sinh(2)
+	println("sinh 2 = " + local.t)
+	local.t = cosh(2)
+	println("cosh 2 = " + local.t)
+	local.t = tanh(180)
+	println("tanh 180 = " + local.t)
+	
+	local.t = atan2 4 5
+	println("atan2(4 5) = " + local.t)
+	
+	local.t = asin(0.5)
+	println("asin 0.5 = " + local.t)
+	local.t = acos(0.5)
+	println("acos 0.5 = " + local.t)
+	local.t = atan(180)
+	println("atan 180 = " + local.t)
+	/* not in reborn
+	local.t = asinh(180)
+	println("asinh 180 = " + local.t)
+	local.t = acosh(180)
+	println("acosh 180 = " + local.t)
+	local.t = atanh(180)
+	println("atanh 180 = " + local.t)
+	*/
+	
+	local.t = exp(5)
+	println("exp(5) = " + local.t)
+	local.t = frexp(8)
+	println("frexp(8) = " + local.t["significand"] + " " + local.t["exponent"])
+	local.t = ldexp 0.95 4
+	println("ldexp(0.95 4) = " + local.t)
+	local.t = log(5.5)
+	println("log(5.5) = " + local.t)
+	local.t = log10(5)
+	println("log10(5) = " + local.t)
+	local.t = modf(8.123)
+	println("modf(8.123) = " + local.t["intpart"] + " " + local.t["fractional"])
+	local.t = pow 5 2
+	println("pow(5 2) = " + local.t)
+	local.t = sqrt(5)
+	println("sqrt(5) = " + local.t)
+	local.t = ceil(5.1)
+	println("ceil(5.1) = " + local.t)
+	local.t = floor(7.1)
+	println("floor(7.1) = " + local.t)
+	local.t = fmod 7 2
+	println("fmod(7 2) = " + local.t)
+end
