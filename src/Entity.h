@@ -1,6 +1,6 @@
 #pragma once
 #include "SimpleEntity.h"
-#include "gamex86.h"
+#include "dgamex86.h"
 #define MAX_MODEL_CHILDREN 16
 #define MAX_GLUE_CHILDREN 8
 

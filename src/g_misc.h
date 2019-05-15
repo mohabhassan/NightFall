@@ -1,5 +1,5 @@
 #pragma once
-#include "gamex86.h"
+#include "dgamex86.h"
 #include "Entity.h"
 gentity_t *G_GetEntityByClient(int clientNum);
 Entity *G_GetEntity(int ent_num);

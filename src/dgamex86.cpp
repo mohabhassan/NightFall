@@ -1,5 +1,5 @@
 #define INCL_DOSMODULEMGR
-#include "gamex86.h"
+#include "dgamex86.h"
 #include "misc.h"
 #include "slre.h"
 #include "ihuddraw.h"

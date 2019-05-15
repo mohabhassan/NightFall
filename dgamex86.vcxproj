@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}</ProjectGuid>
-    <RootNamespace>gamex86</RootNamespace>
+    <RootNamespace>dgamex86</RootNamespace>
     <ProjectName>dgamex86</ProjectName>
     <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -60,16 +60,16 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\Debug/gamex86.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Debug/dgamex86.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;GAMEX86_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;dgamex86_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeaderOutputFile>.\Debug/gamex86.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\Debug/dgamex86.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
       <ObjectFileName>.\Debug/</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
@@ -82,19 +82,19 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <OutputFile>.\Debug/gamex86.dll</OutputFile>
+      <OutputFile>.\Debug/dgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ModuleDefinitionFile>.\src\gamex86.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>.\src\dgamex86.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/gamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\Debug/dgamex86.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>.\Debug/gamex86.lib</ImportLibrary>
+      <ImportLibrary>.\Debug/dgamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Debug/gamex86.bsc</OutputFile>
+      <OutputFile>.\Debug/dgamex86.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -103,18 +103,18 @@
       <MkTypLibCompatible>true</MkTypLibCompatible>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TargetEnvironment>Win32</TargetEnvironment>
-      <TypeLibraryName>.\release/gamex86.tlb</TypeLibraryName>
+      <TypeLibraryName>.\release/dgamex86.tlb</TypeLibraryName>
       <HeaderFileName />
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;GAMEX86_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;dgamex86_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeaderOutputFile>.\bin/gamex86.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeaderOutputFile>.\bin/dgamex86.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\bin/</AssemblerListingLocation>
       <ObjectFileName>.\bin/</ObjectFileName>
       <ProgramDataBaseFileName>.\bin/</ProgramDataBaseFileName>
@@ -133,17 +133,17 @@
       <OutputFile>$(OutDir)\dgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\src\dgamex86.def</ModuleDefinitionFile>
-      <ProgramDatabaseFile>.\release/gamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>.\release/dgamex86.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention />
-      <ImportLibrary>.\release/gamex86.lib</ImportLibrary>
+      <ImportLibrary>.\release/dgamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\release/gamex86.bsc</OutputFile>
+      <OutputFile>.\release/dgamex86.bsc</OutputFile>
     </Bscmake>
     <PostBuildEvent>
       <Command>"$(OutDir)/copy.bat"</Command>
@@ -191,7 +191,7 @@
     <ClInclude Include="src\DM_Team.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Event.h" />
-    <ClInclude Include="src\gamex86.h" />
+    <ClInclude Include="src\dgamex86.h" />
     <ClInclude Include="src\g_misc.h" />
     <ClInclude Include="src\ihuddraw.h" />
     <ClInclude Include="src\Listener.h" />
@@ -209,6 +209,9 @@
     <ClInclude Include="src\vector.h" />
     <ClInclude Include="src\Version.h" />
     <ClInclude Include="src\xtrace.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\dgamex86.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

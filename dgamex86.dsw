@@ -3,12 +3,12 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "gamex86"=.\gamex86.dsp - Package Owner=<4>
+Project: "dgamex86"=.\dgamex86.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
     begin source code control
-    gamex86
+    dgamex86
     .
     end source code control
 }}}

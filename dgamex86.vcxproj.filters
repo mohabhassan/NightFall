@@ -107,9 +107,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\gamex86.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\qcommon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -188,5 +185,13 @@
     <ClInclude Include="src\xtrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\dgamex86.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\dgamex86.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

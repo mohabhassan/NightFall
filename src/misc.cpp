@@ -9,7 +9,7 @@
 #include "windows.h"
 #endif
 
-#include "gamex86.h"
+#include "dgamex86.h"
 #include "misc.h"
 #include "slre.h"
 

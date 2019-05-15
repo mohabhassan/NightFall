@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "gamex86.h"
+#include "dgamex86.h"
 #include "short3.h"
 #include "str.h"
 #include "Listener.h"

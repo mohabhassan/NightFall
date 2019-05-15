@@ -1,7 +1,7 @@
-#include "gamex86.h"
+#include "dgamex86.h"
 enum hudDrawCMD
 {
-	CGM_FILLER = 29,
+	CGM_FILLER = 29, //offset filler
 	CGM_HUDDRAW_SHADER,
 	CGM_HUDDRAW_ALIGN,
 	CGM_HUDDRAW_RECT,
@@ -14,7 +14,7 @@ enum hudDrawCMD
 
 extern gameImport_t	gi;
 
-void HudWriteNumber(int num)
+inline void HudWriteNumber(int num)
 {
 	//OPM: reborn uses WriteShort but idk why?
 	gi.MSG_WriteByte(num);
@@ -34,7 +34,7 @@ void iHudDrawAlign(int cl_num, int info, int horizontalAlign, int verticalAlign)
 {
 	gi.MSG_SetClient(cl_num);
 	gi.MSG_StartCGM(CGM_HUDDRAW_ALIGN);
-	HudWriteNumber(info);					// c = probably "info"
+	HudWriteNumber(info);					// c = "info"
 	gi.MSG_WriteBits(horizontalAlign, 2);	// value = 0,1,2	bits = 2
 											// 0 - left		
 											// 1 - center	 - horizontalAlign
@@ -53,11 +53,11 @@ void iHudDrawRect(int cl_num, int info, int x, int y, int width, int height)
 {
 	gi.MSG_SetClient(cl_num);
 	gi.MSG_StartCGM(CGM_HUDDRAW_RECT);
-	HudWriteNumber(info);		// c = probably "info"
-	gi.MSG_WriteShort(x);			// c = probably "x"
-	gi.MSG_WriteShort(y);			// c = probably "y"
-	gi.MSG_WriteShort(width);		// c = probably "width"
-	gi.MSG_WriteShort(height);		// c = probably "height"
+	HudWriteNumber(info);			// c = "info"
+	gi.MSG_WriteShort(x);			// c = "x"
+	gi.MSG_WriteShort(y);			// c = "y"
+	gi.MSG_WriteShort(width);		// c = "width"
+	gi.MSG_WriteShort(height);		// c = "height"
 	gi.MSG_EndCGM();
 }
 /*
@@ -96,13 +96,7 @@ void iHudDrawVirtualSize(int cl_num, int info, int virtualScreen)
 	gi.MSG_StartCGM(CGM_HUDDRAW_VIRTUALSIZE);
 	HudWriteNumber(info);					// c = info
 
-	gi.MSG_WriteBits(virtualScreen, 1);		// value = ?	bits = 1
-											// value = esi
-											// esi = virtualScreen
-											// NEG esi
-											// SBB esi, esi
-											// NEG esi
-											// call
+	gi.MSG_WriteBits(virtualScreen, 1);		// value = virtualScreen	bits = 1
 
 	gi.MSG_EndCGM();
 
@@ -130,7 +124,7 @@ void iHudDrawColor(int cl_num, int info, float r, float g, float b)
 void iHudDrawAlpha(int cl_num, int info, float alpha)
 {
 	long int temp;
-	temp = (long int)alpha*255.0f;
+	temp = (long int)(alpha*255.0f);
 
 	gi.MSG_SetClient(cl_num);
 	gi.MSG_StartCGM(CGM_HUDDRAW_ALPHA);
