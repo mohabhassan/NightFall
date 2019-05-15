@@ -49,7 +49,6 @@ gameExport_t	*globals;
 gameExport_t	globals_backup;
 
 clientdata_t clients[32];
-extern iplist_t iplist;
 // GLOBALS NEEDED FOR NO-RECOIL DETECTION
 int frames = 0;
 int lastAnim = VMA_NUMANIMATIONS; //initializing
@@ -176,17 +175,6 @@ restarts.
 */
 char *G_ClientConnect( int clientNum, qboolean firstTime )
 {
-	char * name ;
-	char buff[MAX_INFOSTRING];
-	gi.GetUserinfo(clientNum , buff , MAX_INFOSTRING);
-	name = Info_ValueForKey(buff,"name");
-	if(strHasIP(name))
-	{
-		gi.Printf("G_ClientConnect Name Detected !\n");
-		//Info_SetValueForKey(buff,"name","*** Blank Name ***");
-		//gi.setUserinfo(clientNum , buff);
-		return "Spamming other server ip|\nDetection By RyBack";
-	}
 	return globals_backup.ClientConnect( clientNum, firstTime );
 }
 
@@ -423,15 +411,7 @@ void  G_ClientCommand ( gentity_t *ent ){
 	//gi.Argv(0) dmmessage Gi.Argv(1) 0 gi,Argv(2) blah gi.Args() 0 blah test
 	//gi.Printf("\ngi.Argv(0) %s Gi.Argv(1) %s gi,Argv(2) %s gi.Args() %s\n", gi.Argv(0) ,gi.Argv(1) ,gi.Argv(2) ,gi.Args());
 	char *cmd = gi.Argv(0);
-	if(!strcmp(cmd,"dmmessage"))
-	{
-		if(strHasIP(gi.Args()))
-		{
-			gi.Printf("IP Typed Here !\n");
-			return;
-		}
-	}
-	else if (!strcmp(cmd, "keyp"))
+	if (!strcmp(cmd, "keyp"))
 	{
 		char *idStr = gi.Argv(1);
 		if (idStr)
@@ -476,19 +456,6 @@ void  G_ClientCommand ( gentity_t *ent ){
 }
 void G_ClientUserinfoChanged(gentity_t *ent, char *userInfo)
 {
-	//gi.Printf("\nname: %s\n" , Info_ValueForKey(userInfo,"name"));
-	char * name;
-	//char * usrInfo;
-	name = Info_ValueForKey(userInfo,"name");
-	if(strHasIP(name))
-	{
-		gi.Printf("G_ClientUserinfoChanged: Name Detected !\n");
-		sizeof(Entity_t);
-		//usrInfo = userInfo;
-		//Info_SetValueForKey(usrInfo,"name","*** Blank Name ***");
-		//globals_backup.ClientUserinfoChanged(ent,usrInfo);
-		return;
-	}
 	globals_backup.ClientUserinfoChanged(ent,userInfo);
 }
 void __cdecl G_BeginIntermission(const char *map_name, INTTYPE_e transtype, bool shouldFade)
@@ -592,8 +559,7 @@ void G_InitGame( int startTime, int randomSeed )
 
 	globals_backup.Init( startTime, randomSeed );
 	gi.Printf("Class count: %d", classcount);
-	initIPBlocker();
-	gi.Printf( "RyBack Wrapper inited \n");
+	gi.Printf(PATCH_NAME " Wrapper inited \n");
 	
 }
 
@@ -605,7 +571,6 @@ void	G_Shutdown (void)
 {
 
 	gi.Printf("==== Wrapper Shutdown ==== \n");
-	shutDownIPBlocker();
 	shutdownScriptHooks();
 
 	globals_backup.Shutdown();

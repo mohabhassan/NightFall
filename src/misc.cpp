@@ -26,8 +26,6 @@
 	};*/
 #endif
 
-iplist_t iplist;
-int loaded_iplist = 0;
 /* ==============================
              game-related functions
      ==============================
@@ -258,116 +256,6 @@ void MyFreeImpl( void *ptr, const char * function, const char * file, int line )
 		fprintf(stderr,"Freed memory at %p [%s %s:%d]\n",ptr,function,file,line);
 	}
 	free(ptr);
-}
-void initIPBlocker()
-{
-	char *iplist_file;
-	char *pch;
-	struct slre_cap cap[1];
-	int x,x0,x1,x2,x3;
-	iplist.ip_index = 0;
-	gi.Printf("Opening ipfilter.cfg\n");
-	x = gi.FS_ReadFile("ipfilter.cfg", reinterpret_cast<void**>(&iplist_file));
-	if(x != -1 && x > 1)
-	{
-		gi.Printf("Opened ipfilter.cfg size in bytes: %d\n",x);
-		pch = strtok(iplist_file,"\r\n");
-		while(pch != NULL)
-		{
-			if((x = slre_match("(^[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?$)", pch, strlen(pch), cap, 1,0)) > 0)
-			{
-				sscanf_s(cap[0].ptr,"%d.%d.%d.%d",&x0,&x1,&x2,&x3);
-				itoa(x0,iplist.ip_str[iplist.ip_index][0],10);
-				itoa(x1,iplist.ip_str[iplist.ip_index][1],10);
-				itoa(x2,iplist.ip_str[iplist.ip_index][2],10);
-				itoa(x3,iplist.ip_str[iplist.ip_index][3],10);
-				iplist.ip_index++;
-				gi.Printf("Loaded ip: %s.%s.%s.%s\n",iplist.ip_str[iplist.ip_index-1][0], iplist.ip_str[iplist.ip_index-1][1], iplist.ip_str[iplist.ip_index-1][2], iplist.ip_str[iplist.ip_index-1][3]);
-			}
-			gi.Printf("%d return\n",x);
-			pch = strtok(NULL,"\r\n");
-		}
-		gi.Printf("Loaded ipfilter.cfg, Num IPS: %d\n" , iplist.ip_index);
-		loaded_iplist = 1;
-		return;
-	}
-	gi.Printf("Could not open ipfilter.cfg\n");
-}
-int strHasIP (const char *test)
-{
-	char buff[256];
-	struct slre_cap cap[1];
-	int x,x0,x1,x2,x3 , i =0;
-	bool ipfound = false;
-	bool newip = false;
-
-	if(loaded_iplist <= 0)
-	{
-		gi.Printf("strHasIP() Error: loaded_iplist is 0, this should never happen !\n");
-		return 0;
-	}
-	memset(buff,0,sizeof(buff));
-	strcpy(buff,test);
-	if (strstr(buff, "."))
-	{
-		if ((x = slre_match("(^[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?$)", buff, strlen(buff), cap, 1, 0)) > 0)
-		{
-			ipfound = true;
-		}
-	}
-	for(i = 0 ; i< iplist.ip_index; i++)
-	{
-		if ((strstr(buff, iplist.ip_str[i][0]) != NULL && strstr(buff, iplist.ip_str[i][1]) != NULL && strstr(buff, iplist.ip_str[i][2]) != NULL && strstr(buff, iplist.ip_str[i][3]) != NULL))
-		{
-			if (ipfound)
-			{
-				newip = false;
-			}
-		}
-	}
-	if (ipfound)
-	{
-		if (newip)
-		{
-			sscanf_s(cap[0].ptr, "%d.%d.%d.%d", &x0, &x1, &x2, &x3);
-			itoa(x0, iplist.ip_str[iplist.ip_index][0], 10);
-			itoa(x1, iplist.ip_str[iplist.ip_index][1], 10);
-			itoa(x2, iplist.ip_str[iplist.ip_index][2], 10);
-			itoa(x3, iplist.ip_str[iplist.ip_index][3], 10);
-			gi.Printf("Caught new ip: %s.%s.%s.%s|cap.ptr:%s\n", iplist.ip_str[iplist.ip_index][0], iplist.ip_str[iplist.ip_index][1], iplist.ip_str[iplist.ip_index][2], iplist.ip_str[iplist.ip_index][3], cap[0].ptr);
-			iplist.ip_index++;
-
-		}
-		else
-		{
-			gi.Printf("Caught Registered IP %d\n", i);
-		}
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-	return 0;
-}
-
-void shutDownIPBlocker()
-{
-	int i = 0;
-	char buff[800];
-	if(loaded_iplist != 1)
-	{
-		gi.Printf("shutDownIPBlocker() Error: loaded_iplist is 0, this should never happen !\n");
-		return;
-	}
-	memset(buff,0,sizeof(buff));
-	for( i = 0 ; i < iplist.ip_index ; i++)
-	{
-		sprintf(buff + strlen(buff),"%s.%s.%s.%s\n",iplist.ip_str[i][0],iplist.ip_str[i][1],iplist.ip_str[i][2],iplist.ip_str[i][3]);
-	}
-	gi.FS_WriteFile("ipfilter.cfg",buff,strlen(buff));
-	loaded_iplist = 0;
-	gi.Printf("IP Filter ShutDown\n");
 }
 /* Allocate memory - with optional debug  info */
 #define MyMalloc(size)  MyMallocImpl(size, __FUNCTION__, __FILE__, __LINE__)

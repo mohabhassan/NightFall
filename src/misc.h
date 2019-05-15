@@ -23,8 +23,6 @@ extern char *Info_ValueForKey(const char *s, const char *key);
 extern void add_log(const char *level, const char *fmt, ...);
 extern void *MyMallocImpl( int size, const char * function, const char * file, int line );
 extern void MyFreeImpl( void *ptr, const char * function, const char * file, int line );
-extern void initIPBlocker();
-extern void shutDownIPBlocker();
 extern void CreateRandomText(int length, char *returned_text);
 char* mystrndup (const char *s, size_t len);
 char* substring(const char* str, size_t begin, size_t len);
@@ -37,12 +35,6 @@ int msleep(unsigned long milisec);
 unsigned long clockMsec();
 int parseint(const char *str, int mustbefullmatch, int errorvalue);
 int strHasIP(const char *test);
-typedef char ip_match[4][4];
-typedef struct iplist_s
-{
-	int ip_index;
-	ip_match ip_str[200];
-} iplist_t;
 #ifndef _WIN32
 void initsighandlers();
 void resetsighandlers();
