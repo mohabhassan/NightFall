@@ -34,7 +34,6 @@ void getDateTimeInto(char *buf);
 int msleep(unsigned long milisec);
 unsigned long clockMsec();
 int parseint(const char *str, int mustbefullmatch, int errorvalue);
-int strHasIP(const char *test);
 #ifndef _WIN32
 void initsighandlers();
 void resetsighandlers();
