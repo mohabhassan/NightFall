@@ -1,7 +1,7 @@
 #pragma once
 #include "Listener.h"
 #include "str.h"
-#include "gamex86.h"
+#include "dgamex86.h"
 #include "Player.h"
 class DM_Team :
 	public Listener

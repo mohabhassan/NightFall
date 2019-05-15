@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="gamex86"
+	Name="dgamex86"
 	ProjectGUID="{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}"
-	RootNamespace="gamex86"
+	RootNamespace="dgamex86"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -43,17 +43,17 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/gamex86.tlb"
+				TypeLibraryName=".\Debug/dgamex86.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;GAMEX86_EXPORTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;dgamex86_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\Debug/gamex86.pch"
+				PrecompiledHeaderFile=".\Debug/dgamex86.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
@@ -74,15 +74,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile=".\Debug/gamex86.dll"
+				OutputFile=".\Debug/dgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				ModuleDefinitionFile=".\src\gamex86.def"
+				ModuleDefinitionFile=".\src\dgamex86.def"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/gamex86.pdb"
+				ProgramDatabaseFile=".\Debug/dgamex86.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary=".\Debug/gamex86.lib"
+				ImportLibrary=".\Debug/dgamex86.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -97,7 +97,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/gamex86.bsc"
+				OutputFile=".\Debug/dgamex86.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -137,7 +137,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\release/gamex86.tlb"
+				TypeLibraryName=".\release/dgamex86.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -145,11 +145,11 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="src"
-				PreprocessorDefinitions="MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;GAMEX86_EXPORTS"
+				PreprocessorDefinitions="MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;dgamex86_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\bin/gamex86.pch"
+				PrecompiledHeaderFile=".\bin/dgamex86.pch"
 				AssemblerListingLocation=".\bin/"
 				ObjectFile=".\bin/"
 				ProgramDataBaseFileName=".\bin/"
@@ -171,14 +171,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib src/detours.lib"
-				OutputFile=".\release/gamex86.dll"
+				OutputFile=".\release/dgamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				ModuleDefinitionFile=".\src\gamex86.def"
-				ProgramDatabaseFile=".\release/gamex86.pdb"
+				ModuleDefinitionFile=".\src\dgamex86.def"
+				ProgramDatabaseFile=".\release/dgamex86.pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
-				ImportLibrary=".\release/gamex86.lib"
+				ImportLibrary=".\release/dgamex86.lib"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -193,7 +193,7 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\release/gamex86.bsc"
+				OutputFile=".\release/dgamex86.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -214,7 +214,7 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="src\gamex86.c"
+				RelativePath="src\dgamex86.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -235,7 +235,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="src\gamex86.def"
+				RelativePath="src\dgamex86.def"
 				>
 			</File>
 			<File
@@ -290,7 +290,7 @@
 				>
 			</File>
 			<File
-				RelativePath="src\gamex86.h"
+				RelativePath="src\dgamex86.h"
 				>
 			</File>
 			<File

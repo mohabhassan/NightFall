@@ -4,7 +4,7 @@
 #include "CustomEventResponseSet.h"
 #include "Sentient.h"
 #include "DM_Team.h"
-#include "gamex86.h"
+#include "dgamex86.h"
 #define BUTTONS_OFFSET 1724
 #define NUM_DEATHS_OFFSET 2108
 #define PLAYER_SIZE 2404

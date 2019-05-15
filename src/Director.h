@@ -1,5 +1,5 @@
 #pragma once
-#include "gamex86.h"
+#include "dgamex86.h"
 #include "Listener.h"
 #include "str.h";
 class Entry_index_director

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "gamex86.h"
+#include "dgamex86.h"
 
 void iHudDraw3d(int cl_num, int index, vec3_t vector, int ent_num, qboolean bAlwaysShow, qboolean depth);
 void iHudDrawShader(int cl_num, int info, const char *name);

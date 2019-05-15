@@ -1,5 +1,5 @@
 #pragma once
-#include "gamex86.h"
+#include "dgamex86.h"
 #include "Listener.h"
 typedef int entflags_t;
 class SimpleEntity : public Listener
