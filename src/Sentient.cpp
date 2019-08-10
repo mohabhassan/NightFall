@@ -1,5 +1,4 @@
 #include "Sentient.h"
-#define GETACTIVEWEAPON_ADDR 0x31189780
 Animate *(__thiscall *Sentient::GetActiveWeapon_real)(Sentient*_this, weaponhand_t hand);
 
 Sentient::Sentient()
@@ -26,7 +25,7 @@ void Sentient::Init()
 	/*
 	gi.Printf("offset of ammo_inventory = %d \n", classOffsetOf(&Sentient::ammo_inventory));//FIXME
 	gi.Printf("offset of LMRF = %d \n", classOffsetOf(&Sentient::LMRF));
-	gi.Printf("offset of newWeapon = %d \n", classOffsetOf(&Sentient::newWeapon));
+ 	gi.Printf("offset of newWeapon = %d \n", classOffsetOf(&Sentient::newWeapon));
 	gi.Printf("offset of poweruptype = %d \n", classOffsetOf(&Sentient::poweruptype));
 	gi.Printf("offset of poweruptimer = %d \n", classOffsetOf(&Sentient::poweruptimer));//correct
 	gi.Printf("offset of offset_color = %d \n", classOffsetOf(&Sentient::offset_color));

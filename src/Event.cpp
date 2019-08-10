@@ -1,11 +1,5 @@
 #include "Event.h"
 
-#define LASTEVENT_ADDR 0x31276F70
-#define TOTALEVENTS_ADDR 0x31276ED8
-#define EVENTDEFLIST_ADDR 0x31276C80
-#define ADDLISTENER_ADDR 0x3113CCE0
-#define GETVALUE_ADDR 0x3113CB20
-
 static eventInfo_t **lastEvent = NULL;
 int *Event::totalevents = NULL;
 con_map_eventdeflist * Event::eventDefList = NULL;
@@ -206,11 +200,6 @@ bool Event::GetBoolean(int pos)
 	return variable.booleanNumericValue();
 }
 
-int Event::GetConstString(int pos)
-{
-	return 0;//FIXME
-}
-
 float Event::GetFloat(int pos)
 {
 	ScriptVariable& variable = GetValue(pos);
@@ -251,7 +240,7 @@ CheckPos
 void Event::CheckPos(int pos)
 {
 	if (pos > NumArgs()) {
-		throw NULL;//ScriptError("Index %d out of range.", pos);FIXME
+		ScriptError("Index %d out of range.", pos);
 	}
 }
 

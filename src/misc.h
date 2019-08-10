@@ -4,6 +4,8 @@
 
 #include "xtrace.h"
 
+#include "dgamex86.h"
+
 /* GameMessage Types */ 
 #define HUD_MESSAGE_YELLOW			0x01
 #define HUD_MESSAGE_WHITE			0x03
@@ -34,6 +36,11 @@ void getDateTimeInto(char *buf);
 int msleep(unsigned long milisec);
 unsigned long clockMsec();
 int parseint(const char *str, int mustbefullmatch, int errorvalue);
+
+bool validateIP(const char *ip);
+
+bool md5File(const char* file_name, char md5Str[MD5_DIGEST_SIZE * 2 + 1]);
+
 #ifndef _WIN32
 void initsighandlers();
 void resetsighandlers();

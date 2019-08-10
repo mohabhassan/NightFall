@@ -13,6 +13,12 @@
       <UniqueIdentifier>{c46e4e75-534a-4ceb-9580-152426511634}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\civetweb">
+      <UniqueIdentifier>{a43a0947-46d0-4581-9b66-fd1d477f1f89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\civetweb">
+      <UniqueIdentifier>{c17c16cc-5e4d-4636-bd6b-2f10b5a725d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\dgamex86.cpp">
@@ -93,9 +99,6 @@
     <ClCompile Include="src\SimpleEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\slre.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\xtrace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -103,6 +106,57 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ScriptThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CustomCvar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClientAdmin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PlayerClientCommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sv_misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IPFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NameFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ChatFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sv_commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HTTPServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\civetweb\src\CivetServer.cpp">
+      <Filter>Source Files\civetweb</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\civetweb\src\civetweb.c">
+      <Filter>Source Files\civetweb</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScriptThreadAPIServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScriptException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScriptThreadAPIClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HTTPClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\g_json.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UpdateClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -188,10 +242,67 @@
     <ClInclude Include="src\dgamex86.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\GameVersion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CustomCvar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClientAdmin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sv_misc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NameFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ChatFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sv_commands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HTTPServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\civetweb\include\CivetServer.h">
+      <Filter>Header Files\civetweb</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\civetweb\include\civetweb.h">
+      <Filter>Header Files\civetweb</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScriptException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HTTPClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\g_json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UpdateClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\dgamex86.def">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="libs\civetweb\src\handle_form.inl">
+      <Filter>Source Files\civetweb</Filter>
+    </None>
+    <None Include="libs\civetweb\src\md5.inl">
+      <Filter>Source Files\civetweb</Filter>
+    </None>
+    <None Include="libs\civetweb\src\sha1.inl">
+      <Filter>Source Files\civetweb</Filter>
+    </None>
+    <None Include="libs\civetweb\src\timer.inl">
+      <Filter>Source Files\civetweb</Filter>
     </None>
   </ItemGroup>
 </Project>

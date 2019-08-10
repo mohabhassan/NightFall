@@ -1,20 +1,35 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.271
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dgamex86", "dgamex86.vcxproj", "{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		BreakThrough|Win32 = BreakThrough|Win32
+		BreakThrough|x64 = BreakThrough|x64
 		Debug|Win32 = Debug|Win32
-		Release|Win32 = Release|Win32
+		Debug|x64 = Debug|x64
+		SpearHead|Win32 = SpearHead|Win32
+		SpearHead|x64 = SpearHead|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.BreakThrough|Win32.ActiveCfg = BreakThrough|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.BreakThrough|Win32.Build.0 = BreakThrough|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.BreakThrough|x64.ActiveCfg = BreakThrough|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.BreakThrough|x64.Build.0 = BreakThrough|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Debug|Win32.Build.0 = Debug|Win32
-		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Release|Win32.ActiveCfg = Release|Win32
-		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Release|Win32.Build.0 = Release|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Debug|x64.ActiveCfg = Debug|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|Win32.ActiveCfg = SpearHead|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|Win32.Build.0 = SpearHead|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|x64.ActiveCfg = SpearHead|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {09AD0C68-34E7-43D1-B71C-EB7B05D00EAA}
 	EndGlobalSection
 EndGlobal

@@ -63,6 +63,8 @@ void ScriptThread::Init()
 	FileSystemInit();
 	MathsInit();
 	ScriptedEventsInit();
+	APIServerInit();
+	APIClientInit();
 
 	int rscount = cerSet.size() + 1;
 	size_t sz = sizeof(ResponseDef<ScriptThread>) * rscount;

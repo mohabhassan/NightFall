@@ -1,0 +1,13 @@
+Cvars:
+	api:
+		//number of worker threads
+		CustomCvar sv_api_numthreads("sv_api_numthreads", "1", CVAR_ARCHIVE);
+		//listening ports. comma separated list.
+		//if ssl will ever be used, port must have 's' at the end, eg 8080,443s
+		CustomCvar sv_api_ports("sv_api_ports", "8080", CVAR_ARCHIVE);
+		//access controll list filters,'-' means block, '+' means allow, subnets can be used too
+		CustomCvar sv_api_acl("sv_api_acl", "-0.0.0.0/0,+192.168/16,+127.0.0.1", CVAR_ARCHIVE);
+scriptiong events:
+	register_api_route(uri, method, handler);//uri: uri, method: "get" or "post", handler: script
+		->returns 0 on success, 1 if already exists, 2 if invalid arguments, 3 if not running
+	unregister_api_route(uri, method, handler);//uri: uri, method: "get" or "post", handler: script

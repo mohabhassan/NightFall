@@ -2,7 +2,6 @@
 #include "ScriptedEvent.h"
 #include "detours.h"
 #include "Event.h"
-#define DAMAGE_ADDR 0x31112130
 void(__thiscall *Entity::Damage_Orignal)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location);
 
 

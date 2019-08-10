@@ -1,6 +1,7 @@
 #pragma once
 #include "Class.h"
 //#include "Event.h"
+#include "GameVersion.h" //for EXECUTESCRIPT_ADDR
 
 class Event;
 
@@ -17,6 +18,8 @@ public:
 	~Listener();
 	static void Init();
 	static void(__thiscall * ExecuteScript_ptr) (Listener *_this, Event *ev);
+	static void(__thiscall * ExecuteReturnScript_ptr) (Listener *_this, Event *ev);
 	void ExecuteScript(Event *ev);
+	void ExecuteReturnScript(Event *ev);
 };
 

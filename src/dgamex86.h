@@ -1,5 +1,6 @@
 #pragma once
 
+
 // windows and linux common includes
 #include <time.h>
 #include <stdio.h>
@@ -15,14 +16,17 @@
 #include "vector.h"
 #include "str.h"
 #include "Version.h"
+#include "GameVersion.h"
 
-#define MOHBT
 #if defined(_WIN32) || defined(__MINGW32__)
 	//  windows-only
+	#include <wolfssl/wolfcrypt/md5.h>
 	#include <windows.h>	//Windows header
-	#pragma once
 	#define WIN32_LEAN_AND_MEAN
 	#include <process.h>
+	#include <shlwapi.h>
+	#define stristr StrStrIA
+	
 #else
 	//  linux-only
 	#include <dlfcn.h>		//*Nix header
@@ -35,6 +39,7 @@
 	typedef unsigned int	DWORD;
 	typedef unsigned char	BYTE;
 	#define stricmp strcasecmp
+	#define stristr strcasestr
 #endif
 
 #include <assert.h>
@@ -147,7 +152,9 @@ typedef unsigned long solid_t;
 #define MAX_SERVERSOUNDS		64
 #define	MAX_STRINGTOKENS		256
 #define	MAX_OSPATH				256
-#define MAX_SOUNDS				512
+#if defined(MOHBT) || defined(MOHSH)
+#define MAX_SOUNDS				64
+#endif // defined(MOHBT) || defined(MOHSH)
 #define MAX_RELIABLECOMMANDS	512
 #define MAX_MODELS				1024
 #define MAX_ENTITIESINSNAPSHOT	1024
@@ -209,8 +216,16 @@ typedef unsigned long solid_t;
 #define MASK_ALL                ( -1 )
 #define MASK_SOLID				( CONTENTS_SOLID )
 
+#define HUD_MESSAGE_YELLOW			"\x01"
+#define HUD_MESSAGE_WHITE			"\x03"
+#define HUD_MESSAGE_CHAT_WHITE		"\x02"
+#define HUD_MESSAGE_CHAT_RED		"\x04"
+
 typedef void ( *xcommand_t )( );
 static char *LaunchAppName;
+
+#define qfalse 0
+#define qtrue 1
 
 typedef int qhandle_t;
 typedef int sfxHandle_t;
@@ -3132,16 +3147,18 @@ typedef struct netChan_s
 	int outgoingSequence;
 	int fragmentSequence;
 	int fragmentLength;
-	BYTE fragmentBuffer[49152];
+	BYTE fragmentBuffer[MAX_MSGLEN];
 	qboolean unsentFragments;
 	int unsentFragmentStart;
 	int unsentLength;
-	BYTE unsentBuffer[49152];
+	BYTE unsentBuffer[MAX_MSGLEN];
 
 } netChan_t;
 
+#if defined(MOHBT) || defined(MOHSH)
 typedef struct client_s
 {
+	clientState_t state;//extra in bt
 	char userinfo[MAX_INFOSTRING];
 	int reliableSequence;
 	int reliableAcknowledge;
@@ -3150,6 +3167,7 @@ typedef struct client_s
 	int messageAcknowledge;
 	int gamestateMessageNum;
 	int challenge;
+	DWORD filler2;//extra in bt
 	struct usercmd_s lastUsercmd;
 	struct userEyes_s lastEyeinfo;
 	int lastMessageNum;
@@ -3180,14 +3198,16 @@ typedef struct client_s
 	int rate;
 	int snapshotMsec;
 	netChan_t netchan;
+	BYTE filler3[1680];//extra in bt
 	server_sound_t sounds[MAX_SOUNDS];
 	int numberOfSounds;
 	qboolean locprint;
 	int locprintX;
 	int locprintY;
 	char stringToPrint[256];
-
+	BYTE filler4[524];//extra in bt
 } client_t;
+#endif
 
 typedef struct svEntity_s
 {
@@ -4069,7 +4089,7 @@ typedef struct clientGameExport_s
 	qboolean ( *CG_Command_ProcessFile )( char *name, qboolean quiet, dtiki_t *curTiki );
 
 } clientGameExport_t;
-#ifdef MOHBT
+#if defined(MOHBT) || defined(MOHSH)
 typedef struct gameImport_s
 {
 	void(*Printf)(const char *format, ...);
@@ -4435,7 +4455,7 @@ typedef struct gameImport_s
 } gameImport_t;
 #endif
 
-#ifdef MOHBT
+#if defined(MOHBT) || defined(MOHSH)
 
 typedef struct gameExport_s
 {
@@ -4557,5 +4577,5 @@ enum SEV_INTERMISSION_TYPE
 	INTERM_RESTART,
 };
 
-void *MemoryMalloc(int size);
-void MemoryFree(void *);
+void *__cdecl MemoryMalloc(int size);
+void __cdecl MemoryFree(void * ptr);

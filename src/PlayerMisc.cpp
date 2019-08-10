@@ -1,5 +1,7 @@
 #include "Player.h"
 #include "g_misc.h"
+#include "ClientAdmin.h"
+
 #define	BUTTON_ATTACK2		2	// +/-attacksecondary
 
 void Player::MiscInit()
@@ -67,6 +69,17 @@ void Player::MiscInit()
 		EV_GETTER
 	),
 		&Player::GetInventoryEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"isadmin",
+		EV_DEFAULT,
+		NULL,
+		NULL,
+		"Check if player is logged in as admin",
+		EV_RETURN
+	),
+		&Player::IsAdminEvent);
+
 }
 
 void Player::GetKillsEvent(Event *ev)
@@ -118,4 +131,18 @@ void Player::GetInventoryEvent(Event *ev)
 		count++;
 	}
 	ev->AddValue(arr);
+}
+
+void Player::IsAdminEvent(Event * ev)
+{
+	ClientAdmin admin(client->ps.clientNum);
+
+	if (admin.isAdmin())
+	{
+		ev->AddInteger(1);
+	}
+	else
+	{
+		ev->AddInteger(0);
+	}
 }

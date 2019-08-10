@@ -92,10 +92,26 @@ public:
 	void		Md5fileEvent(Event * ev);
 	void		TypeofEvent(Event * ev);
 	void		TraceDetailsEvent(Event * ev);
+	void		SetPropertyEvent(Event * ev);
+	void		GetPropertyEvent(Event * ev);
+	void		CastConstArrayEvent(Event * ev);
+	void		RegexParseEvent(Event * ev);
+	void		JsonParseEvent(Event * ev);
+	void		JsonStringifyEvent(Event * ev);
 
 	static void		ScriptedEventsInit();
 
 	void		RegisterevEvent(Event * ev);
 	void		UnregisterevEvent(Event * ev);
+
+
+	static void		APIServerInit();
+
+	void		RegisterAPIRouteEvent(Event * ev);
+	void		UnregisterAPIRouteEvent(Event * ev);
+
+
+	static void		APIClientInit();
+	void		CreateAPIRequest(Event * ev);
 };
 
