@@ -1,0 +1,59 @@
+main:
+	//wait 3
+	//waitthread register_api_route_test			: success
+	
+	//wait 30
+	//waitthread unregister_api_route_test			: success
+	
+	//waitthread create_api_request_test			: success
+end
+
+register_api_route_test:
+	println("\n\n~~~~~~~Testing register_api_route: / ~~~~~~~~~~~")
+	local.result = register_api_route "/" "get" tests/api.scr::get_handler
+	println ("~~local.result~~")
+	println local.result
+	println "\\u"
+end
+
+get_handler local.query_strings:
+	println "query_strings======="
+	for( local.i = int 0 ; local.i < local.query_strings.size ; local.i++ )
+	{
+		println local.query_strings[local.i][key] " : " local.query_strings[local.i][value];
+	}
+	println "=======query_strings"
+	local.arr[2] = wewewewewew;
+	local.arr[1] = etaseg;
+	local.arr[0] = sdgfdsg;
+	println local.arr[0]
+	println local.arr[2]
+	println local.arr[1]
+end local.arr
+
+unregister_api_route_test:
+	println("\n\n~~~~~~~Testing unregister_api_route_test: / ~~~~~~~~~~~")
+	local.result = unregister_api_route "/" "get"
+	println ("~~local.result~~")
+	println local.result
+end
+
+create_api_request_test:
+	println("\n\n~~~~~~~Testing create_api_request 10 times: / ~~~~~~~~~~~")
+	for(local.i = 1; local.i <=10; local.i++)
+	{
+		println "~~attempt " local.i "~~" 
+		local.result = create_api_request "http://jsonplaceholder.typicode.com/todos/1" "get" tests/api.scr::request_handler local.i
+		println ("~~local.result~~")
+		println local.result
+		waitframe
+	}
+end
+
+request_handler local.resp local.http_code local.user_data:
+	println "~~~~~~~~~~~~~~~~~~~~~~~~~~"
+	println "http_code: " local.http_code
+	println "resp: " local.resp
+	println "user_data: " local.user_data
+	println "~~~~~~~~~~~~~~~~~~~~~~~~~~"
+end

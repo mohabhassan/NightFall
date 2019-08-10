@@ -3,13 +3,13 @@ main:
 	if(level.registed != 1)
 	{
 		local.connected_event = registerev "connected" tests/reborn_events.scr::connected // FIXED : crash server
-		local.disconnected_event = registerev "disconnected" tests/reborn_events.scr::disconnected // FIXED : crash server
-		local.damage_event = registerev "damage" tests/reborn_events.scr::damage // FIXED : dont get triggered
-		local.kill_event = registerev "kill" tests/reborn_events.scr::kill // FIXED : same bugg as the one fixed
-		local.spawn_event = registerev "spawn" tests/reborn_events.scr::spawn // FIXED : gets triggered but dont let player spawn
-		local.intermission_event = registerev "intermission" tests/reborn_events.scr::intermission // FIXED : crash server
-		local.scmd_event = registerev "servercommand" tests/reborn_events.scr::cmd_press // FIXED : dont get triggered
-		local.key_event = registerev "keypress" tests/reborn_events.scr::key_press // FIXED : crash server
+		//local.disconnected_event = registerev "disconnected" tests/reborn_events.scr::disconnected // FIXED : crash server
+		//local.damage_event = registerev "damage" tests/reborn_events.scr::damage // FIXED : dont get triggered
+		//local.kill_event = registerev "kill" tests/reborn_events.scr::kill // FIXED : same bugg as the one fixed
+		//local.spawn_event = registerev "spawn" tests/reborn_events.scr::spawn // FIXED : gets triggered but dont let player spawn
+		//local.intermission_event = registerev "intermission" tests/reborn_events.scr::intermission // FIXED : crash server
+		//local.scmd_event = registerev "servercommand" tests/reborn_events.scr::cmd_press // FIXED : dont get triggered
+		//local.key_event = registerev "keypress" tests/reborn_events.scr::key_press // FIXED : crash server
 
 
 		level.registed = 1

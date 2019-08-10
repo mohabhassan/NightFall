@@ -1,6 +1,7 @@
 main:
 	while(!$player) waitframe;
 	wait 5
+	///////////////////////////////////////////////
 	local.player = $player[1];
 	local.huddrawIndex = 32;
 	local.color[0] = 0;

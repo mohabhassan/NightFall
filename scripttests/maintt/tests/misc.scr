@@ -1,21 +1,28 @@
 main:
-	wait 1
-	//waitthread stuffsrv_test
-	//waitthread conprintf_test
-	//waitthread md5string_test : success
-	//waitthread md5file_test : success
-	//waitthread gettime_test : success
-	//waitthread gettimezone_test : success
-	//waitthread getdate_test : success
-	//waitthread getdate2_test : success
-	//waitthread typeof_test : success
+	wait 3
+	//waitthread stuffsrv_test 			: success
+	//waitthread conprintf_test 		: success
+	//waitthread md5string_test 		: success
+	//waitthread md5file_test 			: success
+	//waitthread gettime_test 			: success
+	//waitthread gettimezone_test 		: success
+	//waitthread getdate_test 			: success
+	//waitthread getdate2_test 			: success
+	//waitthread typeof_test 			: success
+	
+	//waitthread setproperty_test 		: success
+	//waitthread getproperty_test 		: success
 	
 	//while(!$player) waitframe;
-	//waitthread getentity_test
-	//waitthread netname_test : success
-	//waitthread getip_test : success
-	//thread getping_test : success
-	//waitthread getclientnum_test : success
+	//waitthread getentity_test 		: success
+	//waitthread netname_test 			: success
+	//waitthread getip_test 			: success
+	//thread getping_test 				: success
+	//waitthread getclientnum_test 		: success
+	//waitthread constarray_test 		: success
+	//waitthread regex_parse_test 		: success
+	//waitthread json_parse_test 		: success
+	//waitthread json_stringify_test 	: success
 end
 stuffsrv_test:
 	println("\n\n~~~~~~~Testing stuffsrv: say blah~~~~~~~~~~~")
@@ -121,7 +128,26 @@ typeof_test:
 	println ("~~local.result~~")
 	println local.result
 end
-
+setproperty_test:
+	println("\n\n~~~~~~~Testing setproperty~~~~~~~~~~~")
+	local.result = setproperty "nightfall_test" "nf_t_1"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing setproperty~~~~~~~~~~~")
+	local.result = setproperty "nightfall_test" "nf_t_2"
+	println ("~~local.result~~")
+	println local.result
+end
+getproperty_test:
+	println("\n\n~~~~~~~Testing getproperty~~~~~~~~~~~")
+	local.result = getproperty "nightfall_test"
+	println ("~~local.result~~")
+	println local.result
+	println("\n\n~~~~~~~Testing getproperty~~~~~~~~~~~")
+	local.result = getproperty "nightfall_test"
+	println ("~~local.result~~")
+	println local.result
+end
 
 netname_test:
 	println("\n\n~~~~~~~Testing netname~~~~~~~~~~~")
@@ -168,4 +194,66 @@ getclientnum_test:
 	local.result = getclientnum $player[1]
 	println ("~~local.result~~")
 	println local.result
+end
+constarray_test:
+	println("\n\n~~~~~~~Testing constarray~~~~~~~~~~~")
+	local.arr[0] = beep;
+	local.arr2 = beep::boop;
+	//local.arr[5] = boop;
+	
+	local.result = constarray local.arr
+	println ("~~local.result~~")
+	println local.result
+	for(local.i =1; local.i <= local.result.size; local.i++)
+	{
+		println "local.result[" local.i "] = " local.result[local.i]
+	}
+	
+	println ("~~local.arr2~~")
+	for(local.i =1; local.i <= local.arr2.size; local.i++)
+	{
+		println "local.arr2[" local.i "] = " local.arr2[local.i]
+	}
+end
+
+regex_parse_test:
+	println("\n\n~~~~~~~Testing regex_parse~~~~~~~~~~~")
+	local.result = regex_parse "a(a)*b" "baaaby" 0
+	println ("~~local.result~~")
+	println "local.result[success] = " local.result[success]
+	println "local.result[matches].size = " local.result[matches].size
+	println "local.result[matches]: "
+	for(local.i = 0; local.i < local.result[matches].size; local.i++)
+	{
+		println "local.result[matches][" local.i "] = " local.result[matches][local.i]
+	}
+	println("\n\n~~~~~~~Testing regex_parse~~~~~~~~~~~")
+	local.result = regex_parse "([a-z]+)\\.([a-z]+)" "foo.txt" 1
+	println ("~~local.result~~")
+	println "local.result[success] = " local.result[success]
+	println "local.result[matches].size = " local.result[matches].size
+	println "local.result[matches]: "
+	for(local.i = 0; local.i < local.result[matches].size; local.i++)
+	{
+		println "local.result[matches][" local.i "] = " local.result[matches][local.i]
+	}
+	
+end
+
+json_parse_test:
+	println("\n\n~~~~~~~Testing json_parse~~~~~~~~~~~")
+	local.result = json_parse "{ \"happy\": true, \"pi\": 3.141 }"
+	println ("~~local.result~~")
+	println local.result
+	println "local.result.size = " local.result.size
+	println "local.result[happy]: " local.result[happy]
+	println "local.result[pi]: " local.result[pi]
+end
+
+json_stringify_test:
+	println("\n\n~~~~~~~Testing json_stringify~~~~~~~~~~~")
+	local.result = json_stringify aaa::bb::cc
+	println ("~~local.result~~")
+	println local.result
+	println "local.result.size = " local.result.size
 end
