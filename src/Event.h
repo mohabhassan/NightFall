@@ -115,7 +115,7 @@ class Event;
 //eventInfo has the exact same structure for BT.
 typedef struct eventInfo_s
 {
-	Event		*ev;//dont use! not complete
+	Event		*ev;
 	const char	*command;
 	int			flags;
 	const char	*formatspec;
@@ -172,8 +172,6 @@ public:
 	int				NumArgs();
 
 	bool			GetBoolean(int pos);
-
-	int				GetConstString(int pos);
 
 
 	float			GetFloat(int pos);

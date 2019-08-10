@@ -1,5 +1,6 @@
 #include "ScriptThread.h"
 #include "ihuddraw.h"
+#include <algorithm>
 
 void ScriptThread::iHudDrawInit()
 {
@@ -181,14 +182,8 @@ void ScriptThread::iHudDrawAlphaEvent(Event *ev)
 		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_alpha: invalid index %d!\n", index);
 		return;
 	}
-
-	alpha = ev->GetFloat(3);
-
-	if (alpha < 0 || alpha > 1)
-	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_alpha: invalid alpha %f!\n", alpha);
-		return;
-	}
+	
+	alpha = std::clamp(ev->GetFloat(3), 0.0f, 1.0f);
 
 	iHudDrawAlpha(player->client->ps.clientNum, index, alpha);
 }
@@ -223,29 +218,11 @@ void ScriptThread::iHudDrawColorEvent(Event *ev)
 		return;
 	}
 
-	red = ev->GetFloat(3);
+	red = std::clamp(ev->GetFloat(3), 0.0f, 1.0f);
 
-	if (red < 0 || red > 1)
-	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_color: invalid red %f!\n", red);
-		return;
-	}
+	green = std::clamp(ev->GetFloat(4), 0.0f, 1.0f);
 
-	green = ev->GetFloat(4);
-
-	if (green < 0 || green > 1)
-	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_color: invalid green %f!\n", green);
-		return;
-	}
-
-	blue = ev->GetFloat(5);
-
-	if (blue < 0 || blue > 1)
-	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_color: invalid blue %f!\n", blue);
-		return;
-	}
+	blue = std::clamp(ev->GetFloat(5), 0.0f, 1.0f);
 
 	iHudDrawColor(player->client->ps.clientNum, index, red, green, blue);
 }

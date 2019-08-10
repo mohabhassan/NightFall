@@ -1,14 +1,8 @@
 #include "ScriptVariable.h"
 #include "Director.h"
 #include "Class.h"
-#define CLEARINTERNAL_ADDR			0x31058D60
-#define LISTENERVALUE_ADDR			0x3105A230
-#define SETARRAYATREF_ADDR			0x3105D280
-#define STRINGVALUE_ADDR			0x31059160
-#define BOOLEANVALUE_ADDR			0x31059D00
-#define SETLISENERVALUEVALUE_ADDR	0x31059E60
-#define OPERATOREQU_ADDR			0x3105A350
-#define OPERATOREQUEQU_ADDR			0x3105A570
+
+#include <string>
 
 Listener	*(__thiscall *ScriptVariable::listenerValue)(ScriptVariable*_this);
 void		(__thiscall *ScriptVariable::RealClearInternal)(ScriptVariable*_this);
@@ -18,6 +12,10 @@ bool		(__thiscall *ScriptVariable::booleanValueReal)(const ScriptVariable*_this)
 void		(__thiscall *ScriptVariable::setListenerValueReal)(const ScriptVariable*_this, Listener* newValue);
 bool		(__thiscall *ScriptVariable::operatorEquReal)(const ScriptVariable*_this, const ScriptVariable* var);
 bool		(__thiscall *ScriptVariable::operatorEquEquReal)(const ScriptVariable*_this, const ScriptVariable* var);
+void		(__thiscall *ScriptVariable::setConstArrayValueReal)(const ScriptVariable*_this, const ScriptVariable* var, unsigned int size);
+
+extern void *__cdecl  MemoryMalloc(int size);
+extern void __cdecl  MemoryFree(void * ptr);
 
 //correct sizeof = 8
 ScriptVariable::ScriptVariable()
@@ -50,6 +48,7 @@ void ScriptVariable::Init()
 	setListenerValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, Listener*)>(SETLISENERVALUEVALUE_ADDR);
 	operatorEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>(OPERATOREQU_ADDR);
 	operatorEquEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>(OPERATOREQUEQU_ADDR);
+	setConstArrayValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*, unsigned int)>(SETCONSTARRAYVALUE_ADDR);
 }
 
 void ScriptVariable::Clear()
@@ -88,11 +87,91 @@ void ScriptVariable::CastString(void)
 	setStringValue(stringValue());
 }
 
+bool ScriptVariable::CastConstArray(ScriptVariable &var)
+{
+	//only do our stuff if it's a "VARIABLE_ARRAY"
+	if (var.GetType() == VARIABLE_ARRAY)
+	{
+
+		Entry_scriptarrayholder		** const table = var.arrayValue()->arrayValue.getConSet().getTable();
+		Entry_scriptarrayholder *entry;
+		if (var.arrayValue()->arrayValue.getConSet().getCount() == 0)
+		{
+			return false;
+		}
+
+		int max_index = 0;
+		for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
+		{
+			for (entry = table[i]; entry != NULL; entry = entry->next)
+			{
+				ScriptVariable &key = entry->key;
+				variabletype type = key.GetType();
+				if (type == VARIABLE_STRING || type == VARIABLE_CONSTSTRING)
+				{
+					str val = key.stringValue();
+					try
+					{
+						int i = std::stoi(val.c_str());
+						if (i > max_index)
+						{
+							max_index = i;
+						}
+					}
+					catch (const std::exception&)
+					{
+						return false;
+					}
+				}
+				else if(type == VARIABLE_INTEGER)
+				{
+					int i = key.intValue();
+					if (i > max_index)
+					{
+						max_index = i;
+					}
+				}
+				else
+				{
+					return false;
+				}
+			}
+		}
+
+		ScriptVariable *pVar = new ScriptVariable[max_index + 1];
+
+		for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
+		{
+			for (entry = table[i]; entry != NULL; entry = entry->next)
+			{
+				ScriptVariable &key = entry->key;
+				variabletype type = key.GetType();
+				if (type == VARIABLE_STRING || type == VARIABLE_CONSTSTRING)
+				{
+					str val = key.stringValue();
+					int i = std::stoi(val.c_str());
+					pVar[i] = entry->value;
+				}
+				else if (type == VARIABLE_INTEGER)
+				{
+					int i = key.intValue();
+					pVar[i] = entry->value;
+				}
+			}
+		}
+		setConstArrayValue(pVar, max_index + 1);
+		delete[] pVar;
+		return true;
+	}
+	return false;
+}
+
 
 void ScriptVariable::ClearInternal()
 {
 	//todo: must take care of script variables that are auto-deallocated after dgamex86mohbt.dll is unloaded.
 	//prolly should make the dynamically allocated
+	//update: apparently they are no longer there ?
 	if (type != VARIABLE_NONE)
 	{
 		ScriptVariable*_this = this;
@@ -414,7 +493,6 @@ str ScriptVariable::stringValue(void) const
 
 	case VARIABLE_CHAR:
 		return str(m_data.charValue);
-
 	case VARIABLE_LISTENER:
 		/*if (m_data.listenerValue->Pointer())
 		{
@@ -549,6 +627,16 @@ void ScriptVariable::setListenerValue(Listener *newvalue)
 
 	m_data.listenerValue = new SafePtr< Listener >(newvalue);
 	*/
+}
+
+void ScriptVariable::setConstArrayValue(ScriptVariable * pVar, unsigned int size)
+{
+	setConstArrayValueReal(this, pVar, size);
+}
+
+ScriptArrayHolder * ScriptVariable::arrayValue() const
+{
+	return m_data.arrayValue;
 }
 
 

@@ -2,8 +2,12 @@
 #include "ScriptThread.h"
 #include "g_misc.h"
 #include "misc.h"
-using byte = unsigned char;
-//std::unordered_map<std::string, std::string > local_storage;
+#include <SQLiteCpp/Database.h>
+#include "CustomCvar.h"
+#include <regex>
+#include "g_json.h"
+
+
 
 void ScriptThread::MiscInit()
 {
@@ -165,6 +169,65 @@ void ScriptThread::MiscInit()
 	),
 		&ScriptThread::TraceDetailsEvent);
 
+	cerSet.AddEventResponse(new Event(
+		"setproperty",
+		EV_DEFAULT,
+		"ss",
+		"key value",
+		"Sets local storage property",
+		EV_RETURN
+	),
+		&ScriptThread::SetPropertyEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"getproperty",
+		EV_DEFAULT,
+		"s",
+		"key",
+		"Gets local storage property",
+		EV_RETURN
+	),
+		&ScriptThread::GetPropertyEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"constarray",
+		EV_DEFAULT,
+		"e",
+		"array",
+		"Cast hashtable array to const array.",
+		EV_RETURN
+	),
+		&ScriptThread::CastConstArrayEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"regex_parse",
+		EV_DEFAULT,
+		"ssi",
+		"pattern string whole_match",
+		"Perform a regular expression match.",
+		EV_RETURN
+	),
+		&ScriptThread::RegexParseEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"json_parse",
+		EV_DEFAULT,
+		"s",
+		"string",
+		"Parse string to json.",
+		EV_RETURN
+	),
+		&ScriptThread::JsonParseEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"json_stringify",
+		EV_DEFAULT,
+		"e",
+		"var",
+		"Convert object to json string.",
+		EV_RETURN
+	),
+		&ScriptThread::JsonStringifyEvent);
 }
 
 
@@ -499,18 +562,8 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 	trace_t trace;
 	Vector vecStart, vecEnd, vecMins, vecMaxs;
 	Entity *entity;
-	//todo : remove all these vars and add one for index and one for value
-	ScriptVariable array;
-	ScriptVariable allSolidIndex, allSolidValue;
-	ScriptVariable startSolidIndex, startSolidValue;
-	ScriptVariable fractionIndex, fractionValue;
-	ScriptVariable endPosIndex, endPosValue;
-	ScriptVariable surfaceFlagsIndex, surfaceFlagsValue;
-	ScriptVariable shaderNumIndex, shaderNumValue;
-	ScriptVariable contentsIndex, contentsValue;
-	ScriptVariable entityNumIndex, entityNumValue;
-	ScriptVariable locationIndex, locationValue;
-	ScriptVariable entityIndex, entityValue;
+	ScriptVariable resultArray;
+	ScriptVariable index, value;
 
 	numArgs = ev->NumArgs();
 
@@ -541,45 +594,270 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 
 	gi.Trace(&trace, vecStart, vecMins, vecMaxs, vecEnd, pass_entity, mask, 0, 0);
 
-	allSolidIndex.setStringValue("allSolid");
-	startSolidIndex.setStringValue("startSolid");
-	fractionIndex.setStringValue("fraction");
-	endPosIndex.setStringValue("endpos");
-	surfaceFlagsIndex.setStringValue("surfaceFlags");
-	shaderNumIndex.setStringValue("shaderNum");
-	contentsIndex.setStringValue("contents");
-	entityNumIndex.setStringValue("entityNum");
-	locationIndex.setStringValue("location");
-	entityIndex.setStringValue("entity");
+	index.setStringValue("allSolid");
+	value.setIntValue(trace.allsolid);
+	resultArray.setArrayAtRef(index, value);
 
-	allSolidValue.setIntValue(trace.allsolid);
-	startSolidValue.setIntValue(trace.startsolid);
-	fractionValue.setFloatValue(trace.fraction);
-	endPosValue.setVectorValue(trace.endpos);
-	surfaceFlagsValue.setIntValue(trace.surfaceFlags);
-	shaderNumValue.setIntValue(trace.shaderNum);
-	contentsValue.setIntValue(trace.contents);
-	entityNumValue.setIntValue(trace.entityNum);
-	locationValue.setIntValue(trace.location);
+	index.setStringValue("startSolid");
+	value.setIntValue(trace.startsolid);
+	resultArray.setArrayAtRef(index, value);
+
+	index.setStringValue("fraction");
+	value.setFloatValue(trace.fraction);
+	resultArray.setArrayAtRef(index, value);
+
+	index.setStringValue("endpos");
+	value.setVectorValue(trace.endpos);
+	resultArray.setArrayAtRef(index, value);
+
+	index.setStringValue("surfaceFlags");
+	value.setIntValue(trace.surfaceFlags);
+	resultArray.setArrayAtRef(index, value);
+
+	index.setStringValue("shaderNum");
+	value.setIntValue(trace.shaderNum);
+	resultArray.setArrayAtRef(index, value);
+
+	index.setStringValue("contents");
+	value.setIntValue(trace.contents);
+	resultArray.setArrayAtRef(index, value);
+
+	index.setStringValue("entityNum");
+	value.setIntValue(trace.entityNum);
+	resultArray.setArrayAtRef(index, value);
+
+	index.setStringValue("location");
+	value.setIntValue(trace.location);
+	resultArray.setArrayAtRef(index, value);
+
 
 	entity = G_GetEntity(trace.entityNum);
 
 	// Have to use G_GetEntity instead otherwise it won't work
 	if (entity != NULL) {
-		entityValue.setListenerValue(entity);
+		index.setStringValue("entity");
+		value.setListenerValue(entity);
+		resultArray.setArrayAtRef(index, value);
+
 	}
 
-	array.setArrayAtRef(allSolidIndex, allSolidValue);
-	array.setArrayAtRef(startSolidIndex, startSolidValue);
-	array.setArrayAtRef(fractionIndex, fractionValue);
-	array.setArrayAtRef(endPosIndex, endPosValue);
-	array.setArrayAtRef(surfaceFlagsIndex, surfaceFlagsValue);
-	array.setArrayAtRef(shaderNumIndex, shaderNumValue);
-	array.setArrayAtRef(contentsIndex, contentsValue);
-	array.setArrayAtRef(entityNumIndex, entityNumValue);
-	array.setArrayAtRef(locationIndex, locationValue);
-	array.setArrayAtRef(entityIndex, entityValue);
+	ev->AddValue(resultArray);
 
-	ev->AddValue(array);
+}
 
+void ScriptThread::SetPropertyEvent(Event * ev)
+{
+	str key;
+	str value;
+	int numArgs = 0;
+	numArgs = ev->NumArgs();
+
+	if (numArgs != 2)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for setproperty!\n");
+		return;
+	}
+
+	key = ev->GetString(1);
+
+	if (key == NULL)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL key - setproperty!\n");
+		ev->AddInteger(-1);
+		return;
+	}
+
+	value = ev->GetString(2);
+
+	if (value == NULL)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL value - setproperty!\n");
+		ev->AddInteger(-2);
+		return;
+	}
+
+	try
+	{
+		CustomCvar sv_store("sv_store", MAIN_PATH"/store.bin", CVAR_ARCHIVE);
+		const char *createIfNotExists = "CREATE TABLE IF NOT EXISTS localStorage (key TEXT PRIMARY KEY, value TEXT)";
+
+
+		SQLite::Database    db(sv_store.GetStringValue(), SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+		db.exec(createIfNotExists);
+		SQLite::Statement query(db, "INSERT OR REPLACE INTO localStorage (key,value) VALUES (?,?)");
+
+		query.bind(1, key.c_str());
+		query.bind(2, value.c_str());
+
+		query.executeStep();
+
+		ev->AddInteger(0);
+	}
+	catch (const std::exception& e)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Error in setproperty! : %s\n", e.what());
+		ev->AddInteger(-3);
+		return;
+	}
+}
+
+void ScriptThread::GetPropertyEvent(Event * ev)
+{
+	str key;
+	int numArgs = 0;
+	numArgs = ev->NumArgs();
+	if (numArgs != 1)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for getproperty!\n");
+		return;
+	}
+
+
+	key = ev->GetString(1);
+
+	if (key == NULL)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL key - getproperty!\n");
+		ev->AddInteger(-1);
+		return;
+	}
+
+
+	try
+	{
+		CustomCvar sv_store("sv_store", MAIN_PATH"/store.bin", CVAR_ARCHIVE);
+		SQLite::Database    db(sv_store.GetStringValue(), SQLite::OPEN_READONLY);
+		SQLite::Statement query(db, "SELECT value FROM localStorage WHERE key=?");
+
+		query.bind(1, key.c_str());
+
+		if (query.executeStep()) //SQLITE_ROW
+		{
+			const char *value = query.getColumn(0);
+			ev->AddString(value);
+		}
+		else //SQLITE_DONE
+		{
+			ev->AddInteger(0);
+		}
+	}
+	catch (const std::exception& e)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Error in getproperty! : %s\n", e.what());
+		ev->AddInteger(-3);
+		return;
+	}
+}
+
+void ScriptThread::CastConstArrayEvent(Event * ev)
+{
+	int numArgs = ev->NumArgs();
+	if (numArgs != 1)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for constarray!\n");
+		return;
+	}
+	ScriptVariable &arr = ev->GetValue(1);
+	if (arr.GetType() != VARIABLE_ARRAY)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Invalid argument type for constarray, must be a const array. Given %s instead!\n", arr.GetTypeName());
+		return;
+	}
+	ScriptVariable ret;
+	if (ret.CastConstArray(arr))
+	{
+		ev->AddValue(ret);
+	}
+	else
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: constarray: array passed cannot be converted to const array!\n", arr.GetTypeName());
+		ev->AddNil();
+	}
+}
+
+void ScriptThread::RegexParseEvent(Event * ev)
+{
+	int numArgs = ev->NumArgs();
+	if (numArgs != 3)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for regex_parse!\n");
+		return;
+	}
+	
+	regex r(ev->GetString(1).c_str());
+	smatch sm;
+	bool whole_match = ev->GetInteger(3);
+	bool good;
+	string sTarget = ev->GetString(2).c_str();
+	if (whole_match)
+	{
+		good = regex_match(sTarget, sm, r);
+	}
+	else
+	{
+		good = regex_search(sTarget, sm, r);
+	}
+	ScriptVariable arr;
+	ScriptVariable index, value;
+	index.setStringValue("success");
+	value.setIntValue(good ? 1 : 0);
+	arr.setArrayAtRef(index, value);
+	if (good)
+	{
+		ScriptVariable arr2;
+		for (int i = 0; i < sm.size(); i++)
+		{
+			index.setIntValue(i);
+			value.setStringValue(sm[i].str().c_str());
+			arr2.setArrayAtRef(index, value);
+		}
+		index.setStringValue("matches");
+		arr.setArrayAtRef(index, arr2);
+	}
+	ev->AddValue(arr);
+}
+
+void ScriptThread::JsonParseEvent(Event * ev)
+{
+	int numArgs = ev->NumArgs();
+	if (numArgs != 1)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for json_parse!\n");
+		return;
+	}
+	
+	string json_str = ev->GetString(1);
+	json j;
+	try
+	{
+		j = json::parse(json_str);
+	}
+	catch (json::parse_error& e)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: json_parse failed!\n");
+		gi.Printf("info:\n");
+		gi.Printf("\tmessage: %s\n", e.what());
+		gi.Printf("\texception id: %d\n", e.id);
+		gi.Printf("\tbyte position of error: %zu\n", e.byte);
+		ev->AddNil();
+		return;
+	}
+	ScriptVariable var;
+	JsonToGameVar(j, var);
+	ev->AddValue(var);
+}
+
+void ScriptThread::JsonStringifyEvent(Event * ev)
+{
+	int numArgs = ev->NumArgs();
+	if (numArgs != 1)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for json_stringify!\n");
+		return;
+	}
+	ScriptVariable var = ev->GetValue(1);
+
+	json j;
+	GameVarToJson(var, j);
+	ev->AddString(j.dump().c_str());
 }

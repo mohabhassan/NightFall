@@ -6,7 +6,22 @@ gentity_t *G_GetEntityByClient(int clientNum)
 
 	for (int i = 0; gent && i < globals->num_entities; i++, gent++)
 	{
-		if (gent->s.clientNum == clientNum)//extra check ?
+		if (gent->client && gent->client->ps.clientNum == clientNum)//useful when sv_privatePassword is set
+			return gent;
+	}
+
+	return NULL;
+}
+
+// Returns gentity form client name
+// Guarenteed gent and gent->client if no NULL retuned
+gentity_t * G_GetEntityByClientName(const char *name)
+{
+	gentity_t* gent = G_GetGEntity(0);
+
+	for (int i = 0; gent && i < globals->num_entities; i++, gent++)
+	{
+		if (gent->client && !stricmp(gent->client->pers.netname, name))
 			return gent;
 	}
 
@@ -58,4 +73,17 @@ gentity_t *G_GetGEntity(int ent_num)
 	}
 
 	return ent;
+}
+
+
+void G_PrintToAllClients(const char *pszString, qboolean bBold)
+{
+	if (bBold)
+	{
+		gi.SendServerCommand(-1, "print \"" HUD_MESSAGE_WHITE "%s\n\"", pszString);
+	}
+	else
+	{
+		gi.SendServerCommand(-1, "print \"" HUD_MESSAGE_YELLOW "%s\n\"", pszString);
+	}
 }

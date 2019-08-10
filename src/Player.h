@@ -5,9 +5,6 @@
 #include "Sentient.h"
 #include "DM_Team.h"
 #include "dgamex86.h"
-#define BUTTONS_OFFSET 1724
-#define NUM_DEATHS_OFFSET 2108
-#define PLAYER_SIZE 2404
 
 class Player : public Sentient //1504
 {
@@ -36,6 +33,7 @@ public:
 	void Test(Event * ev);
 	
 	static void		MiscInit();
+	static void		ClientCommandsInit();
 
 	void GetKillsEvent(Event * ev);
 	void GetDeathsEvent(Event * ev);
@@ -44,6 +42,48 @@ public:
 	void SecFireHeldEvent(Event * ev);
 	void GetUserInfoEvent(Event * ev);
 	void GetInventoryEvent(Event * ev);
+	void IsAdminEvent(Event *ev);
+
+	void AdminLoginEvent(Event * ev);
+	void AdminLogoutEvent(Event * ev);
+
+	void AdminKickEvent(Event * ev);
+	void AdminKickReasonEvent(Event * ev);
+	void AdminClientKickEvent(Event * ev);
+	void AdminClientKickReasonEvent(Event * ev);
+
+
+	void AdminBanIPEvent(Event * ev);
+	void AdminBanIPReasonEvent(Event * ev);
+	void AdminClientBanEvent(Event * ev);
+	void AdminClientBanReasonEvent(Event * ev);
+	void AdminUnbanIPEvent(Event * ev);
+	void AdminListIPsEvent(Event * ev);
+
+	void AdminBanNameEvent(Event *ev);
+	void AdminUnbanNameEvent(Event * ev);
+	void AdminListNamesEvent(Event * ev);
+
+	void AdminProtectNameEvent(Event * ev);
+	void AdminUnprotectNameEvent(Event * ev);
+	void AdminListProtectedNamesEvent(Event * ev);
+
+	void AdminBanWordEvent(Event * ev);
+	void AdminUnbanWordEvent(Event * ev);
+	void AdminListWordsEvent(Event * ev);
+	
+	void AdminDisableChatEvent(Event *ev);
+	void AdminDisableTauntsEvent(Event *ev);
+
+	void AdminChangeMapEvent(Event *ev);
+	void AdminRestartEvent(Event *ev);
+	void AdminSetFragLimitEvent(Event *ev);
+	void AdminSetTimeLimitEvent(Event *ev);
+	void AdminSetGameTypeEvent(Event *ev);
+	void AdminSayEvent(Event *ev);
+	void AdminSayPrivateEvent(Event *ev);
+	void AdminStatusEvent(Event *ev);
+	void AdminListAdminsEvent(Event *ev);
 };
 
 void __fastcall Respawn(Player *_this, void * edx, Event * ev);

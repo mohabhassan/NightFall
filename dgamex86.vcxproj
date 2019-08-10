@@ -5,8 +5,12 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
+    <ProjectConfiguration Include="BreakThrough|Win32">
+      <Configuration>BreakThrough</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="SpearHead|Win32">
+      <Configuration>SpearHead</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -17,7 +21,13 @@
     <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='BreakThrough|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SpearHead|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v141_xp</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
@@ -32,7 +42,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='BreakThrough|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='SpearHead|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
@@ -49,10 +63,21 @@
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>./release/</OutDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='BreakThrough|Win32'">
+    <OutDir>./release/mohbt/</OutDir>
     <IntDir>./bin/</IntDir>
     <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SpearHead|Win32'">
+    <OutDir>./release/mohsh/</OutDir>
+    <IntDir>./bin/</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VcpkgConfiguration Condition="'$(Configuration)' == 'BreakThrough'">Release</VcpkgConfiguration>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VcpkgConfiguration Condition="'$(Configuration)' == 'SpearHead'">Release</VcpkgConfiguration>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -97,7 +122,7 @@
       <OutputFile>.\Debug/dgamex86.bsc</OutputFile>
     </Bscmake>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='BreakThrough|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MkTypLibCompatible>true</MkTypLibCompatible>
@@ -109,8 +134,63 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;dgamex86_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;dgamex86_EXPORTS;MOHBT;NO_FILES;NO_CGI;NO_SSL;CURL_STATICLIB;WC_NO_HARDEN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\bin/dgamex86.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\bin/</AssemblerListingLocation>
+      <ObjectFileName>.\bin/</ObjectFileName>
+      <ProgramDataBaseFileName>.\bin/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Wldap32.lib;Shlwapi.lib;detours.lib;wolfssl.lib;sqlite3.lib;SQLiteCpp.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)\dgamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>.\src\dgamex86.def</ModuleDefinitionFile>
+      <ProgramDatabaseFile>$(OutDir)\dgamex86.pdb</ProgramDatabaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention />
+      <ImportLibrary>$(OutDir)\dgamex86.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/Lib Release;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\release/dgamex86.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>"$(OutDir)/copy.bat"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='SpearHead|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\release/dgamex86.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;dgamex86_EXPORTS;MOHSH;NO_FILES;NO_CGI;NO_SSL;CURL_STATICLIB;WC_NO_HARDEN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -129,17 +209,18 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>detours.lib;wolfssl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;Wldap32.lib;Shlwapi.lib;detours.lib;wolfssl.lib;sqlite3.lib;SQLiteCpp.lib;libcurl.lib;libcurlpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)\dgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\src\dgamex86.def</ModuleDefinitionFile>
-      <ProgramDatabaseFile>.\release/dgamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>$(OutDir)\dgamex86.pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention />
-      <ImportLibrary>.\release/dgamex86.lib</ImportLibrary>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>$(OutDir)\dgamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/Lib Release;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -150,25 +231,39 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="libs\civetweb\src\CivetServer.cpp" />
+    <ClCompile Include="libs\civetweb\src\civetweb.c" />
     <ClCompile Include="src\Animate.cpp" />
+    <ClCompile Include="src\ChatFilter.cpp" />
     <ClCompile Include="src\Class.cpp" />
     <ClCompile Include="src\ClassDef.cpp" />
+    <ClCompile Include="src\ClientAdmin.cpp" />
+    <ClCompile Include="src\CustomCvar.cpp" />
     <ClCompile Include="src\CustomEventResponseSet.cpp" />
     <ClCompile Include="src\dgamex86.cpp" />
     <ClCompile Include="src\Director.cpp" />
     <ClCompile Include="src\DM_Team.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Event.cpp" />
+    <ClCompile Include="src\g_json.cpp" />
     <ClCompile Include="src\g_misc.cpp" />
+    <ClCompile Include="src\HTTPClient.cpp" />
+    <ClCompile Include="src\HTTPServer.cpp" />
     <ClCompile Include="src\ihuddraw.cpp" />
+    <ClCompile Include="src\IPFilter.cpp" />
     <ClCompile Include="src\Listener.cpp" />
     <ClCompile Include="src\Memory.cpp" />
     <ClCompile Include="src\misc.cpp" />
+    <ClCompile Include="src\NameFilter.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\PlayerClientCommands.cpp" />
     <ClCompile Include="src\PlayerMisc.cpp" />
     <ClCompile Include="src\qcommon.cpp" />
     <ClCompile Include="src\ScriptedEvent.cpp" />
+    <ClCompile Include="src\ScriptException.cpp" />
     <ClCompile Include="src\ScriptThread.cpp" />
+    <ClCompile Include="src\ScriptThreadAPIClient.cpp" />
+    <ClCompile Include="src\ScriptThreadAPIServer.cpp" />
     <ClCompile Include="src\ScriptThreadFileSystem.cpp" />
     <ClCompile Include="src\ScriptThreadiHudDraw.cpp" />
     <ClCompile Include="src\ScriptThreadMaths.cpp" />
@@ -177,11 +272,19 @@
     <ClCompile Include="src\ScriptVariable.cpp" />
     <ClCompile Include="src\Sentient.cpp" />
     <ClCompile Include="src\SimpleEntity.cpp" />
-    <ClCompile Include="src\slre.c" />
     <ClCompile Include="src\str.cpp" />
+    <ClCompile Include="src\sv_commands.cpp" />
+    <ClCompile Include="src\sv_misc.cpp" />
+    <ClCompile Include="src\UpdateClient.cpp" />
     <ClCompile Include="src\xtrace.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="libs\civetweb\include\CivetServer.h" />
+    <ClInclude Include="libs\civetweb\include\civetweb.h" />
+    <ClInclude Include="src\ChatFilter.h" />
+    <ClInclude Include="src\ClientAdmin.h" />
+    <ClInclude Include="src\CustomCvar.h" />
+    <ClInclude Include="src\GameVersion.h" />
     <ClInclude Include="src\Animate.h" />
     <ClInclude Include="src\Class.h" />
     <ClInclude Include="src\ClassDef.h" />
@@ -192,13 +295,19 @@
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Event.h" />
     <ClInclude Include="src\dgamex86.h" />
+    <ClInclude Include="src\g_json.h" />
     <ClInclude Include="src\g_misc.h" />
+    <ClInclude Include="src\HTTPClient.h" />
+    <ClInclude Include="src\HTTPServer.h" />
     <ClInclude Include="src\ihuddraw.h" />
+    <ClInclude Include="src\IPFilter.h" />
     <ClInclude Include="src\Listener.h" />
     <ClInclude Include="src\misc.h" />
+    <ClInclude Include="src\NameFilter.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\qcommon.h" />
     <ClInclude Include="src\ScriptedEvent.h" />
+    <ClInclude Include="src\ScriptException.h" />
     <ClInclude Include="src\ScriptThread.h" />
     <ClInclude Include="src\ScriptVariable.h" />
     <ClInclude Include="src\Sentient.h" />
@@ -206,11 +315,18 @@
     <ClInclude Include="src\SimpleEntity.h" />
     <ClInclude Include="src\slre.h" />
     <ClInclude Include="src\str.h" />
+    <ClInclude Include="src\sv_commands.h" />
+    <ClInclude Include="src\sv_misc.h" />
+    <ClInclude Include="src\UpdateClient.h" />
     <ClInclude Include="src\vector.h" />
     <ClInclude Include="src\Version.h" />
     <ClInclude Include="src\xtrace.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="libs\civetweb\src\handle_form.inl" />
+    <None Include="libs\civetweb\src\md5.inl" />
+    <None Include="libs\civetweb\src\sha1.inl" />
+    <None Include="libs\civetweb\src\timer.inl" />
     <None Include="src\dgamex86.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

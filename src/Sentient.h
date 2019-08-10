@@ -3,8 +3,6 @@
 #define MAX_ACTIVE_WEAPONS WEAPON_ERROR
 #define MAX_DAMAGE_MULTIPLIERS 19
 
-#define ACTIVEWEAPONLIST_OFFSET 1036
-#define SENTEINT_SIZE 1504
 
 typedef int WeaponPtr[4];//FIXME
 typedef int VehiclePtr[4];//FIXME

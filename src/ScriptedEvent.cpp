@@ -1,6 +1,8 @@
 #include "ScriptedEvent.h"
 #include "Director.h"
 #include "Event.h"
+#include "ScriptException.h"
+
 ScriptVariable *ScriptedEvent::eventScripts[SEV_MAX] = { NULL };
 bool ScriptedEvent::eventRegistered[SEV_MAX] = { false };
 

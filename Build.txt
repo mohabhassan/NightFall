@@ -1,0 +1,12 @@
+curlpp:
+	-mkdir build
+	-cd build
+	-cmake .. -DCURL_LIBRARY="../../curl/build/Win32/VC15/Lib Release - Lib wolfSSL/" -DCURL_INCLUDE_DIR="../../curl/include"
+curl:
+	
+Detours:
+	
+SQLiteCpp:
+	
+wolfSSL:
+	

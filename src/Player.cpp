@@ -3,8 +3,6 @@
 #include "detours.h"
 #include "ScriptedEvent.h"
 
-#define RESPAWN_ADDR 0x311530C0
-#define KILLED_ADDR 0x31153D60
 
 ResponseDef<Player> *Player::Responses;
 
@@ -203,7 +201,7 @@ void Player::Init()
 	//PrintOffsets();
 	cerSet.AddEventResponse(new Event(
 		"ptest",
-		EV_DEFAULT,
+		EV_CONSOLE,
 		"IFSB",
 		"test_int test_float test_string test_bool",
 		"PLAYER TEST COMMAND"
@@ -211,6 +209,7 @@ void Player::Init()
 		&Player::Test);
 
 	MiscInit();
+	ClientCommandsInit();
 
 	int rscount = cerSet.size()+1;
 	size_t sz = sizeof(ResponseDef<Player>) * rscount;
@@ -270,9 +269,9 @@ void Player::Shutdown()
 
 void Player::Test(Event*ev)
 {
-	str strTat = ev->GetString(2);
+	//str strTat = ev->GetString(2);
 	gentity_t *gent = G_GetEntityByClient(0);
-	gi.centerprintf(gent, "Player Test success");
+	gi.Printf("Player Test success %d\n", ev->NumArgs());
 }
 
 void __fastcall Respawn(Player *_this, void * edx, Event * ev)

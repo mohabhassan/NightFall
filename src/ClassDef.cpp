@@ -1,10 +1,8 @@
 #include "ClassDef.h"
 #include "Player.h"
 #include "ScriptThread.h"
-#include <cstring>
+#include <string>
 
-#define	BUILDREPONSELIST_ADDRESS 0x310FDBB0
-#define	ADDNEWKEYENTRY_ADDR 0x310FF160
 
 void(__thiscall *ClassDef::BuildResponseList_Orignal)(ClassDef*_this);
 using addNewKeyEntryPtr = Entry_eventdeflist *(__thiscall *)(con_map_eventdeflist *_this, void*r, unsigned int loc);
@@ -220,7 +218,6 @@ void ClassDef::BuildExtendedResponseList(ResponseDef<Class> exResponses[], int e
 	delete[] set;
 }
 */
-int classcount = 0;
 void __fastcall BuildResponseListHook(ClassDef*_this, void * edx)
 {
 	if (!strcmp(_this->classname, "Player"))

@@ -96,6 +96,7 @@ void ScriptThread::RegisterevEvent(Event*ev)
 	ev->AddInteger(SEVR_SUCCESS);
 }
 
+
 void ScriptThread::UnregisterevEvent(Event*ev)
 {
 	int argnum = ev->NumArgs();
