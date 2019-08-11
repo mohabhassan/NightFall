@@ -68,7 +68,7 @@ At map end(or map change or map restart), API server will shutdown, clear all pe
 
 ---
 ### Script Usage
-When a user registers an API route, the script callback function should be something like this:
+When a user registers an API route using [register_api_route](scriptfuncs.md#register_api_route), the script callback function should be something like this:
 ```
 get_handler local.query_strings:
 	println "query_strings======="
