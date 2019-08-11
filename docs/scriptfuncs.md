@@ -13,7 +13,7 @@ Registers callback handler for give api route/method.
 
 Current allowed values for `method` is `"get"`.
 
-See [api_server.md](docs/api_server.md#configuration) for server api configuration settings.
+See [api_server.md](docs/api_server.md) for server api configuration settings and more info.
 
 Example:
 ```
@@ -33,6 +33,33 @@ local.result will have one of the following values:
 4 = Server api error
 
 ```
+
+#### unregister_api_route
+	unregister_api_route(string uri, string method)
+Un-registers callback handler for give api route/method.
+
+Current allowed values for `method` is `"get"`.
+
+See [api_server.md](docs/api_server.md) for server api configuration settings and more info.
+
+Example:
+```
+local.result = unregister_api_route "/" "get"
+```
+Result:
+```
+Removes api callback handler for specified uri/method route.
+
+local.result will have one of the following values:
+
+0 = Route unregistered successfully
+1 = Route is already not registered
+2 = Invalid arguments
+3 = Server api is not running
+4 = Server api error
+
+```
+
 ## Slightly modified reborn functions
 ---
 
