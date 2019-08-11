@@ -266,4 +266,4 @@ local.result can have one of the following values:
 
 For the sake of not re-inventing the wheel, the rest of the functions in NightFall are exactly identical to reborn ones.
 
-Documentation for the original reborn functions can be found here: http://www.x-null.net/wiki/index.php?title=Reborn_Scripting_Commands
+Documentation for the original reborn functions can be found [here](http://www.x-null.net/wiki/index.php?title=Reborn_Scripting_Commands).
