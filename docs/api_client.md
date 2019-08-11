@@ -16,10 +16,10 @@ It allows modders to communicate to the outside world via HTTP/JSON.
 
 ## Client Behaviour
 ### Initialization
-Once [sv_api_client](docs/api_client.md#sv_api_client) cvar is set to one, and upon map load, API client is started. API client will have a single idle running worker thread to serve the HTTP client requests.
+Once [sv_api_client](api_client.md#sv_api_client) cvar is set to one, and upon map load, API client is started. API client will have a single idle running worker thread to serve the HTTP client requests.
 
 ### Run-time
-Whilst the API client is running, modder can choose to register a callback script that will handle outgoing requests. See [create_api_request](docs/scriptfuncs.md#create_api_request) and [Script Usage](#Script-Usage) for more info.
+Whilst the API client is running, modder can choose to register a callback script that will handle outgoing requests. See [create_api_request](scriptfuncs.md#create_api_request) and [Script Usage](#Script-Usage) for more info.
 
 Once the request is done, callback function is called.
 
@@ -27,7 +27,7 @@ Please note that this process is not fast, since everything is synced with MOHAA
 
 Usual calls made when a request arrives are as follows:
 
- 1. Modder calls [create_api_request](docs/scriptfuncs.md#create_api_request) via script.
+ 1. Modder calls [create_api_request](scriptfuncs.md#create_api_request) via script.
  2. MOHAA thread **waits/syncs** to take the send request/script and pass it to API client.
  3. API client thread **waits/syncs** to get request from MOHAA thread.
  4. API client thread creates HTTP request.
