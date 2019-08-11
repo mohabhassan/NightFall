@@ -3,7 +3,7 @@
 # NightFall API Server Documentation
 The NightFall API server is a HTTP server implemented using [CivetWeb](https://github.com/civetweb/civetweb).
 
-It allows modders to communicate to the outside world via HTTP /JSON.
+It allows modders to communicate to the outside world via HTTP/JSON.
 
 ## Cvar Settings
 
@@ -36,10 +36,10 @@ It allows modders to communicate to the outside world via HTTP /JSON.
 
 ## Server Behaviour
 ### Initialization
-Once [sv_api](api_server.md#sv_api) cvar is set to one, and upon map load, API server is started. API server will have a number of [sv_api_numthreads](api_server.md#sv_api_numthreads) idle running worker threads to server the HTTP server. Server will listen to all specified [sv_api_ports](api_server.md#sv_api_ports).
+Once [sv_api](api_server.md#sv_api) cvar is set to one, and upon map load, API server is started. API server will have a number of [sv_api_numthreads](api_server.md#sv_api_numthreads) idle running worker threads to serve the HTTP server. Server will listen to all specified [sv_api_ports](api_server.md#sv_api_ports).
 
 ### Run-time
-Whilst the API server is running, modder can choose to register a callback script that will handle incoming requests. See [register_api_route](scriptfuncs.md#register_api_route) for more info.
+Whilst the API server is running, modder can choose to register a callback script that will handle incoming requests. See [register_api_route](scriptfuncs.md#register_api_route) and [Script Usage](#Script-Usage) for more info.
 
 If a request is made that matches a registered callback script(registered by [register_api_route](scriptfuncs.md#register_api_route)), API server will call that specified script with request information. 
 
