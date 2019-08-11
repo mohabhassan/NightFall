@@ -83,12 +83,65 @@ Creates an http request from the server to url/method combination.
 
 local.result will have one of the following values:
 
-0 = Request created successfully.
+0 = Request queued successfully
 1 = Invalid arguments
 2 = Client api is not running
 3 = Client api error
 
 ```
+
+
+---
+#### constarray
+	constarray(array var)
+Cast existing array to constarray.
+
+A constarray variable's size cannot be changed, has index starting from 1.
+
+Example:
+```
+local.arr[1] = xtesddfgsf;//local.arr is a hasttable array
+local.arr[2] = 2222;//local.arr is a hasttable array
+local.result = constarray local.arr //local.result is a constarray
+//above code is equivalent to
+local.result = xtesddfgsf::2222
+```
+Result:
+```
+local.result will have one of the following values:
+
+Nil if variable can't be converted.
+Proper constarray value otherwise.
+```
+
+
+---
+#### regex_parse
+	regex_parse(string pattern, string search_string, boolean whole_match)
+Perform a regular expression search using pattern on string search_string.
+
+If whole_match is set, parser will fail if whole string doesn't match the regex pattern.
+
+Example:
+```
+local.result = regex_parse "a(a)*b" "baaaby" 0
+
+```
+Result:
+```
+
+local.result will be an array having the following structure:
+
+local.result[success]: integer, 1 if regex is successfull, 0 if not.
+local.result[matches]: array of strings containing capture group matches.
+
+local.result[success] = 1
+local.result[matches][0] = aaab
+local.result[matches][1] = a
+```
+
+This option uses standard c++ library regex parser, regex_match is used when `whole_match` is 1 otherwise regex_search is used. Visit [cppreference](https://en.cppreference.com/w/cpp/regex) for more info.
+
 ## Slightly modified reborn functions
 ---
 
