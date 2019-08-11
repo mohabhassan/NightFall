@@ -112,7 +112,7 @@ where `variable_json_str_here` is a JSON string of the value of the variable ret
 **IMPORTANT NOTE:** Some variable types are not supported for conversion to JSON, these include: 
 
  - container, an array of listeners, $player for example
- - safe container, an array of listeners, $player
+ - safe container, an array of listeners, $player for example
  - pointer, not usually used in scripts
  - reference, a reference to array, usually not used in scripts
 
