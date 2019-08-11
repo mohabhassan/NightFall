@@ -142,6 +142,43 @@ local.result[matches][1] = a
 
 This option uses standard c++ library regex parser, regex_match is used when `whole_match` is 1 otherwise regex_search is used. Visit [cppreference](https://en.cppreference.com/w/cpp/regex) for more info.
 
+
+---
+#### json_parse
+	json_parse(string json_string)
+Parse given `json_string` into a variable.
+
+
+Example:
+```
+local.result = json_parse "{ \"happy\": true, \"pi\": 3.141 }"
+
+```
+Result:
+```
+
+local.result will be an array having the following structure:
+local.result.size = 2
+local.result[happy]: 1
+local.result[pi]: 3.141
+```
+
+---
+#### json_stringify
+	json_stringify(variable var)
+Convert given `var` into a json string.
+
+
+Example:
+```
+local.result = json_stringify "{ \"happy\": true, \"pi\": 3.141 }"
+
+```
+Result:
+```
+local.result = json_stringify aaa::bb::cc
+local.result = {"conent":[{"content":"aaa","type":"string"},{"content":"bb","type":"string"},{"content":"cc","type":"string"}],"type":"array"}
+```
 ## Slightly modified reborn functions
 ---
 
