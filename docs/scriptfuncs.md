@@ -13,7 +13,7 @@ Registers callback handler for give api route/method.
 
 Current allowed values for `method` is `"get"`.
 
-See [api_server.md](docs/api_server.md) for server api configuration settings and more info.
+See [api_server.md](api_server.md) for server api configuration settings and more info.
 
 Example:
 ```
@@ -40,7 +40,7 @@ Un-registers callback handler for give api route/method.
 
 Current allowed values for `method` is `"get"`.
 
-See [api_server.md](docs/api_server.md) for server api configuration settings and more info.
+See [api_server.md](api_server.md) for server api configuration settings and more info.
 
 Example:
 ```
@@ -71,7 +71,7 @@ Url may contain query string.
 
 Current allowed values for `method` is `"get"`.
 
-See [api_client.md](docs/api_client.md) for client api configuration settings and more info.
+See [api_client.md](api_client.md) for client api configuration settings and more info.
 
 Example:
 ```
@@ -243,7 +243,7 @@ local.date2 = "08/23/01"
 
 Registers script callback handler for given event type.
 
-**NOTE:** Event behaviour is slightly different from reborn and more events are added. See [eventsystem.md](docs/eventsystem.md) for more info.
+**NOTE:** Event behaviour is slightly different from reborn and more events are added. See [eventsystem.md](eventsystem.md) for more info.
 Example:
 ```
 local.result = registerev "connected" global/eventhandlers.scr::connected
