@@ -5,7 +5,7 @@ Here you'll find most of the thing you'll need to know in order to use NightFall
 ## For Everyone
 
  - [Installing NightFall](install.md)
-
+---
 ## For Normal Users
 
  - [Cvars Documentation](cvars.md)
