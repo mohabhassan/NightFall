@@ -53,7 +53,9 @@ request_handler local.resp local.http_code local.user_data:
 end
 ```
 `local.http_code` is the HTTP response code.
+
 `local.resp` is the string containing HTTP response body.
+
 `local.user_data` is the user-specific custom data specified when calling [create_api_request](scriptfuncs.md#create_api_request).
 
 If an error occurs during the request, `local.http_code` is set to -1 and error string is saved inside `local.resp`.
