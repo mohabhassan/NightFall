@@ -1,7 +1,7 @@
 #include "ChatFilter.h"
 #include <fstream>
 #include "CustomCvar.h"
-
+#include "ScriptedEvent.h"
 
 vector<ChatEntry> ChatFilter::ChatEntries;
 
@@ -265,6 +265,28 @@ bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &s
 
 				return false;
 			}
+		}
+	}
+	return true;
+}
+
+bool ChatFilter::CheckScriptCallback(vector<string>& chat_args, gentity_t * ent, int target)
+{
+
+	ScriptedEvent sev(SEV_DMMESSAGE);
+
+	if (sev.isRegistered())
+	{
+		ScriptVariable var;
+		sev.Trigger({ (Entity*)ent->entity, target, chat_args}, &var);
+		if (var.GetType() != VARIABLE_POINTER)
+		{
+			return var.intValue();
+		}
+		else
+		{
+			gi.Printf(PATCH_NAME " ChatFilter Script Callback error: dmmessage handler script is taking too long to repsond, allowing mesage.\n");
+			return true;
 		}
 	}
 	return true;

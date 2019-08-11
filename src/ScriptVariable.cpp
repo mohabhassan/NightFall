@@ -409,8 +409,7 @@ int ScriptVariable::intValue(void) const
 		return val;
 
 	default:
-		//ScriptError("Cannot cast '%s' to int", typenames[type]);//FIXME
-		throw 0;
+		ScriptError("Cannot cast '%s' to int", typenames[type]);
 		return 0;
 	}
 }

@@ -496,7 +496,6 @@ void  G_ClientCommand ( gentity_t *ent ){
 	}
 	else if (!strcmp(cmd, "dmmessage"))
 	{
-			ChatFilter filter;
 			int numArgs = gi.Argc();
 			if (numArgs >= 3)
 			{
@@ -511,13 +510,14 @@ void  G_ClientCommand ( gentity_t *ent ){
 				//sayteam is -1
 				//normal say is 0
 				//sayprivate & sayone: clientnum is actualy clientnum (it's a bit fuzzy when using sv_privateclients)
-				for (size_t i = 1; i < numArgs; i++)
+				for (size_t i = 2; i < numArgs; i++)
 				{
 					args.push_back(gi.Argv(i));
 				}
 				
 				bool shouldKick;
 				string reason;
+				ChatFilter filter;
 				if (!filter.CanSend(args, ent->client->ps.clientNum, shouldKick, reason))
 				{
 					if (shouldKick)
@@ -531,6 +531,19 @@ void  G_ClientCommand ( gentity_t *ent ){
 						gi.SendServerCommand(ent->client->ps.clientNum, "hudprint \"%s\n\"", reason.c_str());
 					}
 					return;
+				}
+
+				try
+				{
+					int target = stoi(gi.Argv(1));
+					if (!filter.CheckScriptCallback(args, ent, target))
+					{
+						return;
+					}
+				}
+				catch (const std::exception&)
+				{
+					gi.Printf(PATCH_NAME " dmmessage error: invalid chat target %s or invalid scritp return value ! Ignoring...\n", gi.Argv(1));
 				}
 			}
 	}
