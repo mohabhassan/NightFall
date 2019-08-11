@@ -10,8 +10,11 @@
 #### register_api_route
 	register_api_route(string uri, string method, string/array scriptname)
 Registers callback handler for give api route/method.
+
 Current allowed values for `method` is `"get"`.
+
 See [api_server.md](docs/api_server.md#configuration) for server api configuration settings.
+
 Example:
 ```
 local.result = register_api_route "/" "get" global/api.scr::get_handler
