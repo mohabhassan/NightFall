@@ -1,5 +1,5 @@
 
-## Scripting Functions Documentation
+# Scripting Functions Documentation
 
  - [New NightFall functions](#New-NightFall-functions)
  - [Slightly modified reborn functions](#Slightly-modified-reborn-functions)
@@ -251,7 +251,7 @@ local.result = registerev "connected" global/eventhandlers.scr::connected
 ```
 Result:
 ```
-When given even type will occur, EventSystem engine will execute given script.
+When given event type will occur, EventSystem engine will execute given script.
 
 local.result can have one of the following values:
 
