@@ -54,7 +54,7 @@
 | Name | sv_disabletaunt |
 |--|--|
 | Description | Specify whether or not to disable all taunts.|
-| Allowed values | 0 to enable chat, 1 to disable taunts |
+| Allowed values | 0 to enable taunts, 1 to disable taunts |
 ---
 ### sv_filterchat
 | Name | sv_filterchat |
