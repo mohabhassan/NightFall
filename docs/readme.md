@@ -4,7 +4,7 @@ Here you'll find most of the thing you'll need to know in order to use NightFall
 
 ## For Everyone
 
- - [Installing NightFall](install.md)
+ - [Installing NightFall](installing.md)
 ---
 ## For Normal Users
 
