@@ -7,6 +7,37 @@
 ---
 ## New NightFall functions
 
+
+
+
+
+dfg
+dg
+dg
+dg
+d
+d
+d
+d
+d
+d
+d
+d
+d
+d
+d
+d
+d
+d
+d
+
+d
+d
+d
+d
+d
+dd
+
 ---
 
 ## Slightly modified reborn functions
