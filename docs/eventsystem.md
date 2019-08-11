@@ -6,7 +6,7 @@ The Script Event System is used to extend scripting capabilities and decrease li
 
 It is extremely similar to [Reborn Events System](http://www.x-null.net/wiki/index.php?title=Reborn_Events_System).
 
-See [registerev](scriptfuncs.md#registerev) and [unregisterev](scriptfuncs.md#unregisterev).
+See [registerev](scriptfuncs.md#registerev) and [unregisterev](http://www.x-null.net/wiki/index.php?title=Reborn_Scripting_Commands#unregisterev).
 
  - [New NightFall events](#New-NightFall-events)
  - [Slightly modified Reborn events](#Slightly-modified-Reborn-events)
