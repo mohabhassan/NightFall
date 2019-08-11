@@ -144,9 +144,15 @@ void ScriptThread::UnregisterAPIRouteEvent(Event * ev)
 		return;
 	}
 
+	if (!HTTPServer::RouteExists(uri.c_str(), method.c_str()))
+	{
+		ev->AddInteger(APIR_ALREADEXISTS);
+		return;
+	}
+
 	if (!HTTPServer::UnregisterRoute(uri.c_str(), method.c_str()))
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: unregister_api_route: error while registering route for uri/method %s / %s : api server not running or route already exists!", uri.c_str(), method.c_str());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: unregister_api_route: error while registering route for uri/method %s / %s : api server not running or route does not exist!", uri.c_str(), method.c_str());
 		ev->AddInteger(APIR_ERROR);
 		return;
 	}
