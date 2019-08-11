@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "dgamex86.h"
+#include "ScriptVariable.h"
 using namespace std;
 constexpr int defaultChatIndex = -1;
 constexpr int defaultChatClientIndex = -1;
@@ -44,6 +45,7 @@ class ChatFilter
 	static vector<ChatFilterClientEntry> ChatClientEntries;
 	size_t FindChat(string word_str, bool exact);
 	size_t FindChatClient(int ClientNum);
+
 public:
 	ChatFilter();
 	~ChatFilter();
@@ -51,6 +53,8 @@ public:
 	bool AddWord(string word_str);
 	bool RemoveWord(string word_str);
 	bool CanSend(const vector<string>& chat_args, int clientNum, bool &shouldKick, string& rejectReason);
+
+	bool CheckScriptCallback(vector<string>& chat_args, gentity_t *ent, int target);
 
 	string GetWordsInPage(int page_number);
 

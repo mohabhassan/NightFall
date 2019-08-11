@@ -6,6 +6,7 @@
 ScriptVariable *ScriptedEvent::eventScripts[SEV_MAX] = { NULL };
 bool ScriptedEvent::eventRegistered[SEV_MAX] = { false };
 
+
 extern DirectorClass *Director;
 
 ScriptedEvent::ScriptedEvent(ScriptedEventType type)
@@ -51,6 +52,10 @@ ScriptedEventType ScriptedEvent::ParseType(str type)
 	{
 		return SEV_INTERMISSION;
 	}
+	else if (type == "dmmessage")
+	{
+		return SEV_DMMESSAGE;
+	}
 	else
 	{
 		return SEV_UNK;
@@ -69,7 +74,9 @@ void ScriptedEvent::Shutdown()
 	}
 }
 
-void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args)
+//returns return value index in returnValues, should remove it manaually by calling func.
+//returns defaultReturnValueIndex if no return value.
+void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args, ScriptVariable * returnValue)
 {
 	Event ev;
 	ScriptVariable thread;
@@ -103,7 +110,15 @@ void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args)
 
 	try
 	{
-		Director->ExecuteScript(&ev);
+		if (returnValue)
+		{
+			Director->ExecuteReturnScript(&ev);
+			*returnValue = ev.GetValue(ev.NumArgs());
+		}
+		else
+		{
+			Director->ExecuteScript(&ev);
+		}
 	}
 	catch (const ScriptException& e)
 	{
@@ -148,7 +163,6 @@ bool ScriptedEvent::isRegistered()
 	return eventRegistered[m_Type];
 }
 
-
 ScriptedEventArgument::ScriptedEventArgument(Entity * e)
 {
 	var.setListenerValue(e);
@@ -172,6 +186,17 @@ ScriptedEventArgument::ScriptedEventArgument(int i)
 ScriptedEventArgument::ScriptedEventArgument(float f)
 {
 	var.setFloatValue(f);
+}
+
+ScriptedEventArgument::ScriptedEventArgument(vector<string> &arr)
+{
+	ScriptVariable index, value;
+	for (size_t i = 0; i < arr.size(); i++)
+	{
+		index.setIntValue(i);
+		value.setStringValue(arr[i].c_str());
+		var.setArrayAtRef(index, value);
+	}
 }
 
 ScriptVariable & ScriptedEventArgument::getValue()
