@@ -36,12 +36,12 @@ It allows modders to communicate to the outside world via HTTP /JSON.
 
 ## Server Behaviour
 ### Initialization
-Once [sv_api](docs/api_server.md#sv_api) cvar is set to one, and upon map load, API server is started. API server will have a number of [sv_api_numthreads](docs/api_server.md#sv_api_numthreads) idle running worker threads to server the HTTP server. Server will listen to all specified [sv_api_ports](docs/api_server.md#sv_api_ports).
+Once [sv_api](api_server.md#sv_api) cvar is set to one, and upon map load, API server is started. API server will have a number of [sv_api_numthreads](api_server.md#sv_api_numthreads) idle running worker threads to server the HTTP server. Server will listen to all specified [sv_api_ports](api_server.md#sv_api_ports).
 
 ### Run-time
-Whilst the API server is running, modder can choose to register a callback script that will handle incoming requests. See [register_api_route](docs/scriptfuncs.md#register_api_route) for more info.
+Whilst the API server is running, modder can choose to register a callback script that will handle incoming requests. See [register_api_route](scriptfuncs.md#register_api_route) for more info.
 
-If a request is made that matches a registered callback script(registered by [register_api_route](docs/scriptfuncs.md#register_api_route)), API server will call that specified script with request information. 
+If a request is made that matches a registered callback script(registered by [register_api_route](scriptfuncs.md#register_api_route)), API server will call that specified script with request information. 
 
 Please note that this process is not fast, since everything is synced with MOHAA's 20 fps server. 
 
@@ -61,7 +61,7 @@ Since this process is heavy for MOHAA thread, it was decided to make it at a min
 
 **IMPORTANT NOTE:** API server is an API server, it's not meant to be serving browsers, only APIs should call it.
 
-To un-register a route, see [unregister_api_route](docs/scriptfuncs.md#unregister_api_route).
+To un-register a route, see [unregister_api_route](scriptfuncs.md#unregister_api_route).
 
 ### Shutdown
 At map end(or map change or map restart), API server will shutdown, clear all pending requests/responses and scripts.
@@ -107,7 +107,7 @@ is sent.
 `{"status":"success", "message" : variable_json_str_here}`  
 where `variable_json_str_here` is a JSON string of the value of the variable returned by the callback script.
 
-**IMPORTANT NOTE:** Non constant arrays have string indices instead of integer indices. Use [constarray](docs/scriptfuncs.md#constarray) to convert an array to a constant array which will have integer indices.
+**IMPORTANT NOTE:** Non constant arrays have string indices instead of integer indices. Use [constarray](scriptfuncs.md#constarray) to convert an array to a constant array which will have integer indices.
 
 **IMPORTANT NOTE:** Some variable types are not supported for conversion to JSON, these include: 
 
