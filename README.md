@@ -1,4 +1,5 @@
 
+
 # NightFall - dgamexwrapper
 MOHBT dgamex86 wrapper based on MOHAA gamex86 wrapper.
 
@@ -42,15 +43,16 @@ Breakthrough:
  Create an issue, I'm more than welcome to add any new features to NightFall!
  
 ## Contributors
- - ##### Todesengel
- - ##### RazoRapiD
- - ##### Ley0k
- - ##### xNULL|James
- - ### RyBack
- - ##### DoubleKill
- - ##### Appelpitje
- - ##### Criminal
- - ##### Zappa
- - ##### Mostafa1m
+ - Todesengel
+ - RazoRapiD
+ - Ley0k
+ - xNULL|James
+ - **RyBack**
+ - DoubleKill
+ - Appelpitje
+ - Criminal
+ - Zappa
+ - Mostafa1m
 
 Have fun ! ;)
+
