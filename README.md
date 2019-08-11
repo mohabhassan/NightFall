@@ -15,24 +15,11 @@ If you have any fixes/modifications , please commit them.
 You can download latest version from [here](https://github.com/mohabhassan/dgamexwrapper/releases).
 
 ## Installation
-
-Spearhead:
-
-1. Use moh_spearhead_server.exe & BTPatch.dll shipped in the release package.
-2. Extract mainta contents from release package to mainta directory.
-3. You're good to go!
-
-Breakthrough:
-
-1. Use moh_Breakthrough_server.exe & BTPatch.dll shipped in the release package.
-2. Extract maintt contents from release package to maintt directory.
-3. You're good to go!
+ - [Installing NightFall](docs/installing.md)
 
 ## Documentation
 
- - [Script Functions Documentation](docs/scriptfuncs.md)
- - [Client Commands Documentation](docs/clientcmds.md)
- - [Rcon Commands Documentation](docs/rconcmds.md)
+ - [NightFall Documentation](docs/)
 
 ## FAQ
 
