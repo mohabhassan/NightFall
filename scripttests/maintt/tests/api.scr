@@ -50,7 +50,7 @@ create_api_request_test:
 	}
 end
 
-request_handler local.resp local.http_code local.user_data:
+request_handler local.http_code local.resp local.user_data:
 	println "~~~~~~~~~~~~~~~~~~~~~~~~~~"
 	println "http_code: " local.http_code
 	println "resp: " local.resp
