@@ -1,5 +1,10 @@
 #pragma once
 class SafePtrBase;
+
+/*
+ * Class Class
+ * Used as a sub class for the patch.
+ **/
 class Class
 {
 public:

@@ -6,11 +6,20 @@ vector<NameEntry> NameFilter::NameEntries;
 
 vector<ProtectedNameEntry> NameFilter::ProtectedNameEntries;
 
+/*
+ * NameEntry::NameEntry
+ * Constructor, takes banned name string as an argument.
+ * */
 NameEntry::NameEntry(string name_str, bool bAny)
 {
 	SetName(name_str, bAny);
 }
 
+/*
+ * NameEntry::NameMatches
+ * Returns true if banned name (member of name entry) is found inside given name string.
+ * Case-insensitive
+ * */
 bool NameEntry::NameMatches(string name_str) const
 {
 	if (AnyOccurence())
@@ -23,21 +32,42 @@ bool NameEntry::NameMatches(string name_str) const
 	}
 }
 
+/*
+ * NameEntry::NameMatchesExact
+ * Returns true if name (member of name entry) is exactly same as name string.
+ * Case-insensitive.
+ * */
 bool NameEntry::NameMatchesExact(string name_str) const
 {
 	return stricmp(name.c_str(), name_str.c_str()) == 0;
 }
 
+/*
+ * NameEntry::GetString
+ * Returns banned name string.
+ * */
 string NameEntry::GetString() const
 {
 	return name + (AnyOccurence() ? " ~any" : "");
 }
 
+/*
+ * NameEntry::AnyOccurence
+ * Returns whether partial matches are allowed or not.
+ * Default is to do full matches.
+ * */
 bool NameEntry::AnyOccurence() const
 {
 	return any;
 }
 
+/*
+ * NameEntry::SetName
+ * Sets banned name string.
+ * Arguments:
+ * name_str - banned name string.
+ * bAny - whether or not to do exact search vs in-string search.
+ * */
 void NameEntry::SetName(string name_str, bool bAny)
 {
 	any = bAny;
@@ -46,33 +76,66 @@ void NameEntry::SetName(string name_str, bool bAny)
 
 
 
+/*
+ * ProtectedNameEntry::ProtectedNameEntry
+ * Constructor, takes protected name string and password stirng as arguments.
+ * */
 ProtectedNameEntry::ProtectedNameEntry(string name_str, string pw_str)
 {
 	SetName(name_str, pw_str);
 }
 
+/*
+ * ProtectedNameEntry::NameMatches
+ * Returns true if protected name (member of protected name entry) is exactly given name string.
+ * Case-insensitive
+ * */
 bool ProtectedNameEntry::NameMatches(string name_str) const
 {
 	return stricmp(name.c_str(), name_str.c_str()) == 0;
 }
 
+/*
+ * ProtectedNameEntry::PasswordMatches
+ * Returns true if protected name password (member of protected name entry) is exactly given password string.
+ * Case-sensitive
+ * */
 bool ProtectedNameEntry::PasswordMatches(string pw_str) const
 {
 	return pw_str == password;
 }
 
+/*
+ * ProtectedNameEntry::GetString
+ * Returns protected name & password string.
+ * */
 string ProtectedNameEntry::GetString() const
 {
 	return "name=" + name + " password=" + password;
 }
 
+/*
+ * ProtectedNameEntry::SetName
+ * Sets protected name & password strings.
+ * Arguments:
+ * name_str - protected name string.
+ * pw_str - password string.
+ * */
 void ProtectedNameEntry::SetName(string name_str, string pw_str)
 {
 	name = name_str;
 	password = pw_str;
 }
 
-
+/*
+ * NameFilter::FindName
+ * Search for NameEntry that matches name_str.
+ * Arguments:
+ * name_str - string to match against.
+ * exact - whether or not to do exact search vs in-string search.
+ * Returns id of found NameEntry or defaultNameIndex if not found.
+ *
+ * */
 size_t NameFilter::FindName(string name_str, bool exact = false)
 {
 	for (size_t i = 0; i < NameEntries.size(); i++)
@@ -96,6 +159,14 @@ size_t NameFilter::FindName(string name_str, bool exact = false)
 	return defaultNameIndex;
 }
 
+/*
+ * NameFilter::FindProtectedName
+ * Search for ProtectedNameEntry that matches name_str.
+ * Arguments:
+ * name_str - string to match against.
+ * Returns id of found ProtectedNameEntry or defaultNameIndex if not found.
+ *
+ * */
 size_t NameFilter::FindProtectedName(string name_str)
 {
 	for (size_t i = 0; i < ProtectedNameEntries.size(); i++)
@@ -119,9 +190,15 @@ NameFilter::~NameFilter()
 {
 }
 
-//returns true if name added
-//returns false if name already exists
-//returns false if name already exists
+/*
+ * NameFilter::AddName
+ * Add a new banned name (NameEntry) to NameEntries.
+ * Arguments:
+ * name_str - name to be banned.
+ * Returns false if name already exists(already banned).
+ * Returns true on success.
+ *
+ * */
 bool NameFilter::AddName(string name_str)
 {
 	static string anyStr = " ~any";
@@ -152,6 +229,16 @@ bool NameFilter::AddName(string name_str)
 	}
 }
 
+/*
+ * NameFilter::AddProtectedName
+ * Add a new protected name (ProtectedNameEntry) to ProtectedNameEntries.
+ * Arguments:
+ * name_str - name to be protected.
+ * pasword - password to protect name.
+ * Returns false if name already exists(already protected).
+ * Returns true on success.
+ *
+ * */
 bool NameFilter::AddProtectedName(string name_str, string pasword)
 {
 	size_t index = FindProtectedName(name_str);
@@ -167,6 +254,15 @@ bool NameFilter::AddProtectedName(string name_str, string pasword)
 	}
 }
 
+/*
+ * NameFilter::RemoveName
+ * Remove a banned name (NameEntry) from NameEntries.
+ * Arguments:
+ * name_str - banned name to be removed.
+ * Returns false if name does not exist(not banned).
+ * Returns true on success.
+ *
+ * */
 bool NameFilter::RemoveName(string name_str)
 {
 	size_t index = FindName(name_str, true);
@@ -183,6 +279,15 @@ bool NameFilter::RemoveName(string name_str)
 
 }
 
+/*
+ * NameFilter::RemoveProtectedName
+ * Remove a protected name (ProtectedNameEntry) from ProtectedNameEntries.
+ * Arguments:
+ * name_str - protected name to be removed.
+ * Returns false if name does not exist(not protected).
+ * Returns true on success.
+ *
+ * */
 bool NameFilter::RemoveProtectedName(string name_str)
 {
 	size_t index = FindProtectedName(name_str);
@@ -198,6 +303,15 @@ bool NameFilter::RemoveProtectedName(string name_str)
 	}
 }
 
+/*
+ * NameFilter::CanConnect
+ * Check whether user can connect to server based on his name.
+ * Arguments:
+ * name_str - name to be checked.
+ * Returns false if name is banned.
+ * Returns true if user can connect.
+ *
+ * */
 bool NameFilter::CanConnect(string name_str)
 {
 	size_t index = FindName(name_str, false);
@@ -212,6 +326,16 @@ bool NameFilter::CanConnect(string name_str)
 	}
 }
 
+/*
+ * NameFilter::CanConnectProtected
+ * Check whether user can connect to server based on his name.
+ * Arguments:
+ * name_str - name to be checked.
+ * password - password for protected name.
+ * Returns false if password is wrong.
+ * Returns true if user can connect.
+ *
+ * */
 bool NameFilter::CanConnectProtected(string name_str, string password)
 {
 	size_t index = FindProtectedName(name_str);
@@ -226,6 +350,13 @@ bool NameFilter::CanConnectProtected(string name_str, string password)
 	}
 }
 
+/*
+ * NameFilter::GetNamesInPage
+ * Create a string of banned names indexed by page number.
+ * Arguments:
+ * page_num - page number to get words of.
+ * Returns a formatted/printable string of the list of banned names in given page, if they exist.
+ * */
 string NameFilter::GetNamesInPage(int page_num)
 {
 	constexpr int perPage = 100;
@@ -262,6 +393,13 @@ string NameFilter::GetNamesInPage(int page_num)
 	return retStr;
 }
 
+/*
+ * NameFilter::GetProtectedNamesInPage
+ * Create a string of protected names indexed by page number.
+ * Arguments:
+ * page_num - page number to get words of.
+ * Returns a formatted/printable string of the list of protected names in given page, if they exist.
+ * */
 string NameFilter::GetProtectedNamesInPage(int page_num)
 {
 	constexpr int perPage = 100;
@@ -299,6 +437,11 @@ string NameFilter::GetProtectedNamesInPage(int page_num)
 }
 
 
+/*
+ * NameFilter::Init
+ * Initialize name filter & protected name lists, parse name filter file (namefilter.cfg) & protected name filter file (protectednamefilter.cfg)
+ *
+ * */
 void NameFilter::Init()
 {
 	ifstream ifs(MAIN_PATH "/namefilter.cfg", ifstream::in);
@@ -375,6 +518,11 @@ void NameFilter::Init()
 
 }
 
+/*
+ * NameFilter::Shutdown
+ * Shutdown name filter & protected name filter lists, save to name filter file (namefilter.cfg) & protected name filter file (protectednamefilter.cfg)
+ *
+ * */
 void NameFilter::Shutdown()
 {
 

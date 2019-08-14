@@ -5,6 +5,10 @@
 
 class Event;
 
+/*
+ * Class Listener
+ * Used as an important utility class for the patch.
+ **/
 class Listener : public Class
 {
 	//void *__vfptr;//Class vfptr is used instead

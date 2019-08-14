@@ -1,6 +1,10 @@
 #pragma once
 #include "Entity.h"
 #include "Event.h"
+/*
+ * Class Animate
+ * Used as a subclass of other important classes. 
+ **/
 class Animate : public Entity
 {
 protected:

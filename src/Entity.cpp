@@ -14,9 +14,12 @@ Entity::Entity()
 Entity::~Entity()
 {
 }
-
+/* Entity::Init()
+ * Initialize Entity related hooks.
+ **/
 void Entity::Init()
 {
+	//hook damage event for Scripted Event usage.
 	Damage_Orignal = reinterpret_cast<void(__thiscall *)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)>(DAMAGE_ADDR);
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
@@ -24,8 +27,12 @@ void Entity::Init()
 	ret = DetourTransactionCommit();
 }
 
+/* Entity::Init()
+ * Shudown Entity related hooks.
+ **/
 void Entity::Shutdown()
 {
+	//remove our hooks.
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
 	ret = DetourDetach(&(PVOID&)(Entity::Damage_Orignal), (PVOID)(&Damage));
@@ -39,6 +46,9 @@ qboolean Entity::checkEntity()
 //
 //void Entity_Damage_hook(void *pThis, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
 
+/* MOD_matches()
+ * Returns whether MOD matches damage type or not.
+ **/
 qboolean MOD_matches(int incoming_damage, int damage_type)
 {
 	if (damage_type == -1)
@@ -51,6 +61,10 @@ qboolean MOD_matches(int incoming_damage, int damage_type)
 	}
 }
 
+/* Damage()
+ * Used as a trampoline for the original Damage function.
+ * Hooked for ScriptedEvent usage.
+ **/
 //TODO: make better hook by hooking the event itself.
 void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
 {

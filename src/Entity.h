@@ -14,6 +14,10 @@ public:
 	short int to;
 };
 
+/*
+ * Class Entity
+ * Used as an important utility class for the patch.
+ **/
 class Entity : public SimpleEntity
 {
 public:

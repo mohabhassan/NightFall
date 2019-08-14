@@ -15,7 +15,10 @@ template<typename T, typename U> constexpr size_t classOffsetOf(U T::*member)
 {
 	return (char*)&((T*)nullptr->*member) - (char*)nullptr;
 }
-
+/* 
+ * Sentient::Init()
+ * Initialize related sentient hooks.
+ * */
 void Sentient::Init()
 {
 	GetActiveWeapon_real = reinterpret_cast<Animate *(__thiscall *)(Sentient *__this, weaponhand_t hand)>(GETACTIVEWEAPON_ADDR);
@@ -84,6 +87,10 @@ void Sentient::Init()
 	gi.Printf("offset of m_bFootOnGround_Left = %d \n", classOffsetOf(&Sentient::m_bFootOnGround_Left));
 	*/
 }
+/*
+ * Sentient::GetActiveWeapon()
+ * Gets currently active weapon in given hand.
+ * */
 Animate *Sentient::GetActiveWeapon
 (
 	weaponhand_t hand

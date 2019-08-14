@@ -875,9 +875,9 @@ void __cdecl upon_exit()
 
 BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved ) 
 {
-	char path[MAX_PATH];
-	int i;
-	DWORD dwSize;
+//	char path[MAX_PATH];
+//	int i;
+//	DWORD dwSize;
 //	DWORD dwAddr;
 		
 	if( dwReason == DLL_PROCESS_ATTACH ) 
@@ -885,7 +885,7 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 		//atexit(&upon_exit);
 //		DisableThreadLibraryCalls( hModule );
 		
-		dwSize = GetModuleFileName( hModule, path, 2048 );
+		/*dwSize = GetModuleFileName( hModule, path, 2048 );
 
 		if(!dwSize || GetLastError() == ERROR_INSUFFICIENT_BUFFER) 
 		{
@@ -925,7 +925,8 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 				break;
 			}
 		}
-		
+		*/
+
 		hmod = LoadLibrary(DGAMEX86_PATH);
 
 		if(hmod)
@@ -944,12 +945,10 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 
 		return TRUE; 
 	}
-
 	else if( dwReason == DLL_THREAD_DETACH ) 
     {
-		return 0;
+		return TRUE;
     }
-
 	else if( dwReason == DLL_PROCESS_DETACH ) 
     {
 		if (hmod)
@@ -965,12 +964,12 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 			systemHMOD = NULL;
 		}
 		*/
-		return 0;
+		return TRUE;
     }
 
 
 
-	return FALSE;
+	return TRUE;
 }
 
 #endif

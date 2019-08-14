@@ -7,32 +7,137 @@ vector<ChatEntry> ChatFilter::ChatEntries;
 
 vector<ChatFilterClientEntry> ChatFilter::ChatClientEntries;
 
-
+/* 
+ * ChatEntry::ChatEntry
+ * Constructor, takes banned word string as an argument.
+ * */
 ChatEntry::ChatEntry(string word_str)
 {
 	SetString(word_str);
 }
 
+/*
+ * ChatEntry::ChatMatches
+ * Returns true if banned word (member of chat entry) is found inside given chat message string.
+ * Case-insensitive
+ * */
 bool ChatEntry::ChatMatches(string chat_str) const
 {
 	return stristr(chat_str.c_str(), word.c_str()) != NULL;
 }
 
+/*
+ * ChatEntry::ChatMatchesExact
+ * Returns true if banned word (member of chat entry) is exactly same as chat message string.
+ * Case-insensitive.
+ * */
 bool ChatEntry::ChatMatchesExact(string chat_str) const
 {
 	return stricmp(chat_str.c_str(), word.c_str()) == 0;
 }
 
+/*
+ * ChatEntry::GetString
+ * Returns banned word string.
+ * */
 string ChatEntry::GetString() const
 {
 	return word;
 }
 
+/*
+ * ChatEntry::SetString
+ * Sets banned word string.
+ * */
 void ChatEntry::SetString(string chat_str)
 {
 	word = chat_str;
 }
 
+/*
+ * ChatFilterClientEntry::ChatFilterClientEntry
+ * Constructor
+ * */
+ChatFilterClientEntry::ChatFilterClientEntry(int cNum, int iAttempts = 0, bool bChatAllowed = true, bool bTauntsAllowed = true)
+{
+	clientNum = cNum;
+	badChatAttempts = iAttempts;
+	chatAllowed = bChatAllowed;
+	tauntsAllowed = bTauntsAllowed;
+}
+
+/*
+ * ChatFilterClientEntry::GetClientNum
+ * Getter for client number.
+ * */
+int ChatFilterClientEntry::GetClientNum() const
+{
+	return clientNum;
+}
+
+/*
+ * ChatFilterClientEntry::GetNumAttempts
+ * Getter for number of bad word attempts.
+ * */
+int ChatFilterClientEntry::GetNumAttempts() const
+{
+	return badChatAttempts;
+}
+
+/*
+ * ChatFilterClientEntry::GetChatAllowed
+ * Returns whether chat is allowed for client or not.
+ * */
+bool ChatFilterClientEntry::GetChatAllowed() const
+{
+	return chatAllowed;
+}
+
+/*
+ * ChatFilterClientEntry::GetTauntsAllowed
+ * Returns whether taunts are allowed for client or not.
+ * */
+bool ChatFilterClientEntry::GetTauntsAllowed() const
+{
+	return tauntsAllowed;
+}
+
+/*
+ * ChatFilterClientEntry::SetNumAttempts
+ * Sets number of bad word attempts.
+ * */
+void ChatFilterClientEntry::SetNumAttempts(int iAttempts)
+{
+	badChatAttempts = iAttempts;
+}
+
+/*
+ * ChatFilterClientEntry::SetChatAllowed
+ * Sets if chat is allowed for client.
+ * */
+void ChatFilterClientEntry::SetChatAllowed(bool bAllowed)
+{
+	chatAllowed = bAllowed;
+}
+
+/*
+ * ChatFilterClientEntry::SetTauntsAllowed
+ * Sets if taunts are allowed for client.
+ * */
+void ChatFilterClientEntry::SetTauntsAllowed(bool bAllowed)
+{
+	tauntsAllowed = bAllowed;
+}
+
+/*
+ * ChatFilter::FindChat
+ * Search for ChatEntry that matches word_str.
+ * Arguments:
+ * word_str - string to match against.
+ * exact - whether or not to do exact search vs in-string search.
+ * Returns id of found ChatEntry or defaultChatIndex if not found.
+ * 
+ * */
 size_t ChatFilter::FindChat(string word_str, bool exact = false)
 {
 	for (size_t i = 0; i < ChatEntries.size(); i++)
@@ -56,6 +161,14 @@ size_t ChatFilter::FindChat(string word_str, bool exact = false)
 	return defaultChatIndex;
 }
 
+/*
+ * ChatFilter::FindChatClient
+ * Search for ChatClientEntry that matches ClientNum.
+ * Arguments:
+ * ClientNum - client num to search for.
+ * Returns id of found ChatClientEntry or defaultChatClientIndex if not found.
+ *
+ * */
 size_t ChatFilter::FindChatClient(int ClientNum)
 {
 	for (size_t i = 0; i < ChatClientEntries.size(); i++)
@@ -68,50 +181,6 @@ size_t ChatFilter::FindChatClient(int ClientNum)
 	return defaultChatClientIndex;
 }
 
-ChatFilterClientEntry::ChatFilterClientEntry(int cNum, int iAttempts = 0, bool bChatAllowed = true, bool bTauntsAllowed = true)
-{
-	clientNum = cNum;
-	badChatAttempts = iAttempts;
-	chatAllowed = bChatAllowed;
-	tauntsAllowed = bTauntsAllowed;
-}
-
-int ChatFilterClientEntry::GetClientNum() const
-{
-	return clientNum;
-}
-
-int ChatFilterClientEntry::GetNumAttempts() const
-{
-	return badChatAttempts;
-}
-
-bool ChatFilterClientEntry::GetChatAllowed() const
-{
-	return chatAllowed;
-}
-
-
-bool ChatFilterClientEntry::GetTauntsAllowed() const
-{
-	return tauntsAllowed;
-}
-
-void ChatFilterClientEntry::SetNumAttempts(int iAttempts)
-{
-	badChatAttempts = iAttempts;
-}
-
-void ChatFilterClientEntry::SetChatAllowed(bool bAllowed)
-{
-	chatAllowed = bAllowed;
-}
-
-void ChatFilterClientEntry::SetTauntsAllowed(bool bAllowed)
-{
-	tauntsAllowed = bAllowed;
-}
-
 ChatFilter::ChatFilter()
 {
 }
@@ -121,6 +190,15 @@ ChatFilter::~ChatFilter()
 {
 }
 
+/*
+ * ChatFilter::AddWord
+ * Add a new banned chat word (ChatEntry) to ChatEntries.
+ * Arguments:
+ * word_str - word to be banned.
+ * Returns false if word already exists(already banned).
+ * Returns true on success.
+ *
+ * */
 bool ChatFilter::AddWord(string word_str)
 {
 	size_t index = FindChat(word_str, true);
@@ -136,6 +214,15 @@ bool ChatFilter::AddWord(string word_str)
 	}
 }
 
+/*
+ * ChatFilter::RemoveWord
+ * Remove a banned chat word (ChatEntry) from ChatEntries.
+ * Arguments:
+ * word_str - banned word to be removed.
+ * Returns false if word does not exist(not banned).
+ * Returns true on success.
+ *
+ * */
 bool ChatFilter::RemoveWord(string word_str)
 {
 	size_t index = FindChat(word_str, true);
@@ -151,6 +238,18 @@ bool ChatFilter::RemoveWord(string word_str)
 	}
 }
 
+/*
+ * ChatFilter::CanSend
+ * Check if client can send said chat message or not.
+ * Arguments:
+ * chat_args - vector of space separate list of chat message split into arguments.
+ * clientNum - client number for client that sent the chat message.
+ * Return values:
+ * Returns true if client can send message, false otherwise.
+ * shouldKick - whether or not client should be kicked.
+ * rejectReason - a reason that's printed to player screen in case of rejecting chat message.
+ *
+ * */
 bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &shouldKick, string & rejectReason)
 {
 
@@ -270,6 +369,15 @@ bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &s
 	return true;
 }
 
+/*
+ * ChatFilter::CheckScriptCallback
+ * Check if necessary script callbacks should be called for given chat message.
+ * Arguments:
+ * chat_args - vector of space separate list of chat message split into arguments.
+ * ent - gentity for client that sent the chat message.
+ * target - target that recieves chat message, -1 means team(sayteam), 0 means all (say) and other positive numbers mean private message (sayp or sayprivate).
+ * Returns true if client can send message, false otherwise.
+ * */
 bool ChatFilter::CheckScriptCallback(vector<string>& chat_args, gentity_t * ent, int target)
 {
 
@@ -292,6 +400,13 @@ bool ChatFilter::CheckScriptCallback(vector<string>& chat_args, gentity_t * ent,
 	return true;
 }
 
+/*
+ * ChatFilter::GetWordsInPage
+ * Create a string of banned chat words indexed by page number.
+ * Arguments:
+ * page_num - page number to get words of.
+ * Returns a formatted/printable string of the list of banned chat words in given page, if they exist.
+ * */
 string ChatFilter::GetWordsInPage(int page_num)
 {
 	constexpr int perPage = 100;
@@ -328,11 +443,25 @@ string ChatFilter::GetWordsInPage(int page_num)
 	return retStr;
 }
 
+/*
+ * ChatFilter::ClientConnected
+ * Handle client connected event.
+ * Creates a new ChatClientEntry into ChatClientEntries.
+ * Arguments:
+ * clientNum - client number of connected client.
+ * */
 void ChatFilter::ClientConnected(int clientNum)
 {
 	ChatClientEntries.emplace_back(clientNum);
 }
 
+/*
+ * ChatFilter::ClientDisconnected
+ * Handle client disconnected event.
+ * Removes existing ChatClientEntry from ChatClientEntries.
+ * Arguments:
+ * clientNum - client number of disconnected client.
+ * */
 void ChatFilter::ClientDisconnected(int clientNum)
 {
 	size_t index = FindChatClient(clientNum);
@@ -346,7 +475,16 @@ void ChatFilter::ClientDisconnected(int clientNum)
 	}
 }
 
-//returns true on success.
+/*
+ * ChatFilter::ToggleDisableChat
+ * Toggle disable/enable chat for given client number.
+ * Arguments:
+ * clientNum - client number of client to have chat allowing toggled.
+ * Return values:
+ * Returns true if chat is toggled, false otherwise.
+ * chatAllowed - whether or not chat is allowed for client.
+ * 
+ * */
 bool ChatFilter::ToggleDisableChat(int clientNum, bool & chatAllowed)
 {
 	size_t clientIndex = FindChatClient(clientNum);
@@ -361,7 +499,16 @@ bool ChatFilter::ToggleDisableChat(int clientNum, bool & chatAllowed)
 	return false;
 }
 
-//returns true on success.
+/*
+ * ChatFilter::ToggleDisableTaunt
+ * Toggle disable/enable taunts for given client number.
+ * Arguments:
+ * clientNum - client number of client to have chat allowing toggled.
+ * Return values:
+ * Returns true if taunts are toggled, false otherwise.
+ * chatAllowed - whether or not taunts are allowed for client.
+ *
+ * */
 bool ChatFilter::ToggleDisableTaunt(int clientNum, bool & tauntsAllowed)
 {
 	size_t clientIndex = FindChatClient(clientNum);
@@ -376,6 +523,11 @@ bool ChatFilter::ToggleDisableTaunt(int clientNum, bool & tauntsAllowed)
 	return false;
 }
 
+/*
+ * ChatFilter::Init
+ * Initialize chat filter lists, parse chat filter file (chatfilter.cfg)
+ *
+ * */
 void ChatFilter::Init()
 {
 	ifstream ifs(MAIN_PATH "/chatfilter.cfg", ifstream::in);
@@ -408,6 +560,11 @@ void ChatFilter::Init()
 	gi.Printf(PATCH_NAME " ChatFilter loaded %d chat filter entries successfully\n", ChatEntries.size());
 }
 
+/*
+ * ChatFilter::Shutdown
+ * Shutdown chat filter lists, save to chat filter file (chatfilter.cfg)
+ *
+ * */
 void ChatFilter::Shutdown()
 {
 	ofstream ofs(MAIN_PATH "/chatfilter.cfg", ofstream::out | ofstream::trunc);

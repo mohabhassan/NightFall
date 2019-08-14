@@ -5,8 +5,13 @@
 using namespace std;
 constexpr int defaultIPIndex = -1;
 
+/* Class IPEntry
+ * An IP entry to be used in IPFilter entry list.
+ * Represents a banned IP address.
+ * */
 class IPEntry
 {
+	/* four segments of the IP address */
 	string ipSegments[4];
 public:
 	IPEntry(string ip_str);
@@ -18,9 +23,13 @@ public:
 	void SetIP(string ip_str);
 };
 
+/* Class IPFilter
+ * A filter that is responsible to handle any blockage of client connections based on their ip addresses.
+ * */
 class IPFilter
 {
 private:
+	/* list of banned IP address entries */
 	static vector<IPEntry> IPEntries;
 
 	size_t FindIP(string ip_str, bool masked);
