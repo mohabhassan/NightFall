@@ -44,7 +44,7 @@ At map end(or map change or map restart), API client will shutdown, clear all pe
 ### Script Usage
 When a user creates an API request using [create_api_request](scriptfuncs.md#create_api_request), the script callback function should be something like this:
 ```
-request_handler local.resp local.http_code local.user_data:
+request_handler local.http_code local.resp local.user_data:
 	println "~~~~~~~~~~~~~~~~~~~~~~~~~~"
 	println "http_code: " local.http_code
 	println "resp: " local.resp
