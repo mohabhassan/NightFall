@@ -36,7 +36,9 @@ public:
 	void Test(Event * ev);
 	
 	static void		MiscInit();
+	static void		AdminCommandsInit();
 	static void		ClientCommandsInit();
+
 
 	//The following functions are script events
 	void GetKillsEvent(Event * ev);
@@ -49,6 +51,9 @@ public:
 	void IsAdminEvent(Event *ev);
 
 	//The following functions are console(client command) events.
+	void PatchVersionEvent(Event * ev);
+
+	//The following functions are console(admin command) events.
 	void AdminLoginEvent(Event * ev);
 	void AdminLogoutEvent(Event * ev);
 

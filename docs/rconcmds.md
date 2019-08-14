@@ -141,12 +141,12 @@
 | Description |  Say private message as console to specified client number. |
 | Example | `sayp 3 "Hello, Damn you!"` |
 ---
-### listadmin
-| Name | listadmin |
+### listadmins
+| Name | listadmins |
 |--|--|
 | Arguments | none |
 | Description |  List currently logged in admins. |
-| Example | `listadmin` |
+| Example | `listadmins` |
 ---
 ### patchver
 | Name | patchver |
