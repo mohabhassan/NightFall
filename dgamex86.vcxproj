@@ -260,6 +260,7 @@
     <ClCompile Include="src\misc.cpp" />
     <ClCompile Include="src\NameFilter.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\PlayerAdminCommands.cpp" />
     <ClCompile Include="src\PlayerClientCommands.cpp" />
     <ClCompile Include="src\PlayerMisc.cpp" />
     <ClCompile Include="src\qcommon.cpp" />

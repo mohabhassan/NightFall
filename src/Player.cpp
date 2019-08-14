@@ -216,6 +216,7 @@ void Player::Init()
 		&Player::Test);
 
 	MiscInit();
+	AdminCommandsInit();
 	ClientCommandsInit();
 
 	int rscount = cerSet.size()+1;
