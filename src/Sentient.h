@@ -40,6 +40,10 @@ public:
 	}
 };
 
+/*
+ * Class Sentient
+ * Used as an important utility class in the patch.
+ **/
 class Sentient : public Animate
 {
 protected:

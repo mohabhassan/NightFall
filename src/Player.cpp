@@ -35,6 +35,8 @@ template<typename T, typename U> constexpr size_t classOffsetOf(U T::*member)
 Player::~Player()
 {
 }
+
+//Used to check if all my offsets are correct.
 void Player::PrintOffsets()
 {
 	gi.Printf("Player::num_kills offset: %d\n", classOffsetOf(&Player::num_kills));
@@ -196,6 +198,11 @@ void Player::PrintOffsets()
 	gi.Printf("Player::m_iNumRightArmShots offset: %d\n", classOffsetOf(&Player::m_iNumRightArmShots));*/
 }
 
+/* 
+ * Player::Init()
+ * Initialize script events and client command events.
+ * Initialize some function hooks for ScriptEvent.
+ **/
 void Player::Init()
 {
 	//PrintOffsets();
@@ -240,6 +247,11 @@ void Player::Init()
 	ret = DetourTransactionCommit();
 }
 
+/*
+ * Player::Init()
+ * Shutdown script events and client command events.
+ * Shutdown some function hooks for ScriptEvent.
+ **/
 void Player::Shutdown()
 {
 	for (size_t i = 0; i < cerSet.size(); i++)
@@ -267,6 +279,10 @@ void Player::Shutdown()
 	ret = DetourTransactionCommit();
 }
 
+/*
+ * Player::Test()
+ * Test event for script testing.
+ **/
 void Player::Test(Event*ev)
 {
 	//str strTat = ev->GetString(2);
@@ -274,6 +290,11 @@ void Player::Test(Event*ev)
 	gi.Printf("Player Test success %d\n", ev->NumArgs());
 }
 
+/*
+ * Respawn()
+ * Trampoline function for Player::Repawn()
+ * Used for ScriptedEvent.
+ **/
 void __fastcall Respawn(Player *_this, void * edx, Event * ev)
 {
 	ScriptedEvent sev(SEV_SPAWN);
@@ -285,6 +306,11 @@ void __fastcall Respawn(Player *_this, void * edx, Event * ev)
 	_this->Respawn_Orignal(_this, ev);
 }
 
+/*
+ * Killed()
+ * Trampoline function for Player::Killed()
+ * Used for ScriptedEvent.
+ **/
 void __fastcall Killed(Player *_this, void * edx, Event * ev)
 {
 	ScriptedEvent sev(SEV_KILL);

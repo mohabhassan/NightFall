@@ -5,6 +5,10 @@
 
 vector<IPEntry> IPFilter::IPEntries;
 
+/*
+ * IPEntry::IPEntry
+ * Constructor, IP address string as an argument.
+ * */
 IPEntry::IPEntry(string ip_str)
 {
 	istringstream iss(ip_str);
@@ -14,6 +18,10 @@ IPEntry::IPEntry(string ip_str)
 	getline(iss, ipSegments[3], '.');
 }
 
+/*
+ * IPEntry::IPEntry
+ * Constructor, IP address four segments string as an argument.
+ * */
 IPEntry::IPEntry(string ip_str[4])
 {
 	for (size_t i = 0; i < 4; i++)
@@ -22,6 +30,11 @@ IPEntry::IPEntry(string ip_str[4])
 	}
 }
 
+/*
+ * IPEntry::IPMatches
+ * Returns true if banned IP address (member of ip entry) is same as IP address string.
+ * Mask checks included
+ * */
 bool IPEntry::IPMatches(string ip_str) const
 {
 	string segmentStr[4];
@@ -45,6 +58,11 @@ bool IPEntry::IPMatches(string ip_str) const
 	return true;
 }
 
+/*
+ * IPEntry::IPMatchesExact
+ * Returns true if IP address (member of ip entry) is exactly same as IP address string.
+ * Mask checks excluded
+ * */
 bool IPEntry::IPMatchesExact(string ip_str) const
 {
 	string segmentStr[4];
@@ -65,11 +83,21 @@ bool IPEntry::IPMatchesExact(string ip_str) const
 	return true;
 }
 
+/*
+ * IPEntry::GetString
+ * Returns banned IP address string.
+ * */
 string IPEntry::GetString() const
 {
 	return ipSegments[0] + '.' + ipSegments[1] + '.' + ipSegments[2] + '.' + ipSegments[3];
 }
 
+/*
+ * IPEntry::SetIP
+ * Sets banned IP address string.
+ * Arguments:
+ * ip_str - banned IP address string.
+ * */
 void IPEntry::SetIP(string ip_str)
 {
 	istringstream iss(ip_str);
@@ -86,7 +114,15 @@ IPFilter::~IPFilter()
 {
 }
 
-//returns pos, or defaultIPIndex if not found
+/*
+ * IPFilter::FindIP
+ * Search for IPEntry that matches ip_str.
+ * Arguments:
+ * ip_str - string to match against.
+ * masked - whether or not to do mask checks.
+ * Returns id of found IPEntry or defaultIPIndex if not found.
+ *
+ * */
 size_t IPFilter::FindIP(string ip_str, bool masked = false)
 {
 
@@ -111,8 +147,15 @@ size_t IPFilter::FindIP(string ip_str, bool masked = false)
 	return defaultIPIndex;
 }
 
-//returns true if IP is added
-//returns false if IP already exists
+/*
+ * IPFilter::AddIP
+ * Add a new banned IP (IPEntry) to IPEntries.
+ * Arguments:
+ * ip_str - IP address to be banned.
+ * Returns false if IP address already exists(already banned).
+ * Returns true on success.
+ *
+ * */
 bool IPFilter::AddIP(string ip_str)
 {
 	//search for port
@@ -134,8 +177,15 @@ bool IPFilter::AddIP(string ip_str)
 	}
 }
 
-//returns true if IP is removed
-//return false if IP doesn't exist
+/*
+ * IPFilter::RemoveIP
+ * Remove a banned IP address (IPEntry) from IPEntries.
+ * Arguments:
+ * ip_str - banned IP address to be removed.
+ * Returns false if IP address does not exist(not banned).
+ * Returns true on success.
+ *
+ * */
 bool IPFilter::RemoveIP(string ip_str)
 {
 	//search for port
@@ -158,7 +208,15 @@ bool IPFilter::RemoveIP(string ip_str)
 	}
 }
 
-//returns true if IP can connect
+/*
+ * IPFilter::CanConnect
+ * Check whether user can connect to server based on his IP address.
+ * Arguments:
+ * ip_str - IP address to be checked.
+ * Returns false if IP address is banned.
+ * Returns true if user can connect.
+ *
+ * */
 bool IPFilter::CanConnect(string ip_str)
 {
 	//search for port
@@ -180,7 +238,13 @@ bool IPFilter::CanConnect(string ip_str)
 	}
 }
 
-//page_number should start from 1
+/*
+ * IPFilter::GetIPsInPage
+ * Create a string of banned IP addresses indexed by page number.
+ * Arguments:
+ * page_num - page number to get words of.
+ * Returns a formatted/printable string of the list of banned IP addresses in given page, if they exist.
+ * */
 string IPFilter::GetIPsInPage(int page_num)
 {
 	constexpr int perPage = 100;
@@ -217,6 +281,11 @@ string IPFilter::GetIPsInPage(int page_num)
 	return retStr;
 }
 
+/*
+ * IPFilter::Init
+ * Initialize IP filter lists, parse IP filter file (ipfilter.cfg)
+ *
+ * */
 void IPFilter::Init()
 {
 
@@ -250,6 +319,11 @@ void IPFilter::Init()
 
 }
 
+/*
+ * IPFilter::Shutdown
+ * Shutdown IP filter lists, save to IP filter file (ipfilter.cfg)
+ *
+ * */
 void IPFilter::Shutdown()
 {
 

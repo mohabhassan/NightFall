@@ -6,11 +6,14 @@
 using namespace std;
 constexpr int defaultChatIndex = -1;
 constexpr int defaultChatClientIndex = -1;
-
+/* Class ChatEntry
+ * A chat entry to be used in ChatFilter entry list.
+ * Represents a banned word in chat.
+ * */
 class ChatEntry
 {
+	/* banned word */
 	string word;
-	bool any;
 public:
 	ChatEntry(string word_str);
 
@@ -20,11 +23,20 @@ public:
 	void SetString(string word_str);
 };
 
+/* Class ChatFilterClientEntry
+ * A chat client entry to be used in ChatFilter client entry list.
+ * Represents a client that used a banned word(ChatEntry) at least once in chat.
+ * Or a client that has been disallowed chats or taunts.
+ * */
 class ChatFilterClientEntry
 {
+	/* client number */
 	int clientNum;
+	/* number of bad word attepmpts */
 	int badChatAttempts;
+	/* allowed chat */
 	bool chatAllowed;
+	/* allowed taunts */
 	bool tauntsAllowed;
 public:
 	ChatFilterClientEntry(int cNum, int iAttempts, bool bChatAllowed, bool bTauntsAllowed);
@@ -39,9 +51,14 @@ public:
 	void SetTauntsAllowed(bool bAllowed);
 };
 
+/* Class ChatFilter
+ * A filter that is responsible to handle any blockage of chat messages for a given client.
+ * */
 class ChatFilter
 {
+	/* list of banned word entries */
 	static vector<ChatEntry> ChatEntries;
+	/* list of client rules(banned chat/taunts/number of penalites) entries */
 	static vector<ChatFilterClientEntry> ChatClientEntries;
 	size_t FindChat(string word_str, bool exact);
 	size_t FindChatClient(int ClientNum);

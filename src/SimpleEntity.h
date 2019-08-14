@@ -2,6 +2,11 @@
 #include "dgamex86.h"
 #include "Listener.h"
 typedef int entflags_t;
+
+/*
+ * Class Entity
+ * Used as a sub class for the patch.
+ **/
 class SimpleEntity : public Listener
 {
 public:

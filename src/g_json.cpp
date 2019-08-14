@@ -36,7 +36,7 @@ void GameVarToJson(ScriptVariable & var, json & j)
 			}
 		}
 		j["type"] = "array_object";
-		j["conent"] = arr_obj;
+		j["content"] = arr_obj;
 		break;
 	}
 	case VARIABLE_CONSTARRAY:
@@ -46,15 +46,15 @@ void GameVarToJson(ScriptVariable & var, json & j)
 		for (size_t i = 0; i < constArr->size; i++)
 		{
 			ScriptVariable &e = constArr->constArrayValue[i + 1];
-			GameVarToJson(e, j["conent"][i]);
+			GameVarToJson(e, j["content"][i]);
 		}
 		break;
 	}
 	case VARIABLE_VECTOR:
 		j["type"] = "vector";
-		j["conent"]["x"] = var.vectorValue().x;
-		j["conent"]["y"] = var.vectorValue().y;
-		j["conent"]["z"] = var.vectorValue().z;
+		j["content"]["x"] = var.vectorValue().x;
+		j["content"]["y"] = var.vectorValue().y;
+		j["content"]["z"] = var.vectorValue().z;
 		break;
 	case VARIABLE_CONTAINER:
 	case VARIABLE_SAFECONTAINER:
@@ -63,7 +63,7 @@ void GameVarToJson(ScriptVariable & var, json & j)
 	case VARIABLE_REF:
 	case VARIABLE_NONE:
 		j["type"] = var.GetTypeName();
-		j["conent"] = nullptr;
+		j["content"] = nullptr;
 		break;
 	default:
 		break;

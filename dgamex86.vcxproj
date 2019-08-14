@@ -150,6 +150,8 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -203,6 +205,8 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>CompileAsCpp</CompileAs>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

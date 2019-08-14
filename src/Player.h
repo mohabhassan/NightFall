@@ -5,7 +5,10 @@
 #include "Sentient.h"
 #include "DM_Team.h"
 #include "dgamex86.h"
-
+/*
+ * Class Player
+ * Used as an important utility class in the patch.
+ **/
 class Player : public Sentient //1504
 {
 	// can't bother to fix the offsets, I'll use direct offests & dummies
@@ -35,6 +38,7 @@ public:
 	static void		MiscInit();
 	static void		ClientCommandsInit();
 
+	//The following functions are script events
 	void GetKillsEvent(Event * ev);
 	void GetDeathsEvent(Event * ev);
 	void GetConnStateEvent(Event * ev);
@@ -44,6 +48,7 @@ public:
 	void GetInventoryEvent(Event * ev);
 	void IsAdminEvent(Event *ev);
 
+	//The following functions are console(client command) events.
 	void AdminLoginEvent(Event * ev);
 	void AdminLogoutEvent(Event * ev);
 

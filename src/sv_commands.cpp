@@ -27,7 +27,7 @@ vector<ConsoleCommand> ConsoleCommands = {
 	{"dischat",					SV_DisableChat},
 	{"distaunt",				SV_DisableTaunts},
 	{"sayp",					SV_SayPrivate},
-	{"listadmin",				SV_ListAdmins},
+	{"listadmins",				SV_ListAdmins},
 	{"patchver",				SV_PatchVersion},
 };
 

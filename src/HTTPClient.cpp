@@ -137,8 +137,16 @@ void HTTPClient::Init()
 	curlpp::initialize();
 
 	status = CST_IDLE;
-
-	std::thread(HandleRequests).detach();
+	//FIXME: wine stuff
+	//try
+	//{
+		std::thread(HandleRequests).detach();
+	//}
+	//catch (const std::exception& e)
+	//{
+	//	gi.Printf("HTTPClient::Init error: %s\n", e.what());
+	//	gi.cvar_set2("sv_api_client", "1", true);
+	//}
 }
 
 void HTTPClient::Shutdown()
