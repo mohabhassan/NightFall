@@ -32,7 +32,7 @@ void ScriptThread::CreateAPIRequest(Event * ev)
 
 
 	str url = ev->GetString(1);
-	url.tolower();
+	//url.tolower();
 	if (url.length() == 0)
 	{
 		gi.Printf(PATCH_NAME " SCRIPT ERROR: empty url passed to create_api_request!\n");
