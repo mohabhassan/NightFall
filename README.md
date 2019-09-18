@@ -1,6 +1,6 @@
 
 
-# NightFall - dgamexwrapper
+# NightFall - (d)gamexwrapper
 MOHBT dgamex86 wrapper based on MOHAA gamex86 wrapper.
 
 https://www.x-null.net/forums/forum.php
