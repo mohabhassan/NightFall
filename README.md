@@ -19,7 +19,7 @@ You can download latest version from [here](https://github.com/mohabhassan/dgame
 
 ## Documentation
 
- - [NightFall Documentation](docs/)
+ - [NightFall Documentation](docs/readme.md)
 
 ## FAQ
 
