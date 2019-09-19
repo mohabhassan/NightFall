@@ -1104,7 +1104,8 @@ void Player::AdminSayPrivateEvent(Event * ev)
 	}
 
 	int client_num = ev->GetInteger(1);
-	if (GetClientByClientNum(client_num) == NULL)
+	client_t* cl = GetClientByClientNum(client_num);
+	if (cl == NULL || cl->state == CS_FREE)
 	{
 		gi.SendServerCommand(client->ps.clientNum, "print \"Client num not in server.\n\"");
 		return;

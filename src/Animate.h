@@ -13,7 +13,9 @@ protected:
 	float		syncTime;//16
 	float		syncRate;//17
 	int			pauseSyncTime;//18
+#if defined(MOHBT) || defined(MOHSH)
 	int			dummy1;//19 //FIXME: seems bool/qboolean
+#endif
 
 	Event		*doneEvents[MAX_FRAMEINFOS];//18
 
@@ -22,7 +24,9 @@ protected:
 
 public:
 	Vector		frame_delta;//68
+#if defined(MOHBT) || defined(MOHSH)
 	int			dummy2;//71
+#endif
 public:
 	Animate();
 	~Animate();

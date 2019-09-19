@@ -1,7 +1,13 @@
 #pragma once
 #include "SimpleEntity.h"
 #include "dgamex86.h"
+#ifdef MOHAA
+
+#define MAX_MODEL_CHILDREN 8
+#else
 #define MAX_MODEL_CHILDREN 16
+#endif // MOHAA
+
 #define MAX_GLUE_CHILDREN 8
 
 class Entity;

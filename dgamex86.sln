@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.271
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dgamex86", "dgamex86.vcxproj", "{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}"
 EndProject
@@ -11,6 +11,8 @@ Global
 		BreakThrough|x64 = BreakThrough|x64
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
+		MOHAA|Win32 = MOHAA|Win32
+		MOHAA|x64 = MOHAA|x64
 		SpearHead|Win32 = SpearHead|Win32
 		SpearHead|x64 = SpearHead|x64
 	EndGlobalSection
@@ -22,6 +24,9 @@ Global
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Debug|Win32.Build.0 = Debug|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Debug|x64.ActiveCfg = Debug|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.MOHAA|Win32.ActiveCfg = MOHAA|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.MOHAA|Win32.Build.0 = MOHAA|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.MOHAA|x64.ActiveCfg = MOHAA|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|Win32.ActiveCfg = SpearHead|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|Win32.Build.0 = SpearHead|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|x64.ActiveCfg = SpearHead|Win32

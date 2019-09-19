@@ -183,7 +183,7 @@ void SV_ClientKickReason()
 	}
 
 	client_t * cl = GetClientByClientNum(atoi(gi.Argv(1)));
-	if (cl)
+	if (cl && cl->state != CS_FREE)
 	{
 		string reason = gi.Argv(2);
 		admin.AddKick(cl->gentity->client->ps.clientNum, true, reason.c_str());
@@ -268,7 +268,7 @@ void SV_ClientBan()
 	}
 
 	client_t * cl = GetClientByClientNum(atoi(gi.Argv(1)));
-	if (cl)
+	if (cl && cl->state != CS_FREE)
 	{
 		//string reason = gi.Argv(2);
 		admin.AddBan(cl->gentity->client->ps.clientNum, true);
@@ -292,7 +292,7 @@ void SV_ClientBanReason()
 	}
 
 	client_t * cl = GetClientByClientNum(atoi(gi.Argv(1)));
-	if (cl)
+	if (cl && cl->state != CS_FREE)
 	{
 		string reason = gi.Argv(2);
 		admin.AddBan(cl->gentity->client->ps.clientNum, true, reason.c_str());
@@ -611,7 +611,8 @@ void SV_SayPrivate()
 	}
 
 	int client_num = atoi(gi.Argv(1));
-	if (GetClientByClientNum(client_num) == NULL)
+	client_t* cl = GetClientByClientNum(client_num);
+	if (!cl || cl->state == CS_FREE)
 	{
 		gi.Printf("Client num not in server.\n");
 		return;

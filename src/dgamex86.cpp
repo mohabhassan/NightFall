@@ -746,7 +746,6 @@ void	G_Shutdown (void)
 	#endif	
 }
 
-
 gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 {
 	/****** Linux: Load fgamededmohaa.so ******/
@@ -853,7 +852,8 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 	globals->TIKI_Orientation		= G_TIKI_Orientation;
 	globals->WriteLevel				= G_WriteLevel;
 */
-	
+	//TODO: supress DavenExtra for BT.
+	sizeof(Player);
 	return globals;
 }
 
