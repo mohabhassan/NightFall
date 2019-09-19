@@ -187,7 +187,7 @@ void HTTPServer::Init()
 			gi.Printf(PATCH_NAME " api server started successfully.\n");
 			server->addHandler("**", &handler);
 		}
-		catch (CivetException* e)
+		catch (CivetException& e)
 		{
 			gi.Printf(PATCH_NAME " api server error: failed to start, could be port binding issue.\n");
 		}

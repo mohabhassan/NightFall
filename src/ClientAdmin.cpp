@@ -428,7 +428,7 @@ void ClientAdmin::AddBan(int bannedClientNum, bool hasReason, string reason)
 		return;
 	}
 
-	client_t *cl = GetClientByClientNum(clientNum);
+	client_t *cl = GetClientByClientNum(bannedClientNum);
 	if (!cl)
 	{
 		return;

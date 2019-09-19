@@ -280,6 +280,9 @@ void UpdateClient::CheckForUpdate()
 #elif defined(MOHBT)
 		CustomCvar shortversion("shortversion", "2.30", CVAR_ROM);
 		dir_info = j["bt"][shortversion.GetStringValue()];
+#elif defined(MOHAA)
+		CustomCvar shortversion("shortversion", "1.11", CVAR_ROM);
+		dir_info = j["aa"][shortversion.GetStringValue()];
 #endif // MOHSH / MOHBT
 
 		bool allgood = true;
