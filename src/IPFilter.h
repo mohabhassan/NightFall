@@ -40,6 +40,7 @@ public:
 	bool AddIP(string ip_str);
 	bool RemoveIP(string ip_str);
 	bool CanConnect(string ip_str);
+	bool CanConnectMaxConnections(int clientNum);
 	string GetIPsInPage(int page_number);
 
 

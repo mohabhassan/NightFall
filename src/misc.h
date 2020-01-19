@@ -41,6 +41,9 @@ bool validateIP(const char *ip);
 
 bool md5File(const char* file_name, char md5Str[MD5_DIGEST_SIZE * 2 + 1]);
 
+bool CheckFPSSkin(char* userinfo);
+bool CheckCommentSlashesInName(char* name);
+
 #ifndef _WIN32
 void initsighandlers();
 void resetsighandlers();
