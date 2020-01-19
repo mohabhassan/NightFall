@@ -17,6 +17,7 @@
 #include "HTTPServer.h"
 #include "HTTPClient.h"
 #include "UpdateClient.h"
+#include "ClientFilter.h"
 
 //#include "hooks/script.h"
 
@@ -206,7 +207,14 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 			{
 				reason = "Your skins are invalid.\nPlease go to multiplayer options and change them.\n";
 			}
+			else
+			{
+				ClientFilter filter;
+				filter.ClientConnected(clientNum, gi.Milliseconds());
+			}
 		}
+
+
 	}
 
 	if (reason == NULL)
@@ -239,6 +247,9 @@ void G_ClientDisconnect(gentity_t *ent)
 
 		ChatFilter filter;
 		filter.ClientDisconnected(ent->client->ps.clientNum);
+
+		ClientFilter filter;
+		filter.ClientDisconnected(ent->client->ps.clientNum);
 	}
 	else
 	{
@@ -255,213 +266,20 @@ usually be a couple times for each server frame on fast clients.
 If "g_synchronousClients 1" is set, this will be called exactly
 once for each server frame, which makes for smooth demo recording.
 ==============
-//*/
-//void G_ClientThink( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
-//{
-///*
-////------------------	Global Variables	------------------\\
-//*/
-//	
-//	float n[3] = { eyeInfo->ofs[0] + ent->client->ps.origin[0], eyeInfo->ofs[1] + ent->client->ps.origin[1], eyeInfo->ofs[2] + ent->client->ps.origin[2] };
-//	gentity_t *gEntTo = globals->gentities;		//no need for this right now, but may be useful later - RazoRapid
-//	float anglesDifference[3];	//delta angles for computing viewkick
-//	//char msg2[256];
-//	//char            userinfo[ MAX_INFOSTRING ];
-//	//char            stuff[256], cvar[7], value[5];
-//	int k;
-//	Weapon_t *weapon;
-//	int bazooka_or_nade = 0;
-///*
-////-----------------------	    End	   -----------------------\\
-//*/
-//	/* ======================================== Start of STWH Detection =================================================*/
-//
-//	//Simple, but effective anti STWH
-//	//Check if we are in the game & currently active players & NOT spectators
-//	if(ent->client->pers.team != TEAM_SPECTATOR && ent->entity->health > 0) 
-//	{
-//		
-//		
-//			//We check to see if their heade is inside a wall, this ONLY happens with STWH
-//			if( gi.pointcontents(n,0) == CONTENTS_SOLID )
-//			{
-//				//Check if they have a weapon or an item. Otherwise STWH is pointless
-//				//Changed from if(ent->client->ps.activeItems), -1: no items in hand  - Razorapid, prev version didn't work well because activeItems is a pointer to an array which is never <= 0
-//				if(ent->client->ps.activeItems[0] != -1)
-//				{
-//					//Check to see if they are trying to shoot when their head is in the wall
-//					if(ucmd->buttons & BUTTON_GROUP_FIRE_PRIMARY || ucmd->buttons & BUTTON_GROUP_FIRE_SECONDARY)
-//					{
-//						//We detected the cheater, now lets kick him
-//						SendGameMessage(ent->client->ps.clientNum, HUD_MESSAGE_WHITE, "%s is kicked for using STWH!\n", ent->client->pers.netname);
-//						
-//						//gi.DropClient( ent->client->ps.clientNum, "Kicked for using STWH!" );
-//					}
-//				}
-//			}
-//	}
-//
-//	/* ======================================== Done with STWH Detection =================================================*/
-//
-//	/*=========================================== NO-RECOIL DETECTION ===========================================================*/
-//	
-//	//Check if they have a weapon or not. -1: stands for no weapons/holstered 6: stands for granade 8: stand for bazookas
-//	// Bazookas seems to have no-recoil as standard setting
-//	
-//	// Thirst of all, we go throught every entity in game
-//	for(k = 0; k < globals->numEntities; gEntTo++, k++)
-//	{
-//		// We are checking if this Entity is ET_ITEM - this stands for both items and weapons
-//		if(gEntTo->s.eType == ET_ITEM)
-//		{
-//			// If it's an item or a weapon, we assign it's Entity_s pointer to a Weapon_t struct
-//			// since when entity is a weapon, this holds a pointer to weapon struct instead of Entity_s struct
-//			
-//			weapon = (Weapon_t *)gEntTo->entity;
-//			
-//			
-//			//gi.Printf("Weapon Ptr: %i\n", (DWORD)weapon);
-//			//gi.Printf("Weapon String: %i\n", weapon->m_csWeaponGroup);
-//			
-//			// I did a lil bit calculation here because I guess that some structs aren't 100% right, so
-//			// basicly if we hold an item or weapon then 'weapon->owner' value is a pointer to it's owner entity
-//			// if we dont hold anything then this value is 0.
-//			// We compare it to ent->entity which is a pointer to our player Entity_s struct but since it's
-//			// somehow incomplete, we have to add 0x3DC to it manually
-//
-//			// If this is positive, it means that the owner of the weapon is our player
-//			if( weapon->owner == ( (DWORD)(ent->entity) + 0x3DC) )
-//			{
-//				
-//				// so we check if the weapon class is 16: stands for grenade or 32: stands for bazooka
-//				// classes are always the same for allies and axis, because weapon class never changes if this is grenade or something else
-//				if(weapon->weapon_class == 16 || weapon->weapon_class == 32)
-//				{
-//					bazooka_or_nade = 1;
-//				}
-//				else
-//				{
-//					bazooka_or_nade = 0;
-//				}
-//				
-//			}
-//		}
-//	}
-//				
-//				
-//	// Here we do the viewkick deltas computation for the fire animation BEGGINING, MIDDLE, END
-//	
-//	// We check if we hold grenade or bazooka because they don't have a recoil added originally 
-//	if(!bazooka_or_nade)
-//	{
-//		
-//		//if previous anim was different than FIRE and actual ANIM is FIRE
-//		if(ent->client->ps.viewModelAnim == VMA_FIRE && lastAnim != VMA_FIRE)	//we got the first shoot frame
-//		{
-//			lastAnim = VMA_FIRE;
-//			anglesDifference[0] = eyeInfo->angles[0] - ent->client->ps.viewAngles[0];
-//			anglesDifference[1] = eyeInfo->angles[1] - ent->client->ps.viewAngles[1];
-//
-//			if(anglesDifference[0] == 0 && anglesDifference[1] == 0)
-//			{
-//				start = 0;
-//			}
-//			else
-//			{
-//				start = 1;
-//			}
-//
-//		}
-//		else if(ent->client->ps.viewModelAnim == VMA_FIRE && lastAnim == VMA_FIRE)	// this is the next frame from the 2nd frame to the end of the fire anim
-//		{
-//			frames++;
-//		
-//			anglesDifference[0] = eyeInfo->angles[0] - ent->client->ps.viewAngles[0];
-//			anglesDifference[1] = eyeInfo->angles[1] - ent->client->ps.viewAngles[1];
-//			
-//			if(frames == 6) // I did it after debug printing frame counts for every weapon when shooting. it's almost middle, every weapon here have already viewkick added
-//			{
-//				
-//				if(anglesDifference[0] == 0 && anglesDifference[1] == 0)
-//				{
-//					middle = 0;
-//				
-//				}
-//				else
-//				{
-//					middle = 1;
-//				
-//				}
-//			}
-//			// We have to do this again, because we don't know which frame is the last one 
-//			
-//			if(anglesDifference[0] == 0 && anglesDifference[1] == 0)
-//			{
-//				end = 0;
-//				
-//			}
-//			else
-//			{
-//				end = 1;
-//			
-//			}
-//		}
-//		else if(ent->client->ps.viewModelAnim != VMA_FIRE && lastAnim == VMA_FIRE)	// lastAnim was the last FIRE ANIM so shooting is done
-//		{
-//			frames = 0;		// reseting the frames counter
-//			lastAnim = ent->client->ps.viewModelAnim;	//setting the actual anim state as the last anim
-//			
-//			//Here we can check if player is using no recoil
-//			//Because the fire animation is done and we have got the info of viewkick deltas
-//			if(start != 0 || middle != 0 || end != 0)
-//			{
-//				gi.Printf("Recoil On\n");
-//				//SendGameMessage(ent->client->ps.clientNum, HUD_MESSAGE_WHITE, "%s - NORECOIL is OFF!\n", ent->client->pers.netname);
-//			}
-//			else if(start == 0 && middle == 0 && end == 0)
-//			{
-//				gi.Printf("Recoil Off\n");
-//				//SendGameMessage(ent->client->ps.clientNum, HUD_MESSAGE_WHITE, "%s - NORECOIL is ON!\n", ent->client->pers.netname);
-//			}
-//		}
-//	}
-//
-//	
-//	//	This was used to check if playerstate viewangles stays the same when shooting while eyeInfo angles change
-//	//	Came out to be positive so we now can compute the viewkick deltas ^^
-//	//	No need to comment this out, but if it will be needed, you need to declare the char msg2[256] array
-//	/*
-//		sprintf(msg2,"eyeInfo Viewangles: %f \t, %f \t\n ", eyeInfo->angles[0], eyeInfo->angles[1]);
-//		gi.Printf(msg2);
-//		sprintf(msg2,"PlayerS Viewangles: %f \t, %f \t\n ", ent->client->ps.viewAngles[0] , ent->client->ps.viewAngles[1]);
-//		gi.Printf(msg2);
-//	
-//	*/
-//
-//	/*========================================End of NO-RECOIL DETECTION ========================================================*/
-//	
-//	/*=========================================== TEST AREA ===========================================================*/
-//	
-//
-//	/*	CreateRandomText(7, cvar);
-//		CreateRandomText(5, value);
-//
-//		gi.SendServerCommand( ent->client->ps.clientNum, "stufftext \"setu %s %s\"", cvar, value );
-//		gi.getUserinfo(ent->client->ps.clientNum, userinfo, sizeof(userinfo) );
-//  
-//		strncpy( stuff, Info_ValueForKey(userinfo, cvar),256 );
-//		if( !stricmp(stuff, "") )
-//		{
-//        
-//			gi.Printf("Player kicked for tampered files\n");
-//        
-//		}
-//	*/	
-//	/*=========================================== End of TEST AREA ===========================================================*/
-//
-//	globals_backup.ClientThink( ent, ucmd, eyeInfo);
-//	
-//}
+*/
+void G_ClientThink( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
+{
+	ClientFilter filter;
+	if (filter.CheckPingKick(ent->client->ps.clientNum, ent->client->ps.ping, ent))
+	{
+		ClientAdmin admin(internalClientNum);
+		admin.AddKick(ent->client->ps.clientNum, true, "too high ping");
+		gi.DropClient(ent->client->ps.clientNum, "has been kicked for too high ping");
+	}
+
+	globals_backup.ClientThink( ent, ucmd, eyeInfo);
+	
+}
 
 
 
@@ -847,7 +665,7 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 	globals->ClientConnect			= G_ClientConnect;
 
 	globals->ClientDisconnect		= G_ClientDisconnect;
-	//globals->ClientThink			= G_ClientThink;
+	globals->ClientThink			= G_ClientThink;
 
 	globals->ClientUserinfoChanged	= G_ClientUserinfoChanged;
 	globals->ConsoleCommand			= G_ConsoleCommand;

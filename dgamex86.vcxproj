@@ -331,6 +331,7 @@
     <ClCompile Include="src\Class.cpp" />
     <ClCompile Include="src\ClassDef.cpp" />
     <ClCompile Include="src\ClientAdmin.cpp" />
+    <ClCompile Include="src\ClientFilter.cpp" />
     <ClCompile Include="src\CustomCvar.cpp" />
     <ClCompile Include="src\CustomEventResponseSet.cpp" />
     <ClCompile Include="src\dgamex86.cpp" />
@@ -377,6 +378,7 @@
     <ClInclude Include="libs\civetweb\include\civetweb.h" />
     <ClInclude Include="src\ChatFilter.h" />
     <ClInclude Include="src\ClientAdmin.h" />
+    <ClInclude Include="src\ClientFilter.h" />
     <ClInclude Include="src\CustomCvar.h" />
     <ClInclude Include="src\GameVersion.h" />
     <ClInclude Include="src\Animate.h" />
