@@ -146,6 +146,8 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 	}
 	else
 	{
+
+		//IP related checks
 		char * ip = Info_ValueForKey(cl->userinfo, "ip");
 		if (ip == "")
 		{
@@ -159,12 +161,17 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 			{
 				reason = "Banned IP.";
 			}
+			else if (!filter.CanConnectMaxConnections(clientNum))
+			{
+				reason = "Too many connection attempts from one IP.";
+			}
 			else
 			{
 				reason = NULL;
 			}
 		}
-
+		
+		//name related checks:
 		if (reason == NULL)
 		{
 			char *name = Info_ValueForKey(cl->userinfo, "name");
@@ -191,17 +198,26 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 				}
 			}
 		}
-	}
-	ChatFilter filter;
-	filter.ClientConnected(clientNum);
 
-	if (reason != NULL)
+		//_fps skin bug check:
+		if (reason == NULL)
+		{
+			if (CheckFPSSkin(cl->userinfo))
+			{
+				reason = "Your skins are invalid.\nPlease go to multiplayer options and change them.\n";
+			}
+		}
+	}
+
+	if (reason == NULL)
 	{
-		return reason;
+		ChatFilter filter;
+		filter.ClientConnected(clientNum);
+		return globals_backup.ClientConnect(clientNum, firstTime);
 	}
 	else
 	{
-		return globals_backup.ClientConnect(clientNum, firstTime);
+		return reason;
 	}
 }
 
@@ -559,7 +575,7 @@ void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
 	}
 	else
 	{
-
+		char* namepass = Info_ValueForKey(userInfo, "cl_namepass");
 		NameFilter filter;
 		if (!filter.CanConnect(name))
 		{
@@ -569,19 +585,32 @@ void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
 			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
 			return;
 		}
-		else
+		else if(!filter.CanConnectProtected(name, namepass))//check for protected name filter
 		{
-			//check for protected name filter
-			char *namepass = Info_ValueForKey(userInfo, "cl_namepass");
-			if (!filter.CanConnectProtected(name, namepass))
-			{
-				ClientAdmin admin(internalClientNum);
-				string reason = "using protected name w/o permission.";
-				admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
-				gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
-				return;
-			}
+			ClientAdmin admin(internalClientNum);
+			string reason = "using protected name w/o permission.";
+			admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
+			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+			return;
 		}
+		else if (CheckFPSSkin(userInfo))
+		{
+			ClientAdmin admin(internalClientNum);
+			string reason = "invalid/crash _fps skin";
+			admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
+			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+			return;
+		}
+		else if (CheckCommentSlashesInName(name))
+		{
+			ClientAdmin admin(internalClientNum);
+			string reason = "disallowed comment slashes in the name";
+			admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
+			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+			return;
+		}
+
+
 	}
 
 	globals_backup.ClientUserinfoChanged(gent,userInfo);

@@ -2,6 +2,8 @@
 #include <sstream>
 #include <fstream>
 #include "misc.h"
+#include "CustomCvar.h"
+#include "sv_misc.h"
 
 vector<IPEntry> IPFilter::IPEntries;
 
@@ -215,7 +217,7 @@ bool IPFilter::RemoveIP(string ip_str)
  * ip_str - IP address to be checked.
  * Returns false if IP address is banned.
  * Returns true if user can connect.
- *
+ * Modfies reason to specified block reason.
  * */
 bool IPFilter::CanConnect(string ip_str)
 {
@@ -236,6 +238,34 @@ bool IPFilter::CanConnect(string ip_str)
 	{
 		return false;
 	}
+}
+extern int* svs_numclients;
+//returns false if client should not pass (too many connections)
+bool IPFilter::CanConnectMaxConnections(int clientNum)
+{
+	CustomCvar sv_maxconnperip("sv_maxconnperip", "3", CVAR_ARCHIVE);
+	int numConnections = 0;
+	client_t* cl = GetClientByClientNum(clientNum);
+	if (sv_maxconnperip.GetIntValue() <= 0)
+	{
+		return true;
+	}
+
+	for (size_t i = 0; i < *svs_numclients; i++)
+	{
+		client_t *icl = GetClientByClientNum(i);
+		if (!icl || icl->state == CS_FREE)
+			continue;
+		if (cl->netchan.remoteAddress.ip[0] == icl->netchan.remoteAddress.ip[0]
+			&& cl->netchan.remoteAddress.ip[1] == icl->netchan.remoteAddress.ip[1]
+			&& cl->netchan.remoteAddress.ip[2] == icl->netchan.remoteAddress.ip[2]
+			&& cl->netchan.remoteAddress.ip[3] == icl->netchan.remoteAddress.ip[3])
+		{
+			numConnections++;
+		}
+	}
+	
+	return numConnections <= sv_maxconnperip.GetIntValue();
 }
 
 /*

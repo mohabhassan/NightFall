@@ -535,9 +535,28 @@ bool md5File(const char* file_name, char md5Str[MD5_DIGEST_SIZE * 2 + 1])
 }
 
 
+//CheckFPSSkin
+//checks if userinfo skin has "_fps" inside
+//returns true if player should be kicked.
+bool CheckFPSSkin(char* userinfo)
+{
+	char skinallies[257];
+	char skinaxis[257];
+	//strncpy( skinallies, Info_ValueForKey(userinfo, "dm_playermodel"), sizeof(skinallies) );
+	//strncpy( skinaxis, Info_ValueForKey(userinfo, "dm_playergermanmodel"), sizeof(skinallies) );
+	strncpy(skinallies, Info_ValueForKey(userinfo, "dm_playermodel"), 256);
+	strncpy(skinaxis, Info_ValueForKey(userinfo, "dm_playergermanmodel"), 256);
+	skinallies[256] = '\0';
+	skinaxis[256] = '\0';
 
+	return (strstr(skinallies, "_fps") || strstr(skinaxis, "_fps"));
+}
 
-
+bool CheckCommentSlashesInName(char* name)
+{
+	int len = strlen(name);
+	return name[len - 2] == '/' && (name[len - 1] == '/' || name[len - 1] == '*');
+}
 // =================================================================
 // Custom signal handling (linux only) to print info on application crashes
 // =================================================================

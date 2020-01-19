@@ -68,3 +68,10 @@
 | Description | Specifies amount of times a use can enter bad chat filter words before being kicked. |
 | Allowed values | 0 or more |
 ---
+### sv_maxconnperip
+| Name | sv_maxconnperip |
+|--|--|
+| Description | Specifies the maximum number of users with the same ip allowed. |
+| Allowed values | 0 or more |
+| Remarks | use -1 to disable |
+---
