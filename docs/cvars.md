@@ -75,3 +75,10 @@
 | Allowed values | 0 or more |
 | Remarks | use -1 to disable |
 ---
+### sv_kickping
+| Name | sv_kickping |
+|--|--|
+| Description | Specifies the maximum ping a user is allowed to exceed before getting kicked. |
+| Allowed values | 1 or more |
+| Remarks | user is warned 1 time before getting kicked |
+---
