@@ -1,7 +1,7 @@
 
 
 # NightFall - (d)gamexwrapper
-MOHBT dgamex86 wrapper based on MOHAA gamex86 wrapper.
+MOHAA/MOHSH/MOHBT (d)gamex86 wrapper based on the old MOHAA gamex86 wrapper.
 
 https://www.x-null.net/forums/forum.php
 
@@ -12,7 +12,7 @@ Questions are welcomed.
 If you have any fixes/modifications , please commit them.
 
 ## Downloading
-You can download latest version from [here](https://github.com/mohabhassan/dgamexwrapper/releases).
+You can download latest version from [here](https://github.com/mohabhassan/NightFall/releases).
 
 ## Installation
  - [Installing NightFall](docs/installing.md)
