@@ -59,6 +59,7 @@ int lastAnim = VMA_NUMANIMATIONS; //initializing
 int start, middle, end;
 
 
+extern DirectorClass* Director;
 /*
 //-----------------------	    End	   -----------------------\\
 */
@@ -549,6 +550,32 @@ void G_InitGame( int startTime, int randomSeed )
 	
 }
 
+/*
+============
+G_Precache
+
+Calls precache scripts
+================
+*/
+void G_Precache()
+{
+	//keep reborn.scr mohaa only for now, might make it for all games later.
+#ifdef MOHAA
+	CustomCvar sv_rebornloader("sv_rebornloader", "reborn/reborn_loader.scr", CVAR_ARCHIVE);
+	char* scriptLbl = sv_rebornloader.GetStringValue();
+	if (scriptLbl != NULL && strlen(scriptLbl) > 0)
+	{
+		Event ev;
+		ScriptVariable script;
+		script.setStringValue(scriptLbl);
+		ev.AddValue(script);
+		Director->ExecuteScript(&ev);
+	}
+#endif // MOHAA
+
+	globals_backup.Precache();
+}
+
 qboolean G_ConsoleCommand()
 {
 	if (SV_Commands_HandleCommand())
@@ -679,12 +706,15 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 	globals->LevelArchiveValid		= G_LevelArchiveValid;
 	globals->maxEntities			= G_maxEntities;
 	globals->numEntities			= G_numEntities;
+*/
 	globals->Precache				= G_Precache;
+/*
 	globals->PrepFrame				= G_PrepFrame;
 	globals->profStruct				= G_profStruct;
 	globals->ReadLevel				= G_ReadLevel;
 	globals->RegisterSounds			= G_RegisterSounds;
-	globals->Restart				= G_Restart;*/
+	globals->Restart				= G_Restart;
+*/
 	globals->RunFrame				= G_RunFrame;
 
 /*	globals->ServerSpawned			= G_ServerSpawned;
