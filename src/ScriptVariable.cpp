@@ -40,15 +40,15 @@ ScriptVariable::~ScriptVariable()
 
 void ScriptVariable::Init()
 {
-	listenerValue = reinterpret_cast<Listener*(__thiscall*)(ScriptVariable*__this)>(LISTENERVALUE_ADDR);
-	RealClearInternal = reinterpret_cast<void(__thiscall*)(ScriptVariable*__this)>(CLEARINTERNAL_ADDR);
-	setArrayAtRefReal = reinterpret_cast<void(__thiscall*)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value)>(SETARRAYATREF_ADDR);
-	stringValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, str*in)>(STRINGVALUE_ADDR);
-	booleanValueReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this)>(BOOLEANVALUE_ADDR);
-	setListenerValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, Listener*)>(SETLISENERVALUEVALUE_ADDR);
-	operatorEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>(OPERATOREQU_ADDR);
-	operatorEquEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>(OPERATOREQUEQU_ADDR);
-	setConstArrayValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*, unsigned int)>(SETCONSTARRAYVALUE_ADDR);
+	listenerValue = reinterpret_cast<Listener*(__thiscall*)(ScriptVariable*__this)>((int)LISTENERVALUE_ADDR);
+	RealClearInternal = reinterpret_cast<void(__thiscall*)(ScriptVariable*__this)>((int)CLEARINTERNAL_ADDR);
+	setArrayAtRefReal = reinterpret_cast<void(__thiscall*)(ScriptVariable*_this, ScriptVariable*index, ScriptVariable*value)>((int)SETARRAYATREF_ADDR);
+	stringValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, str*in)>((int)STRINGVALUE_ADDR);
+	booleanValueReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this)>((int)BOOLEANVALUE_ADDR);
+	setListenerValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, Listener*)>((int)SETLISENERVALUEVALUE_ADDR);
+	operatorEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>((int)OPERATOREQU_ADDR);
+	operatorEquEquReal = reinterpret_cast<bool(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*)>((int)OPERATOREQUEQU_ADDR);
+	setConstArrayValueReal = reinterpret_cast<void(__thiscall*)(const ScriptVariable*_this, const ScriptVariable*, unsigned int)>((int)SETCONSTARRAYVALUE_ADDR);
 }
 
 void ScriptVariable::Clear()

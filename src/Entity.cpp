@@ -20,7 +20,7 @@ Entity::~Entity()
 void Entity::Init()
 {
 	//hook damage event for Scripted Event usage.
-	Damage_Orignal = reinterpret_cast<void(__thiscall *)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)>(DAMAGE_ADDR);
+	Damage_Orignal = reinterpret_cast<void(__thiscall *)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)>((int)DAMAGE_ADDR);
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
 	ret = DetourAttach(&(PVOID&)(Entity::Damage_Orignal), (PVOID)(&Damage));

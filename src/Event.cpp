@@ -332,9 +332,9 @@ EventDef *Event::getInfo()
 */
 void Event::Init()
 {
-	lastEvent = reinterpret_cast<eventInfo_t**>(LASTEVENT_ADDR);
-	totalevents = reinterpret_cast<int*>(TOTALEVENTS_ADDR);
-	eventDefList = reinterpret_cast<con_map_eventdeflist *>(EVENTDEFLIST_ADDR);
-	AddListener_Real = reinterpret_cast<void(__thiscall *)(Event*_this, Listener* listener)>(ADDLISTENER_ADDR);
-	GetValue_Real = reinterpret_cast<ScriptVariable*(__thiscall *)(Event*_this)>(GETVALUE_ADDR);
+	lastEvent = reinterpret_cast<eventInfo_t**>((int)LASTEVENT_ADDR);
+	totalevents = reinterpret_cast<int*>((int)TOTALEVENTS_ADDR);
+	eventDefList = reinterpret_cast<con_map_eventdeflist *>((int)EVENTDEFLIST_ADDR);
+	AddListener_Real = reinterpret_cast<void(__thiscall *)(Event*_this, Listener* listener)>((int)ADDLISTENER_ADDR);
+	GetValue_Real = reinterpret_cast<ScriptVariable*(__thiscall *)(Event*_this)>((int)GETVALUE_ADDR);
 }

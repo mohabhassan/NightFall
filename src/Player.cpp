@@ -235,13 +235,13 @@ void Player::Init()
 	}
 
 
-	Respawn_Orignal = reinterpret_cast<void(__thiscall *)(Player*_this, Event*)>(RESPAWN_ADDR);
+	Respawn_Orignal = reinterpret_cast<void(__thiscall *)(Player*_this, Event*)>((int)RESPAWN_ADDR);
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
 	ret = DetourAttach(&(PVOID&)(Player::Respawn_Orignal), (PVOID)(&Respawn));
 	ret = DetourTransactionCommit();
 
-	Killed_Orignal = reinterpret_cast<void(__thiscall *)(Player*_this, Event*)>(KILLED_ADDR);
+	Killed_Orignal = reinterpret_cast<void(__thiscall *)(Player*_this, Event*)>((int)KILLED_ADDR);
 	ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
 	ret = DetourAttach(&(PVOID&)(Player::Killed_Orignal), (PVOID)(&Killed));

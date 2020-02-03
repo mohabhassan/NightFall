@@ -246,11 +246,15 @@ void G_ClientDisconnect(gentity_t *ent)
 		globals_backup.ClientDisconnect(ent);
 		admin.HandlePostDisconnect();
 
-		ChatFilter filter;
-		filter.ClientDisconnected(ent->client->ps.clientNum);
+		{
+			ChatFilter filter;
+			filter.ClientDisconnected(ent->client->ps.clientNum);
+		}
 
-		ClientFilter filter;
-		filter.ClientDisconnected(ent->client->ps.clientNum);
+		{
+			ClientFilter filter;
+			filter.ClientDisconnected(ent->client->ps.clientNum);
+		}
 	}
 	else
 	{
@@ -412,6 +416,9 @@ void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
 			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
 			return;
 		}
+		//let this be for MOHAA only, for now
+		//fps check is done in Daven's pk3
+#ifdef MOHAA
 		else if (CheckFPSSkin(userInfo))
 		{
 			ClientAdmin admin(internalClientNum);
@@ -428,7 +435,7 @@ void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
 			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
 			return;
 		}
-
+#endif
 
 	}
 
@@ -455,7 +462,9 @@ void __cdecl G_CleanUp(qboolean samemap)
 void initScriptHooks()
 {
 
-	G_BeginIntermission_original = reinterpret_cast<pG_BeginIntermission_spec>(BEGININTERMISSION_ADDR);
+	AddressManager::Init((unsigned int) hmod);
+
+	G_BeginIntermission_original = reinterpret_cast<pG_BeginIntermission_spec>((int)BEGININTERMISSION_ADDR);
 	SV_Commands_Init();
 	Event::Init();
 	ClassDef::Init();
@@ -505,6 +514,8 @@ void shutdownScriptHooks()
 	ret = DetourUpdateThread(GetCurrentThread());
 	ret = DetourDetach(&(PVOID&)(G_BeginIntermission_original), (PVOID)(&G_BeginIntermission));
 	ret = DetourTransactionCommit();
+
+	AddressManager::Shutdown();
 }
 
 
@@ -675,7 +686,15 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 	/*Game Exports*/
 /*
 	globals->AllowPaused			= G_AllowPaused;	
-	globals->apiVersion				= G_apiVersion;	
+*/
+#ifdef CLIENT
+#ifdef MOHBT
+	globals->apiVersion = 15;
+#endif // MOHBT
+
+
+#endif // CLIENT
+/*
 	globals->ArchiveFloat			= G_ArchiveFloat;
 	globals->ArchiveInteger			= G_ArchiveInteger;
 	globals->ArchivePersistant		= G_ArchivePersistant;
