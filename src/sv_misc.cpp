@@ -31,7 +31,7 @@ void __cdecl NET_OutOfBandPrint(netSrc_t sock, netAdr_t adr, const char * format
 
 void SV_Misc_Init()
 {
-	svs_clients = reinterpret_cast<client_t**>(SVS_CLIENTS_ADDR);
-	svs_numclients = reinterpret_cast<int*>(SVS_NUMCLIENTS_ADDR);
-	NET_OutOfBandPrint_Real = reinterpret_cast<net_oob_print_t>(NET_OUTOFBANDPRINT_ADDR);
+	svs_clients = reinterpret_cast<client_t**>((int)SVS_CLIENTS_ADDR);
+	svs_numclients = reinterpret_cast<int*>((int)SVS_NUMCLIENTS_ADDR);
+	NET_OutOfBandPrint_Real = reinterpret_cast<net_oob_print_t>((int)NET_OUTOFBANDPRINT_ADDR);
 }

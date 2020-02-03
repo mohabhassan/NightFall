@@ -21,6 +21,6 @@ str & DirectorClass::GetString(const_str s)
 
 void DirectorClass::Init()
 {
-	StringDict_reverseTable = reinterpret_cast<Entry_index_director ***>(STRINGDICT_ADDR);
-	Director = reinterpret_cast<DirectorClass *>(DIRECTOR_ADDR);
+	StringDict_reverseTable = reinterpret_cast<Entry_index_director ***>((int)STRINGDICT_ADDR);
+	Director = reinterpret_cast<DirectorClass *>((int)DIRECTOR_ADDR);
 }

@@ -37,7 +37,7 @@ xcommand_t SV_GameMap_original;
 
 bool Cmd_HookCommand(const char* cmd_name, xcommand_t *oldFunc, xcommand_t newFunc)
 {
-	static cmd_function_t **cmd_functions = reinterpret_cast<cmd_function_t **>(CMDFUNCTIONS_ADDR);
+	static cmd_function_t **cmd_functions = reinterpret_cast<cmd_function_t **>((int)CMDFUNCTIONS_ADDR);
 	cmd_function_t	*cmd;
 	for (cmd = *cmd_functions; cmd; cmd = cmd->next)
 	{
@@ -53,7 +53,7 @@ bool Cmd_HookCommand(const char* cmd_name, xcommand_t *oldFunc, xcommand_t newFu
 
 bool Cmd_UnHookCommand(xcommand_t oldFunc, xcommand_t newFunc)
 {
-	static cmd_function_t **cmd_functions = reinterpret_cast<cmd_function_t **>(CMDFUNCTIONS_ADDR);
+	static cmd_function_t **cmd_functions = reinterpret_cast<cmd_function_t **>((int)CMDFUNCTIONS_ADDR);
 	cmd_function_t	*cmd;
 	for (cmd = *cmd_functions; cmd; cmd = cmd->next)
 	{

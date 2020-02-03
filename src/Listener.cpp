@@ -20,8 +20,8 @@ Listener::~Listener()
  **/
 void Listener::Init()
 {
-	ExecuteScript_ptr = reinterpret_cast<void(__thiscall*)(Listener *, Event *)>(EXECUTESCRIPT_ADDR);
-	ExecuteReturnScript_ptr = reinterpret_cast<void(__thiscall*)(Listener *, Event *)>(EXECUTERETURNSCRIPT_ADDR);
+	ExecuteScript_ptr = reinterpret_cast<void(__thiscall*)(Listener *, Event *)>((int)EXECUTESCRIPT_ADDR);
+	ExecuteReturnScript_ptr = reinterpret_cast<void(__thiscall*)(Listener *, Event *)>((int)EXECUTERETURNSCRIPT_ADDR);
 }
 
 /*

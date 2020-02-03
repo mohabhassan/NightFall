@@ -21,7 +21,7 @@ template<typename T, typename U> constexpr size_t classOffsetOf(U T::*member)
  * */
 void Sentient::Init()
 {
-	GetActiveWeapon_real = reinterpret_cast<Animate *(__thiscall *)(Sentient *__this, weaponhand_t hand)>(GETACTIVEWEAPON_ADDR);
+	GetActiveWeapon_real = reinterpret_cast<Animate *(__thiscall *)(Sentient *__this, weaponhand_t hand)>((int)GETACTIVEWEAPON_ADDR);
 	//gi.Printf("offset of inventory = %d \n", classOffsetOf(&Sentient::inventory));//940
 	//gi.Printf("offset of activeWeaponList = %d \n", classOffsetOf(&Sentient::activeWeaponList));//??? should be 1036
 

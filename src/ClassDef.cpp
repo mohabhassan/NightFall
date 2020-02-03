@@ -236,6 +236,6 @@ void __fastcall BuildResponseListHook(ClassDef*_this, void * edx)
 
 void ClassDef::Init()
 {
-	BuildResponseList_Orignal = reinterpret_cast<void(__thiscall *)(ClassDef*_this)>(BUILDREPONSELIST_ADDRESS);
-	addNewKeyEntry = reinterpret_cast<addNewKeyEntryPtr>(ADDNEWKEYENTRY_ADDR);
+	BuildResponseList_Orignal = reinterpret_cast<void(__thiscall *)(ClassDef*_this)>((int)BUILDREPONSELIST_ADDRESS);
+	addNewKeyEntry = reinterpret_cast<addNewKeyEntryPtr>((int)ADDNEWKEYENTRY_ADDR);
 }
