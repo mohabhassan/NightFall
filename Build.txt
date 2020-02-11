@@ -1,12 +1,59 @@
-curlpp:
+1. wolfSSL:
+	-select "Release" configuration
+	-in only wolfSSL project:
+	-v141_xp
+	-MT
+	-build only wolfSSL project
+
+2. curl:
+	open powershell & cd libs/curl/projects
+	./generate vc15
+	duplicate libs/wolfSSL/cyassl/options.h.in to libs/wolfSSL/cyassl/options.h
+	open libs/curl/projects/Windows/VC15/lib/libcurl.sln
+	-select "Lib Release" configuration
+	-v141_xp
+	-MT
+	add preprocessor macro (project options -> c/c++ -> preprocessor->preprocessor definitions": SIZEOF_LONG_LONG=8
+	build
+	
+3. curlpp:
+	-open "Developer command prompt for vs2017" (you can find it in start menu)
+	-cd libs/curlpp/
 	-mkdir build
 	-cd build
 	-cmake .. -DCURL_LIBRARY="../../curl/build/Win32/VC15/Lib Release - Lib wolfSSL/" -DCURL_INCLUDE_DIR="../../curl/include"
-curl:
+	-open libs/curlpp/build/curlpp.sln
+	-select "Release" configuration
+	-in only curlpp_static project:
+	-v141_xp
+	-MT
+	-build only curlpp_static project
 	
-Detours:
+4. Detours:
+	-open "Developer command prompt for vs2017" (you can find it in start menu)
+	-cd libs/Detours/src
+	-nmake
 	
-SQLiteCpp:
+5. SQLiteCpp:
+	-open "Developer command prompt for vs2017" (you can find it in start menu)
+	-cd libs/SQLiteCpp
+	-build.bat
+	-build/SQLiteCpp.sln
+	-select "Release" configuration
+	-in only sqlite3 project:
+	-v141_xp
+	-build only sqlite3 project
+	-in only SQLiteCpp project:
+	-v141_xp
+	-build only SQLiteCpp project
 	
-wolfSSL:
+6. civetweb:
+	-do nothing
+
+7. nlohmann-json:
+	-do nothing
 	
+81. NightFall:
+	-dgamex86.sln
+	-choose any configuration other than "Debug"
+	-build
