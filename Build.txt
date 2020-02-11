@@ -1,3 +1,5 @@
+v141_xp: project properties -> general -> platform toolset
+MT: project properties -> c/c++ -> code generation -> runtime library
 1. wolfSSL:
 	-select "Release" configuration
 	-in only wolfSSL project:
