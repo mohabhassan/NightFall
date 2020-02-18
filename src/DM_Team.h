@@ -3,20 +3,23 @@
 #include "str.h"
 #include "dgamex86.h"
 #include "Player.h"
+
+class Player;
+//FIXME: size is not proper.
 class DM_Team :
 	public Listener
 {
 
-	void* /*Container< PlayerStart * >*/ m_spawnpoints[3];
-	void* /*Container< Player * >*/ m_players[3];
+	void* /*Container< PlayerStart * >*/ m_spawnpoints[3];//20
+	void* /*Container< Player * >*/ m_players[3];//32
 
-	int			m_maxplayers;
+	int			m_maxplayers;//44
 
-	str			m_teamname;
+	str			m_teamname;//48
 
-	int			m_teamnumber;
+	int			m_teamnumber;//60
 
-	teamType_t	teamType;
+	teamType_t	teamType;//64
 
 	int			m_countdown;
 
@@ -31,5 +34,17 @@ class DM_Team :
 public:
 	DM_Team();
 	~DM_Team();
+
+	static void Init();
+#ifdef MOHAA
+
+
+	void	AddKills(Player* player, int numKills);
+	void	AddDeaths(Player* player, int numDeaths);
+
+
+	static void(__thiscall* AddKills_Orignal)(DM_Team* _this, Player* player, int numKills);
+	static void(__thiscall* AddDeaths_Orignal)(DM_Team* _this, Player* player, int numDeaths);
+#endif // MOHAA
 };
 

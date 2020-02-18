@@ -55,6 +55,7 @@ DGAMEX_OFFSET(SENTEINT_SIZE, 1504)//string, Sentient
 //Player.h
 DGAMEX_OFFSET(BUTTONS_OFFSET, 1824)//string, g_success 
 DGAMEX_OFFSET(NUM_DEATHS_OFFSET, 2208)//string, you killed yourself
+DGAMEX_OFFSET(CURRENT_TEAM_OFFSET, 2248)//string, wait 250;pushmenu_teamselect
 DGAMEX_OFFSET(PLAYER_SIZE, 2428)//string, player
 
 //Sentient.h

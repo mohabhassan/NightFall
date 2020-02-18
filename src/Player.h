@@ -9,6 +9,9 @@
  * Class Player
  * Used as an important utility class in the patch.
  **/
+
+
+class DM_Team;
 class Player : public Sentient //1504
 {
 	// can't bother to fix the offsets, I'll use direct offests & dummies
@@ -17,10 +20,17 @@ class Player : public Sentient //1504
 	
 	uint8_t pfiller1[BUTTONS_OFFSET - sizeof(Sentient)];
 	int buttons;
-	uint8_t pfiller2[NUM_DEATHS_OFFSET - BUTTONS_OFFSET - sizeof(buttons)];
+	uint8_t pfiller2[NUM_DEATHS_OFFSET - sizeof(buttons) - BUTTONS_OFFSET];
 	int num_deaths;
 	int num_kills;
+#ifdef MOHAA
+	uint8_t pfiller3[CURRENT_TEAM_OFFSET - sizeof(num_kills) - sizeof(num_deaths) - NUM_DEATHS_OFFSET];
+	DM_Team* current_team;
+	uint8_t pfiller4[PLAYER_SIZE - sizeof(current_team) - CURRENT_TEAM_OFFSET];
+#else
 	uint8_t pfiller3[PLAYER_SIZE - sizeof(num_kills) - sizeof(num_deaths) - NUM_DEATHS_OFFSET];
+#endif // MOHAA
+
 public:
 	Player();
 	~Player();
@@ -49,6 +59,11 @@ public:
 	void GetUserInfoEvent(Event * ev);
 	void GetInventoryEvent(Event * ev);
 	void IsAdminEvent(Event *ev);
+
+#ifdef MOHAA
+	void AddKillsEvent(Event* ev);
+	void AddDeathsEvent(Event* ev);
+#endif // MOHAA
 
 	//The following functions are console(client command) events.
 	void PatchVersionEvent(Event * ev);

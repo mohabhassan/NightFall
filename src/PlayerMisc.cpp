@@ -79,6 +79,26 @@ void Player::MiscInit()
 		EV_RETURN
 	),
 		&Player::IsAdminEvent);
+#ifdef MOHAA
+
+	cerSet.AddEventResponse(new Event(
+		"addkills",
+		EV_DEFAULT,
+		"i",
+		"numkills",
+		"Adds number of kills to player. (Can be also negative)"
+	),
+		&Player::AddKillsEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"adddeaths",
+		EV_DEFAULT,
+		"i",
+		"numDeaths",
+		"Adds number of deaths to player. (Can be also negative)"
+	),
+		&Player::AddDeathsEvent);
+#endif // MOHAA
 
 }
 
@@ -146,3 +166,18 @@ void Player::IsAdminEvent(Event * ev)
 		ev->AddInteger(0);
 	}
 }
+
+
+#ifdef MOHAA
+
+void Player::AddKillsEvent(Event* ev)
+{
+	current_team->AddKills(this, ev->GetInteger(1));
+}
+
+void Player::AddDeathsEvent(Event* ev)
+{
+	current_team->AddDeaths(this, ev->GetInteger(1));
+}
+
+#endif // MOHAA

@@ -474,6 +474,7 @@ void initScriptHooks()
 	ScriptVariable::Init();
 
 	Entity::Init();
+	DM_Team::Init();
 	Player::Init();
 	ScriptThread::Init();
 	HTTPServer::Init();
