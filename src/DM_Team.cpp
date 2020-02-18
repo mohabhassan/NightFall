@@ -1,7 +1,7 @@
 #include "DM_Team.h"
 //#define INTERMISSIONTIME_ADDR 
 //constexpr int leve_intermissiontime = reinterpret_cast<int>(1);
-
+#include "GameVersion.h"
 
 #ifdef MOHAA
 
