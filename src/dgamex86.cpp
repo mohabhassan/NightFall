@@ -580,7 +580,14 @@ void G_Precache()
 		ScriptVariable script;
 		script.setStringValue(scriptLbl);
 		ev.AddValue(script);
-		Director->ExecuteScript(&ev);
+		try
+		{
+			Director->ExecuteScript(&ev);
+		}
+		catch (ScriptException&e)
+		{
+			gi.Printf(PATCH_NAME " Precache Error: Couldn't load reborn loader script, error message: %s\n", e.string.c_str());
+		}
 	}
 #endif // MOHAA
 

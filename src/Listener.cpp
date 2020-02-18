@@ -29,6 +29,7 @@ void Listener::Init()
  * Executes given game script inside ev.
  * ev should have first argument as the script
  * later arguments are passed to script itself
+ * IMPORTANT: throws ScriptException, use with caution.
  **/
 void Listener::ExecuteScript(Event *ev)
 {
@@ -43,6 +44,7 @@ void Listener::ExecuteScript(Event *ev)
  * return value is add to ev after function executes, it is the last argument inside ev.
  * if script has any wait or waitframe inside, return value is delayed, it will have a type of VARIABLE_POINTER
  * otherwise, it will have proper return type.
+ * IMPORTANT: throws ScriptException, use with caution.
  **/
 //ev has original arguments + return value.
 //return value is last one inside event.
