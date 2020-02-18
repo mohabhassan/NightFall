@@ -325,6 +325,8 @@ void HTTPServer::HandleNextAPIRequest()
 				}
 
 				ev.AddValue(query_strings_param);
+
+				//TODO: check for ScriptException 
 				Director->ExecuteReturnScript(&ev);
 
 				int numArgs = ev.NumArgs();//numargs is return value index.

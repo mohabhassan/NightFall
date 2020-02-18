@@ -196,6 +196,13 @@ void HTTPClient::HandleNextAPIResponse()
 		ev.AddInteger(res.getHttpCode());
 		ev.AddString(res.getResponseStr().c_str());
 		ev.AddValue(res.getUserData());
-		Director->ExecuteScript(&ev);
+		try
+		{
+			Director->ExecuteScript(&ev);
+		}
+		catch (const ScriptException&)
+		{
+			//TODO: report
+		}
 	}
 }
