@@ -92,3 +92,11 @@ extern AddressEntry& GETACTIVEWEAPON_ADDR;
 extern AddressEntry& NET_OUTOFBANDPRINT_ADDR;
 extern AddressEntry& SVS_CLIENTS_ADDR;
 extern AddressEntry& SVS_NUMCLIENTS_ADDR;
+
+#ifdef MOHAA
+
+//DM_Team.cpp
+extern AddressEntry& DMTEAM_ADDKILLS_ADDR;
+extern AddressEntry& DMTEAM_ADDDEATHS_ADDR;
+
+#endif // MOHAA

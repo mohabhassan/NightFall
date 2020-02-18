@@ -214,6 +214,10 @@ AddressEntry& GETACTIVEWEAPON_ADDR = AddressManager::AddAddress(0x31149AC0);
 AddressEntry& NET_OUTOFBANDPRINT_ADDR = AddressManager::AddAddress(0x424730, true);
 AddressEntry& SVS_CLIENTS_ADDR = AddressManager::AddAddress(0x79D5E0, true);
 AddressEntry& SVS_NUMCLIENTS_ADDR = AddressManager::AddAddress(0x79D5E4, true);
+
+//DM_Team.cpp
+AddressEntry& DMTEAM_ADDKILLS_ADDR = AddressManager::AddAddress(0x310B87E0);//string, you killed yourself
+AddressEntry& DMTEAM_ADDDEATHS_ADDR = AddressManager::AddAddress(0x310B8850);// in player's KILLED_ADDR
 #endif // MOHAA
 
 
