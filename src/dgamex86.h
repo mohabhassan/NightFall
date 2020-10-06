@@ -4350,7 +4350,11 @@ typedef struct gameExport_s
 	void ( *Restart )( );
 	void ( *SetTime )( int svsStartTime, int svsTime );
 	void ( *SpawnEntities )( char *entities, int svsTime);
-	char *( *ClientConnect )( int clientNum, qboolean firstTime );
+#ifdef MOHAA
+	char* (*ClientConnect)(int clientNum, qboolean firstTime);
+#else
+	char* (*ClientConnect)(int clientNum, qboolean firstTime, int a3);
+#endif // MOHAA
 	void ( *ClientBegin )( gentity_t *ent, userCmd_t *cmd );
 	void ( *ClientUserinfoChanged )( gentity_t *ent, char *userInfo );
 	void ( *ClientDisconnect )( gentity_t *ent );
