@@ -137,23 +137,24 @@ to the server machine, but qfalse on map changes and tournement
 restarts.
 ============
 */
-char *G_ClientConnect( int clientNum, qboolean firstTime )
+
+char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 {
-	char * reason = NULL;
-	client_t *cl = GetClientByClientNum(clientNum);
+	char* reason = NULL;
+	client_t* cl = GetClientByClientNum(clientNum);
 	if (!cl)
 	{
-		gi.Printf(PATCH_NAME " connect error: NULL client %d on G_ClientConnect! Ignoring...\n", clientNum);
+		gi.Printf(PATCH_NAME " connect error: NULL client %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 		reason = NULL;
 	}
 	else
 	{
 
 		//IP related checks
-		char * ip = Info_ValueForKey(cl->userinfo, "ip");
+		char* ip = Info_ValueForKey(cl->userinfo, "ip");
 		if (ip == "")
 		{
-			gi.Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect! Ignoring...\n", clientNum);
+			gi.Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 			reason = NULL;
 		}
 		else
@@ -172,15 +173,15 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 				reason = NULL;
 			}
 		}
-		
+
 		//name related checks:
 		if (reason == NULL)
 		{
-			char *name = Info_ValueForKey(cl->userinfo, "name");
-			char *namepass = Info_ValueForKey(cl->userinfo, "cl_namepass");
+			char* name = Info_ValueForKey(cl->userinfo, "name");
+			char* namepass = Info_ValueForKey(cl->userinfo, "cl_namepass");
 			if (name == "")
 			{
-				gi.Printf(PATCH_NAME " connect error: empty client name %d on G_ClientConnect! Ignoring...\n", clientNum);
+				gi.Printf(PATCH_NAME " connect error: empty client name %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 				reason = NULL;
 			}
 			else
@@ -222,6 +223,20 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 	{
 		ChatFilter filter;
 		filter.ClientConnected(clientNum);
+		return reason;
+	}
+	else
+	{
+		return reason;
+	}
+}
+#ifdef MOHAA
+
+char* G_ClientConnect(int clientNum, qboolean firstTime)
+{
+	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
+	if (reason == NULL)
+	{
 		return globals_backup.ClientConnect(clientNum, firstTime);
 	}
 	else
@@ -229,6 +244,22 @@ char *G_ClientConnect( int clientNum, qboolean firstTime )
 		return reason;
 	}
 }
+
+#else
+char* G_ClientConnect(int clientNum, qboolean firstTime, int a3)
+{
+	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
+	if (reason == NULL)
+	{
+		return globals_backup.ClientConnect(clientNum, firstTime, a3);
+	}
+	else
+	{
+		return reason;
+	}
+}
+#endif // MOHAA
+
 
 void G_ClientDisconnect(gentity_t *ent)
 {
@@ -723,6 +754,7 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 
 	globals->ClientUserinfoChanged	= G_ClientUserinfoChanged;
 	globals->ConsoleCommand			= G_ConsoleCommand;
+	
 /*	globals->DebugCircle			= G_DebugCircle;
 	globals->errorMessage			= G_errorMessage;
 	globals->gentities				= G_gentities;
