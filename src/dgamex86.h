@@ -20,9 +20,8 @@
 
 #if defined(_WIN32) || defined(__MINGW32__)
 	//  windows-only
-	#include <wolfssl/wolfcrypt/md5.h>
-	#include <windows.h>	//Windows header
 	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>	//Windows header
 	#include <process.h>
 	#include <shlwapi.h>
 	#define stristr StrStrIA
