@@ -1,3 +1,4 @@
+#include <wolfssl/wolfcrypt/md5.h>
 #include "UpdateClient.h"
 #include <curlpp/cURLpp.hpp>
 #include <curlpp/Easy.hpp>
@@ -22,6 +23,55 @@ static size_t write_callback_string(string &respStr, char* ptr, size_t size, siz
 	return size * nmemb;
 }
 
+bool md5File(const char* file_name, char md5Str[MD5_DIGEST_SIZE * 2 + 1])
+{
+	unsigned char md5sum[MD5_DIGEST_SIZE];
+	FILE* fp;
+	long filelen = 0, bytesread = 0;
+	errno_t err;
+	char* buff;
+	Md5 md5;
+	err = fopen_s(&fp, file_name, "rb");
+	if (err != 0)
+	{
+		return false;
+	}
+	fseek(fp, 0, SEEK_END);
+	filelen = ftell(fp);
+	rewind(fp);
+
+	try
+	{
+		buff = new char[filelen + 1];
+	}
+	catch (...)
+	{
+		return false;
+	}
+	buff[filelen] = '\0';
+
+	bytesread = fread(buff, 1, filelen, fp);
+	if (bytesread < filelen)
+	{
+		delete[] buff;
+		fclose(fp);
+		return false;
+	}
+	fclose(fp);
+
+
+	wc_InitMd5(&md5);
+
+	wc_Md5Update(&md5, (const unsigned char*)buff, filelen);
+
+	wc_Md5Final(&md5, md5sum);
+
+
+	for (int di = 0; di < MD5_DIGEST_SIZE; ++di)
+		sprintf(md5Str + di * 2, "%02x", md5sum[di]);
+	delete[] buff;
+	return true;
+}
 string UpdateClient::RequestUpdateInfo()
 {
 	gi.Printf(PATCH_NAME " Update Client: Checking for updates...\n");
