@@ -1,5 +1,6 @@
 #pragma once
 
+class Class;
 class SafePtrBase
 {
 
