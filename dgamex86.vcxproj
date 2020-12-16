@@ -453,6 +453,7 @@
     <ClCompile Include="src\str.cpp" />
     <ClCompile Include="src\sv_commands.cpp" />
     <ClCompile Include="src\sv_misc.cpp" />
+    <ClCompile Include="src\Trigger.cpp" />
     <ClCompile Include="src\UpdateClient.cpp" />
     <ClCompile Include="src\xtrace.cpp" />
   </ItemGroup>
@@ -488,6 +489,7 @@
     <ClInclude Include="src\OffsetDefinitions.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\qcommon.h" />
+    <ClInclude Include="src\safeptr.h" />
     <ClInclude Include="src\ScriptedEvent.h" />
     <ClInclude Include="src\ScriptException.h" />
     <ClInclude Include="src\ScriptThread.h" />
@@ -498,6 +500,7 @@
     <ClInclude Include="src\str.h" />
     <ClInclude Include="src\sv_commands.h" />
     <ClInclude Include="src\sv_misc.h" />
+    <ClInclude Include="src\Trigger.h" />
     <ClInclude Include="src\UpdateClient.h" />
     <ClInclude Include="src\vector.h" />
     <ClInclude Include="src\Version.h" />

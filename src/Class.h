@@ -1,5 +1,5 @@
 #pragma once
-class SafePtrBase;
+#include "safeptr.h"
 
 /*
  * Class Class
