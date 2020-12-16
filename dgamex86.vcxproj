@@ -428,6 +428,7 @@
     <ClCompile Include="src\HTTPServer.cpp" />
     <ClCompile Include="src\ihuddraw.cpp" />
     <ClCompile Include="src\IPFilter.cpp" />
+    <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Listener.cpp" />
     <ClCompile Include="src\Memory.cpp" />
     <ClCompile Include="src\misc.cpp" />
@@ -455,6 +456,7 @@
     <ClCompile Include="src\sv_misc.cpp" />
     <ClCompile Include="src\Trigger.cpp" />
     <ClCompile Include="src\UpdateClient.cpp" />
+    <ClCompile Include="src\Weapon.cpp" />
     <ClCompile Include="src\xtrace.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -483,6 +485,7 @@
     <ClInclude Include="src\HTTPServer.h" />
     <ClInclude Include="src\ihuddraw.h" />
     <ClInclude Include="src\IPFilter.h" />
+    <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Listener.h" />
     <ClInclude Include="src\misc.h" />
     <ClInclude Include="src\NameFilter.h" />
@@ -504,6 +507,7 @@
     <ClInclude Include="src\UpdateClient.h" />
     <ClInclude Include="src\vector.h" />
     <ClInclude Include="src\Version.h" />
+    <ClInclude Include="src\Weapon.h" />
     <ClInclude Include="src\xtrace.h" />
   </ItemGroup>
   <ItemGroup>

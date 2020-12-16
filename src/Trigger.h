@@ -3,7 +3,7 @@
 
 class ScriptThreadLabel
 {
-    void* m_Script;//GameScript*
+    void* m_Script;//FIXME: GameScript*
     const_str m_Label;
 };
 
