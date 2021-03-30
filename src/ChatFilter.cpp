@@ -517,7 +517,7 @@ bool ChatFilter::ToggleDisableTaunt(int clientNum, bool & tauntsAllowed)
 	{
 		ChatFilterClientEntry & e = ChatClientEntries[clientIndex];
 		e.SetTauntsAllowed(!e.GetTauntsAllowed());
-		tauntsAllowed = e.GetChatAllowed();
+		tauntsAllowed = e.GetTauntsAllowed();
 		return true;
 	}
 	return false;

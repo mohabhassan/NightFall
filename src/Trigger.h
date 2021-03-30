@@ -1,6 +1,7 @@
 #pragma once
 #include "Animate.h"
 
+#ifndef MOHAA
 class ScriptThreadLabel
 {
     void* m_Script;//FIXME: GameScript*
@@ -9,9 +10,6 @@ class ScriptThreadLabel
 
 class Trigger :	public Animate
 {
-#ifndef MOHAA
-#error "Only Mohaa supported for this class."
-#endif // MOHAA
 protected:
     float wait; /* bitsize 32, bitpos 7200 */
     float delay; /* bitsize 32, bitpos 7232 */
@@ -32,4 +30,5 @@ protected:
     qboolean edgeTriggered; /* bitsize 32, bitpos 7904 */
     int multiFaceted; /* bitsize 32, bitpos 7936 */
 };
+#endif // MOHAA
 
