@@ -1,11 +1,8 @@
 #pragma once
 #include "Item.h"
-typedef enum { RANGE_SHORT, RANGE_MEDIUM, RANGE_LONG, RANGE_SNIPER, RANGE_NUM_RANGES } AIRanges;
+#ifndef MOHAA
 class Weapon : public Item
 {
-#ifndef MOHAA
-#error "Only Mohaa supported for this class."
-#endif // MOHAA
 protected:
     int m_iAnimSlot; /* bitsize 32, bitpos 8416 */
     qboolean attached; /* bitsize 32, bitpos 8448 */
@@ -96,6 +93,7 @@ public:
     int m_iNumGroinShots; /* bitsize 32, bitpos 12928 */
     int m_iNumLeftArmShots; /* bitsize 32, bitpos 12960 */
     int m_iNumRightArmShots; /* bitsize 32, bitpos 12992 */
-    AIRanges mAIRange; /* bitsize 32, bitpos 13024 */
+    AIRanges_t mAIRange; /* bitsize 32, bitpos 13024 */
     SafePtr<Entity> aim_target; /* bitsize 128, bitpos 13056 */
 };
+#endif // MOHAA

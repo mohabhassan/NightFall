@@ -1,11 +1,9 @@
 #pragma once
 #include "Trigger.h"
 #include "Sentient.h"
+#ifndef MOHAA
 class Item : public Trigger
 {
-#ifndef MOHAA
-#error "Only Mohaa supported for this class."
-#endif // MOHAA
     SafePtr<Sentient> owner; /* bitsize 128, bitpos 7968 */
     qboolean respawnable; /* bitsize 32, bitpos 8096 */
     qboolean playrespawn; /* bitsize 32, bitpos 8128 */
@@ -18,3 +16,4 @@ class Item : public Trigger
     str sPickupSound; /* bitsize 32, bitpos 8352 */
     qboolean no_remove; /* bitsize 32, bitpos 8384 */
 };
+#endif // MOHAA
