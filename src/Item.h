@@ -1,7 +1,7 @@
 #pragma once
 #include "Trigger.h"
 #include "Sentient.h"
-#ifndef MOHAA
+#ifdef MOHAA
 class Item : public Trigger
 {
     SafePtr<Sentient> owner; /* bitsize 128, bitpos 7968 */
