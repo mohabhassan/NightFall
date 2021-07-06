@@ -1,7 +1,7 @@
 #pragma once
 #include "Animate.h"
 
-#ifndef MOHAA
+#ifdef MOHAA
 class ScriptThreadLabel
 {
     void* m_Script;//FIXME: GameScript*

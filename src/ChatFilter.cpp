@@ -503,10 +503,10 @@ bool ChatFilter::ToggleDisableChat(int clientNum, bool & chatAllowed)
  * ChatFilter::ToggleDisableTaunt
  * Toggle disable/enable taunts for given client number.
  * Arguments:
- * clientNum - client number of client to have chat allowing toggled.
+ * clientNum - client number of client to have taunt allowing toggled.
  * Return values:
  * Returns true if taunts are toggled, false otherwise.
- * chatAllowed - whether or not taunts are allowed for client.
+ * tauntsAllowed - whether or not taunts are allowed for client.
  *
  * */
 bool ChatFilter::ToggleDisableTaunt(int clientNum, bool & tauntsAllowed)

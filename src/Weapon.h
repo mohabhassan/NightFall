@@ -1,6 +1,6 @@
 #pragma once
 #include "Item.h"
-#ifndef MOHAA
+#ifdef MOHAA
 class Weapon : public Item
 {
 protected:
