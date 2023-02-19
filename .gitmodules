@@ -1,21 +1,21 @@
 [submodule "libs/Detours"]
-	path = libs/Detours
+	path = dgamexwrapper/libs/Detours
 	url = https://github.com/Microsoft/Detours.git
 [submodule "libs/wolfSSL"]
-	path = libs/wolfSSL
+	path = dgamexwrapper/libs/wolfSSL
 	url = https://github.com/wolfSSL/wolfssl.git
 [submodule "libs/SQLiteCpp"]
-	path = libs/SQLiteCpp
+	path = dgamexwrapper/libs/SQLiteCpp
 	url = https://github.com/SRombauts/SQLiteCpp.git
 [submodule "libs/curl"]
-	path = libs/curl
+	path = dgamexwrapper/libs/curl
 	url = https://github.com/curl/curl.git
 [submodule "libs/civetweb"]
-	path = libs/civetweb
+	path = dgamexwrapper/libs/civetweb
 	url = https://github.com/civetweb/civetweb.git
 [submodule "libs/nlohmann-json"]
-	path = libs/nlohmann-json
+	path = dgamexwrapper/libs/nlohmann-json
 	url = https://github.com/nlohmann/json.git
 [submodule "libs/curlpp"]
-	path = libs/curlpp
+	path = dgamexwrapper/libs/curlpp
 	url = https://github.com/jpbarrette/curlpp.git
