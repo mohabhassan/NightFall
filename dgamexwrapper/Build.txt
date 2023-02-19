@@ -8,7 +8,7 @@ MT: project properties -> c/c++ -> code generation -> runtime library
 	-build only wolfSSL project
 
 2. curl:
-	open powershell & cd libs/curl/projects
+	open cmd & cd libs/curl/projects
 	./generate vc15
 	duplicate libs/wolfSSL/cyassl/options.h.in to libs/wolfSSL/cyassl/options.h
 	open libs/curl/projects/Windows/VC15/lib/libcurl.sln
