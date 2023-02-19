@@ -23,20 +23,31 @@ You can download latest version from [here](https://github.com/mohabhassan/Night
 
  - [NightFall Documentation](docs/readme.md)
 
+## Building
+ - Clone this repo
+ - `cd NightFall`
+ - `git submodule update --init`
+ - Use Visual Studio 2019
+ - Start VS Developer CMD Prompt
+ - `cd dgamexwrapper`
+ - `build_deps.bat` (to build dependencies)
+ - Build NightFall using `dgamexwrapper.sln` (use any configuration other than Debug)
+ 
+ 
 ## FAQ
 
  - **What is currently supported ?**
  Currently, most reborn functions are supported, some security related addition are not implemented.
  
  - **Will feature xxxx be implemented ?**
- Create an issue, I'm more than welcome to add any new features to NightFall!
+ Create an issue (feature request), I'm more than welcome to add any new features to NightFall!
  
 ## Contributors
+ - **RyBack**
  - Todesengel
  - RazoRapiD
  - Ley0k
  - xNULL|James
- - **RyBack**
  - DoubleKill
  - Appelpitje
  - Criminal
