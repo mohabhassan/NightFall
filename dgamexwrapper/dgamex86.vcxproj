@@ -211,7 +211,7 @@
       <ImportLibrary>$(OutDir)\dgamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/Lib Release;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/LIB Release - LIB wolfSSL;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x40080000</BaseAddress>
       <AdditionalOptions>/EXPORT:"GetGameAPI" %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -272,7 +272,7 @@
       <ImportLibrary>$(OutDir)\dgamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/Lib Release;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/LIB Release - LIB wolfSSL;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x40080000</BaseAddress>
       <AdditionalOptions>/EXPORT:"GetGameAPI" %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -333,7 +333,7 @@
       <ImportLibrary>$(OutDir)\gamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/Lib Release;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/LIB Release - LIB wolfSSL;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>
       </BaseAddress>
       <AdditionalOptions>/EXPORT:"GetGameAPI" %(AdditionalOptions)</AdditionalOptions>
@@ -393,7 +393,7 @@
       <ImportLibrary>$(OutDir)\dgamex86.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/Lib Release;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC15/LIB Release - LIB wolfSSL;libs/curlpp/Build/Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x40080000</BaseAddress>
       <AdditionalOptions>/EXPORT:"GetGameAPI" %(AdditionalOptions)</AdditionalOptions>
     </Link>
