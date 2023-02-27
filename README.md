@@ -37,13 +37,16 @@ You can download latest version from [here](https://github.com/mohabhassan/Night
 ## FAQ
 
  - **What is currently supported ?**
- Currently, most reborn functions are supported, some security related addition are not implemented.
+ Currently, most reborn functions are supported, some security related additions are not implemented.
  
  - **Will feature xxxx be implemented ?**
  Create an issue (feature request), I'm more than welcome to add any new features to NightFall!
  
-## Contributors
+# Contributors
+## Main Developer
  - **RyBack**
+ 
+## Secondary Developers/Contributors
  - Todesengel
  - RazoRapiD
  - Ley0k
