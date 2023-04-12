@@ -56,6 +56,8 @@
 //#include <execinfo.h>
 //#include <ucontext.h>
 
+#include <filesystem>
+namespace fs = std::filesystem;
 
 typedef unsigned long solid_t;
 

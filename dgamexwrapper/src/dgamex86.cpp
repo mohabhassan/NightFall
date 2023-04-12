@@ -19,6 +19,7 @@
 #include "UpdateClient.h"
 #include "ClientFilter.h"
 
+
 //#include "hooks/script.h"
 
 #ifdef _WIN32
@@ -566,6 +567,57 @@ void shutdownConsoleCommands()
 	NameFilter::Shutdown();
 }
 
+void startCrashReporter()
+{
+	gi.Printf(PATCH_NAME ": starting crash reporter \n");
+	CustomCvar sv_crashrpt_poll_delay("sv_crashrpt_poll_delay", "5", CVAR_ARCHIVE);//in seconds
+	CustomCvar sv_crashrpt_hang_wait("sv_crashrpt_hang_wait", "30", CVAR_ARCHIVE);//in seconds
+
+	HANDLE hLocalProc = GetCurrentProcess();
+	HANDLE hGlobalProc;
+
+	if (!DuplicateHandle(hLocalProc,
+		hLocalProc,
+		hLocalProc,
+		&hGlobalProc,
+		0,
+		TRUE,
+		DUPLICATE_SAME_ACCESS))
+	{
+		gi.Printf("Start crash reporter error 1: %u\n", GetLastError());
+		return;
+	}
+
+	STARTUPINFOW si;
+	PROCESS_INFORMATION pi;
+
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+	auto mainPath = fs::current_path() / MAIN_PATH;
+	auto crashRptPath = mainPath / "CrashReporter.exe";
+	WCHAR cmdline[2048];
+	DWORD pollDelay = sv_crashrpt_poll_delay.GetIntValue() * 1000, hungDelay = sv_crashrpt_hang_wait.GetIntValue() * 1000;
+	wsprintfW(cmdline, L"%s %p %u %u", crashRptPath.c_str(), hGlobalProc, pollDelay, hungDelay);
+	if (!CreateProcessW(NULL,   // No module name (use command line)
+		cmdline,        // Command line
+		NULL,           // Process handle not inheritable
+		NULL,           // Thread handle not inheritable
+		TRUE,           
+		0,              // No creation flags
+		NULL,           // Use parent's environment block
+		mainPath.c_str(), 
+		&si,            // Pointer to STARTUPINFO structure
+		&pi)           // Pointer to PROCESS_INFORMATION structure
+		)
+	{
+		gi.Printf("Start crash reporter error 2: %u\n", GetLastError());
+	}
+	else
+	{
+		gi.Printf("Start crash reporter success\n", GetLastError());
+	}
+}
 
 /*
 ============
@@ -587,6 +639,7 @@ void G_InitGame( int startTime, int randomSeed )
 
 	initConsoleCommands();
 
+	startCrashReporter();
 	globals_backup.Init( startTime, randomSeed );
 	//gi.Printf("Class count: %d", classcount);
 	gi.Printf(PATCH_NAME " Wrapper inited \n");
