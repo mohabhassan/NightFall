@@ -2,6 +2,7 @@
 
 void ScriptThread::MathsInit()
 {
+#ifdef MOHAA
 	cerSet.AddEventResponse(new Event(
 		"sin",
 		EV_DEFAULT,
@@ -21,7 +22,6 @@ void ScriptThread::MathsInit()
 		EV_RETURN
 	),
 		&ScriptThread::MCosEvent);
-
 	cerSet.AddEventResponse(new Event(
 		"tan",
 		EV_DEFAULT,
@@ -31,6 +31,17 @@ void ScriptThread::MathsInit()
 		EV_RETURN
 	),
 		&ScriptThread::MTanEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"atan",
+		EV_DEFAULT,
+		"f",
+		"x",
+		"Returns the arc tangent of an angle of x radians. Use atan2 instead.",
+		EV_RETURN
+	),
+		&ScriptThread::MATanEvent);
+#endif
 
 	cerSet.AddEventResponse(new Event(
 		"asin",
@@ -52,15 +63,6 @@ void ScriptThread::MathsInit()
 	),
 		&ScriptThread::MACosEvent);
 
-	cerSet.AddEventResponse(new Event(
-		"atan",
-		EV_DEFAULT,
-		"f",
-		"x",
-		"Returns the arc tangent of an angle of x radians. Use atan2 instead.",
-		EV_RETURN
-	),
-		&ScriptThread::MATanEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"atan2",
