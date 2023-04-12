@@ -12,6 +12,7 @@ set "rootdir=%cd%"
 @for %%a in (%*) do @(
   IF "%%a"=="wolfssl" call :wolfssl
   IF "%%a"=="libcurl" call :libcurl
+  IF "%%a"=="curl" call :curl
   IF "%%a"=="curlpp" call :curlpp
   IF "%%a"=="detours" call :detours
   IF "%%a"=="sqlitecpp" call :sqlitecpp
@@ -39,8 +40,11 @@ exit /b 0
 echo ==============================================
 echo Building Wolfssl
 echo ==============================================
-set _CL_=/MT
-msbuild libs/wolfSSL/wolfssl64.sln /t:"wolfssl:Clean;Rebuild" /p:Configuration="Release" /p:Platform="Win32" /p:PlatformToolset="v141_xp" /p:nowarn="MSB8051;D9025" /nologo /verbosity:quiet
+rem  & rem /DWOLFSSL_SHA512 /DMAX_DH_SZ=1036 /DFP_MAX_BITS=8192 /DDEBUG_WOLFSSL
+set _CL_=/MT /DFP_MAX_BITS=8192
+echo F|xcopy "libs\curl\projects\wolfssl_options.h" "libs\wolfSSL\cyassl\options.h" /Y
+echo F|xcopy "libs\curl\projects\wolfssl_options.h" "libs\wolfSSL\wolfssl\options.h" /Y
+msbuild libs/wolfSSL/wolfssl64.sln /t:"wolfssl:Clean;Rebuild" /p:Configuration="Release" /p:Platform="Win32" /p:PlatformToolset="v141_xp" /p:nowarn="MSB8051;D9025" /p:CustomAfterMicrosoftCommonTargets="%rootdir%/libs/curl/projects/wolfssl_override.props" /p:OutDir="%rootdir%/libs/wolfSSL/build/Win32/VC15/LIB Release/" /nologo /verbosity:quiet
 exit /b 0
 
 :libcurl
@@ -50,9 +54,23 @@ echo ==============================================
 cd libs/curl/projects
 call generate.bat vc15
 cd %rootdir%
-echo F|xcopy "libs\wolfSSL\cyassl\options.h.in" "libs\wolfSSL\cyassl\options.h" /Y
+echo F|xcopy "libs\curl\projects\wolfssl_options.h" "libs\wolfSSL\cyassl\options.h" /Y
+echo F|xcopy "libs\curl\projects\wolfssl_options.h" "libs\wolfSSL\wolfssl\options.h" /Y
 set _CL_=/MT /DSIZEOF_LONG_LONG=8
 msbuild libs/curl/projects/Windows/VC15/lib/libcurl.sln /t:"libcurl:Clean;Rebuild" /p:Configuration="Lib Release - Lib wolfSSL" /p:Platform="Win32" /p:PlatformToolset="v141_xp" /p:nowarn="MSB8051;D9025;C4214" /nologo /verbosity:quiet
+exit /b 0
+
+:curl
+echo ==============================================
+echo Building curl
+echo ==============================================
+cd libs/curl/projects
+call generate.bat vc15
+cd %rootdir%
+echo F|xcopy "libs\curl\projects\wolfssl_options.h" "libs\wolfSSL\cyassl\options.h" /Y
+echo F|xcopy "libs\curl\projects\wolfssl_options.h" "libs\wolfSSL\wolfssl\options.h" /Y
+set _CL_=/MT /DSIZEOF_LONG_LONG=8
+msbuild libs/curl/projects/Windows/VC15/src/curl.sln /t:"curl:Clean;Rebuild" /p:Configuration="Lib Release - Lib wolfSSL" /p:Platform="Win32" /p:PlatformToolset="v141_xp" /p:nowarn="MSB8051;D9025;C4214" /nologo /verbosity:quiet
 exit /b 0
 
 :curlpp
