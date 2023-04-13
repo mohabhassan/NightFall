@@ -11,7 +11,9 @@ This is the best public version out there.
 
 Questions are welcomed.
 
-If you have any fixes/modifications , please commit them.
+For enhancements and bug reports: [submit an issue](https://github.com/mohabhassan/NightFall/issues).
+
+If you have any fixes/modifications, please submit a PR.
 
 ## Downloading
 You can download latest version from [here](https://github.com/mohabhassan/NightFall/releases).
@@ -28,19 +30,21 @@ You can download latest version from [here](https://github.com/mohabhassan/Night
  - `cd NightFall`
  - `git submodule update --init`
  - Use Visual Studio 2019
- - Start VS Developer CMD Prompt
+ - Start VS2019 Developer PowerShell
  - `cd dgamexwrapper`
- - `build_deps.bat` (to build dependencies)
+ - `build_deps.bat all` to build dependencies, you can also build specific dependencies: `build_deps.bat wolfssl curl libcurl`
  - Build NightFall using `dgamexwrapper.sln` (use any configuration other than Debug)
  
  
 ## FAQ
 
  - **What is currently supported ?**
+ 
  Currently, most reborn functions are supported, some security related additions are not implemented.
  
  - **Will feature xxxx be implemented ?**
- Create an issue (feature request), I'm more than welcome to add any new features to NightFall!
+ 
+ [Create an issue](https://github.com/mohabhassan/NightFall/issues) (feature request), I'm more than welcome to add any new features to NightFall!
  
 # Contributors
 ## Main Developer
