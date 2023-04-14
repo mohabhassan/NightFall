@@ -13,7 +13,7 @@ namespace fs = std::filesystem;
 
 using json = nlohmann::json;
 
-constexpr char updateURL[] = "http://nightfall.mohaa.net:3000/api/version_info";
+constexpr char updateURL[] = "http://nightfall.mohaa.net/api/version_info";
 
 
 
@@ -99,12 +99,16 @@ string UpdateClient::RequestUpdateInfo()
 		//verify peer requires ca cert bundle, shipped with exe. not needed.
 		//not used anyways, we're not linking libcurl/pp to wolfssl
 		//request.setOpt(new curlpp::options::SslVerifyPeer(false));
+		
+		//specifiy ca bundle location
+		fs::path ca_path = fs::current_path() / MAIN_PATH / NF_LIBCURL_CABUNDLENAME;
+		request.setOpt(new curlpp::options::CaInfo(ca_path.string()));
 
-		//set timeout to 10 minutes (includes connection phase)
-		request.setOpt(new curlpp::options::Timeout(600L));
+		//set timeout to 5 seconds (includes connection phase)
+		request.setOpt(new curlpp::options::Timeout(5L));
 
-		//set connection phase timeoute to 10 minutes
-		request.setOpt(new curlpp::options::ConnectTimeout(599L));
+		//set connection phase timeoute to 5 seconds
+		request.setOpt(new curlpp::options::ConnectTimeout(5L));
 
 
 		using namespace std::placeholders;
@@ -231,6 +235,10 @@ bool UpdateClient::UpdateFile(string fileRelPath, string fileURL, string fileMD5
 		//verify peer requires ca cert bundle, shipped with exe. not needed.
 		//not used anyways, we're not linking libcurl/pp to wolfssl
 		//request.setOpt(new curlpp::options::SslVerifyPeer(false));
+		
+		//specifiy ca bundle location
+		fs::path ca_path = fs::current_path() / MAIN_PATH / NF_LIBCURL_CABUNDLENAME;
+		request.setOpt(new curlpp::options::CaInfo(ca_path.string()));
 
 		//set timeout to 10 minutes (includes connection phase)
 		request.setOpt(new curlpp::options::Timeout(600L));
@@ -333,7 +341,7 @@ void UpdateClient::CheckForUpdate()
 #elif defined(MOHAA)
 		CustomCvar shortversion("shortversion", "1.11", CVAR_ROM);
 		dir_info = j["aa"][shortversion.GetStringValue()];
-#endif // MOHSH / MOHBT
+#endif // MOHSH / MOHBT / MOHAA
 
 		bool allgood = true;
 		// range-based for

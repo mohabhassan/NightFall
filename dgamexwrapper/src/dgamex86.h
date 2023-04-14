@@ -25,6 +25,7 @@
 	#include <process.h>
 	#include <shlwapi.h>
 	#define stristr StrStrIA
+	#define NF_LIBCURL_CABUNDLENAME "cacert.pem"
 	
 #else
 	//  linux-only

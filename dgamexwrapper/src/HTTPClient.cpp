@@ -79,6 +79,10 @@ void HTTPClient::CreateRequest(QueuedClientRequest & req)
 		//verify peer requires ca cert bundle, shipped with exe. not needed.
 		//not used anyways, we're not linking libcurl/pp to wolfssl
 		//request.setOpt(new curlpp::options::SslVerifyPeer(false));
+		
+		//specifiy ca bundle location
+		fs::path ca_path = fs::current_path() / MAIN_PATH / NF_LIBCURL_CABUNDLENAME;
+		request.setOpt(new curlpp::options::CaInfo(ca_path.string()));
 
 		//set timeout to 20 seconds (includes connection phase)
 		request.setOpt(new curlpp::options::Timeout(20L));
