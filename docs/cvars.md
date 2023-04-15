@@ -2,6 +2,18 @@
 
 # NightFall Cvars Documentation
 
+### sv_crashrpt_poll_delay
+| Name | sv_crashrpt_poll_delay |
+|--|--|
+| Description | Amount in seconds to regularly check if MOHAA/SH/BT is hung. |
+| More Info | [sv_crashrpt_poll_delay](crash_reporter.md#sv_crashrpt_poll_delay)|
+---
+### sv_crashrpt_hang_wait
+| Name | sv_crashrpt_hang_wait |
+|--|--|
+| Description | Amount in seconds to comfirm that MOHAA/SH/BT is hung. |
+| More Info | [sv_crashrpt_hang_wait](crash_reporter.md#sv_crashrpt_hang_wait)|
+---
 ### sv_api
 | Name | sv_api |
 |--|--|
