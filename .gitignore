@@ -254,3 +254,7 @@ ModelManifest.xml
 /CrashReporter/CrashDummy/nightfall
 /dgamexwrapper/log.txt
 /CrashReporter/CrashDummy/log.txt
+/dgamexwrapper/buildnpackage.ps1
+/dgamexwrapper/generate_version_info.js
+/dgamexwrapper/package.json
+/dgamexwrapper/version_info.json
