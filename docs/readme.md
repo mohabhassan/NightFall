@@ -12,6 +12,7 @@ Here you'll find most of the thing you'll need to know in order to use NightFall
  - [Rcon Commands Documentation](rconcmds.md)
  - [Client Admin Commands Documentation](clientcmds.md)
  - [Filters Documentation](filters.md)
+ - [Crash Reporter Documentation](crash_reporter.md)
 ---
 ## For Modders
  - [Event System Documentation](eventsystem.md)
