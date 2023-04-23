@@ -70,18 +70,19 @@ At map end(or map change or map restart), API server will shutdown, clear all pe
 ### Script Usage
 When a user registers an API route using [register_api_route](scriptfuncs.md#register_api_route), the script callback function should be something like this:
 ```
-get_handler local.query_strings:
-	println "query_strings======="
-	for( local.i = int 0 ; local.i < local.query_strings.size ; local.i++ )
+get_handler local.req_params:
+	println "req_params======="
+	for( local.i = int 0 ; local.i < local.req_params.size ; local.i++ )
 	{
-		println local.query_strings[local.i][key] " : " local.query_strings[local.i][value];
+		println local.req_params[local.i][key] " : " local.req_params[local.i][value];
 	}
 	local.resp = "yay!"
 end local.resp
 ```
-`local.query_strings` is the query strings provided in the HTTP GET request.
+For GET requests, `local.req_params` is the query strings provided in the HTTP GET request. Looping the query strings is done as specified in the callback example.
 
-Looping the query strings is done as specified in the callback example.
+For POST requests, `local.req_params` is the json-parsed body provided in the HTTP POST request.
+
 
 API server will return local.resp as JSON string, so expected HTTP response body is:
 
