@@ -43,7 +43,7 @@ void ScriptThread::CreateAPIRequest(Event * ev)
 	str method = ev->GetString(2);
 	method.tolower();
 
-	if (method.length() == 0 || method != "get")
+	if (method.length() == 0 || (method != "get" && method != "post"))
 	{
 		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to create_api_request!\n", method.c_str());
 		ev->AddInteger(CAPIR_INVALID);

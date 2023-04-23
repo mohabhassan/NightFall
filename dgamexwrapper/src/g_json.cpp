@@ -92,10 +92,10 @@ void JsonToGameVar(json & j, ScriptVariable & var)
 		break;
 	case json::value_t::array:
 	{
-		ScriptVariable elem;
-		ScriptVariable index;
 		for (size_t i = 0; i < j.size(); i++)
 		{
+			ScriptVariable elem;
+			ScriptVariable index;
 			JsonToGameVar(j[i], elem);
 			index.setIntValue(i);
 			var.setArrayAtRef(index, elem);
@@ -104,9 +104,9 @@ void JsonToGameVar(json & j, ScriptVariable & var)
 		break;
 	case json::value_t::object:
 	{
-		ScriptVariable index, value;
 		for (json::iterator it = j.begin(); it != j.end(); ++it)
 		{
+			ScriptVariable index, value;
 			index.setStringValue(it.key().c_str());
 			JsonToGameVar(it.value(), value);
 			var.setArrayAtRef(index, value);

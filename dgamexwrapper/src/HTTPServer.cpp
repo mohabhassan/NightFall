@@ -2,7 +2,6 @@
 #include "CustomCvar.h"
 #include "Director.h"
 #include "Event.h"
-#include "g_json.h"
 
 #include <chrono>
 #include <thread>
@@ -14,68 +13,29 @@ mutex HTTPServer::requests_mutex;
 atomic<unsigned int> HTTPServer::lastRequestNumber;
 list<QueuedResponse> HTTPServer::responses;
 mutex HTTPServer::responses_mutex;
+condition_variable HTTPServer::responses_cv;
 
 list<PendingScript> HTTPServer::pending_scripts;
 
+bool HTTPServer::shouldShutdown = false;
+
 class RouteHandler : public CivetHandler
 {
-public:
+private:
 	bool
-		handleGet(CivetServer *server, struct mg_connection *conn)
+		handleAll(string method,
+			json &j_req_params,
+			CivetServer* server,
+			struct mg_connection* conn)
 	{
+		const struct mg_request_info* req_info = mg_get_request_info(conn);
 
-		const struct mg_request_info *req_info = mg_get_request_info(conn);
-		//req_info->local_uri : contains uri always has slash and doesn't contain query sting
-		string query_string = req_info->query_string ? req_info->query_string : "";
-		vector<pair<string, string>> queries;
-		if (query_string.empty() || query_string.length() < 3)
-		{
-			//handle empty query string
-		}
-		else
-		{
-			//CivetServer::urlDecode(req_info->query_string, decoded_query_string, false);
-			for (size_t i = query_string.find('&', 0), curr = 0; ; curr = i, i = query_string.find('&', i + 1))
-			{
-				if (i == string::npos)
-				{
-					string query_value_string = query_string.substr(curr);
-					size_t equ = query_value_string.find('=');
-					if (equ == string::npos)
-					{
-						break;
-					}
-					string key = query_value_string.substr(0, equ);
-					string value = query_value_string.substr(equ + 1);
-					queries.emplace_back( "", "" );
-					CivetServer::urlDecode(key, queries.back().first, false);
-					CivetServer::urlDecode(value, queries.back().second, false);
-					break;
-				}
-				i++;
-				string query_value_string = query_string.substr(curr, i - curr - 1);
-				size_t equ = query_value_string.find('=');
-				if (equ == string::npos)
-				{
-					break;
-				}
-				string key = query_value_string.substr(0, equ);
-				string value = query_value_string.substr(equ + 1);
-				queries.emplace_back("", "");
-				CivetServer::urlDecode(key, queries.back().first, false);
-				CivetServer::urlDecode(value, queries.back().second, false);
-			}
-		}
+		unsigned int requestID = HTTPServer::EnqueueRequest(string(req_info->local_uri), method, j_req_params);
 
-		unsigned int requestID = HTTPServer::EnqueueRequest(string(req_info->local_uri), "get", queries);
 
-		
 		//todo: replace polling by condition_varaible
 		QueuedResponse res;
-		while (!HTTPServer::DequeueResponse(requestID, res))
-		{
-			this_thread::sleep_for(50ms);
-		}
+		HTTPServer::DequeueResponse(requestID, res);
 
 		switch (res.getType())
 		{
@@ -88,7 +48,7 @@ public:
 			mg_send_http_ok(conn, "application/json", s.size());
 			mg_write(conn, s.c_str(), s.size());
 		}
-			break;
+		break;
 		case QueuedResponse::RESP_NOTFOUND:
 		{
 			//mg_send_http_error(conn, 404, R"t({"message" : "Not found."})t");
@@ -96,26 +56,7 @@ public:
 			constexpr char msg[] = R"t({"status":"error_not_found", "message" : "Not found."})t";
 			char date[64];
 			time_t curtime = time(NULL);
-			const char *status_text = mg_get_response_code_text(conn, status);
-			strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&curtime));
-
-			mg_printf(conn, "HTTP/1.1 %d %s\r\n", status, status_text);
-			mg_printf(conn, "Content-Type: application/json; charset=utf-8\r\n");
-			mg_printf(conn, "Date: %s\r\n", date);
-			mg_printf(conn, "Connection: close\r\n\r\n");
-			mg_write(conn, msg, strlen(msg));
-			//mg_printf(conn, "\r\n");
-		}
-			break;
-		case QueuedResponse::RESP_ERROR:
-		default:
-		{
-			//mg_send_http_error(conn, 404, R"t({"message" : "Not found."})t");
-			constexpr int status = 500;
-			constexpr char msg[] = R"t({"status":"error_internal", "message" : "Internal server error."})t";
-			char date[64];
-			time_t curtime = time(NULL);
-			const char *status_text = mg_get_response_code_text(conn, status);
+			const char* status_text = mg_get_response_code_text(conn, status);
 			strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&curtime));
 
 			mg_printf(conn, "HTTP/1.1 %d %s\r\n", status, status_text);
@@ -126,7 +67,25 @@ public:
 			//mg_printf(conn, "\r\n");
 		}
 		break;
-			break;
+		case QueuedResponse::RESP_ERROR:
+		default:
+		{
+			//mg_send_http_error(conn, 404, R"t({"message" : "Not found."})t");
+			constexpr int status = 500;
+			constexpr char msg[] = R"t({"status":"error_internal", "message" : "Internal server error."})t";
+			char date[64];
+			time_t curtime = time(NULL);
+			const char* status_text = mg_get_response_code_text(conn, status);
+			strftime(date, sizeof(date), "%a, %d %b %Y %H:%M:%S GMT", gmtime(&curtime));
+
+			mg_printf(conn, "HTTP/1.1 %d %s\r\n", status, status_text);
+			mg_printf(conn, "Content-Type: application/json; charset=utf-8\r\n");
+			mg_printf(conn, "Date: %s\r\n", date);
+			mg_printf(conn, "Connection: close\r\n\r\n");
+			mg_write(conn, msg, strlen(msg));
+			//mg_printf(conn, "\r\n");
+		}
+		break;
 		}
 		/*
 		int index = HTTPServer::FindRoute(req_info->local_uri, "get");
@@ -138,12 +97,70 @@ public:
 		*/
 		return true;
 	}
+public:
+	bool
+		handleGet(CivetServer *server, struct mg_connection *conn)
+	{
+		const struct mg_request_info* req_info = mg_get_request_info(conn);
+		//req_info->local_uri : contains uri always has slash and doesn't contain query sting
+		string query_string = req_info->query_string ? req_info->query_string : "";
+		json j_querystrings = json::array();
+		if (!query_string.empty() && query_string.length() >= 3)//minimum length is 3 "a=b" 
+		{
+			for (size_t i = query_string.find('&', 0), curr = 0; ; curr = i, i = query_string.find('&', i + 1))
+			{
+				string query_value_string;
+				if (i == string::npos)
+				{
+					query_value_string = query_string.substr(curr);
+				}
+				else
+				{
+					i++;
+					query_value_string = query_string.substr(curr, i - curr - 1);
+				}
+				size_t equ = query_value_string.find('=');
+				if (equ == string::npos)
+				{
+					break;
+				}
+				string key = query_value_string.substr(0, equ), key_dec = key;
+				string value = query_value_string.substr(equ + 1), value_dec = value;
+				CivetServer::urlDecode(key, key_dec, false);
+				CivetServer::urlDecode(value, value_dec, false);
+				json entry = { {"key", key_dec}, {"value", value_dec} };
+				j_querystrings.emplace_back(entry);
+				if (i == string::npos)
+					break;
+			}
+		}
+		return handleAll("get", j_querystrings, server, conn);
+	}
 
 	bool
 		handlePost(CivetServer *server, struct mg_connection *conn)
 	{
-		const struct mg_request_info *req_info = mg_get_request_info(conn);
-		return false;
+		const struct mg_request_info* req_info = mg_get_request_info(conn);
+		long long rlen;
+		long long tlen = req_info->content_length;
+		char buf[1024];
+		string body_str;
+
+		while ((rlen = mg_read(conn, buf, sizeof(buf))) > 0) {
+			tlen += rlen;
+			body_str.append(buf, rlen);
+		}
+
+		json j_req_body;
+		try
+		{
+			j_req_body = json::parse(body_str);
+		}
+		catch (json::parse_error& e)
+		{
+			j_req_body = nullptr;
+		}
+		return handleAll("post", j_req_body, server, conn);
 	}
 };
 
@@ -198,18 +215,22 @@ void HTTPServer::Shutdown()
 {
 	if (server)
 	{
-		mg_exit_library();
-		delete server;
+		shouldShutdown = true;
+
 		routes.clear();
 		{
 			lock_guard<mutex> lock1(requests_mutex);
 			requests.clear();
 		}
 		{
-			lock_guard<mutex> lock2(responses_mutex);
+			unique_lock<mutex> lock2(responses_mutex);
 			responses.clear();
+			lock2.unlock();
+			responses_cv.notify_all();
 		}
 		pending_scripts.clear();
+		mg_exit_library();
+		delete server;
 	}
 }
 
@@ -292,7 +313,7 @@ void HTTPServer::HandleNextAPIRequest()
 			{
 				ev.AddValue(route.GetScript());
 			
-				vector<pair<string, string>> & query_strings = req.getQueryStrings();
+				json & j_req_params = req.getRequestParameters();
 
 				//array shape:
 				/*
@@ -308,26 +329,20 @@ void HTTPServer::HandleNextAPIRequest()
 
 				 */
 				//
-				// 
-				ScriptVariable query_strings_param;
-				for (size_t i = 0; i < query_strings.size(); i++)
+				//
+				ScriptVariable var;
+				JsonToGameVar(j_req_params, var);
+				ev.AddValue(var);
+
+				try
 				{
-					ScriptVariable index, value;
-					ScriptVariable inner_index, inner_value;
-					index.setIntValue(i);
-					inner_index.setStringValue("key");
-					inner_value.setStringValue(query_strings[i].first.c_str());
-					value.setArrayAtRef(inner_index, inner_value);
-					inner_index.setStringValue("value");
-					inner_value.setStringValue(query_strings[i].second.c_str());
-					value.setArrayAtRef(inner_index, inner_value);
-					query_strings_param.setArrayAtRef(index, value);
+					Director->ExecuteReturnScript(&ev);
 				}
-
-				ev.AddValue(query_strings_param);
-
-				//TODO: check for ScriptException 
-				Director->ExecuteReturnScript(&ev);
+				catch (const ScriptException&e)
+				{
+					gi.Printf(PATCH_NAME " HTTP Server API request error: %s\n", e.string.c_str());
+					throw;
+				}
 
 				int numArgs = ev.NumArgs();//numargs is return value index.
 				// if it's type is not script pointer, that means it's done executing.
@@ -378,10 +393,10 @@ void HTTPServer::HandleNextAPIResponse()
 
 //returns request id.
 //later requests have greater ids.
-int HTTPServer::EnqueueRequest(string &route, string method, vector<pair<string, string>> &query_strings)
+int HTTPServer::EnqueueRequest(string &route, string method, json& req_params)
 {
 	lock_guard<mutex> lock(requests_mutex);
-	requests.emplace_back(route, method, query_strings, lastRequestNumber);
+	requests.emplace_back(route, method, req_params, lastRequestNumber);
 	return lastRequestNumber++;
 }
 
@@ -398,28 +413,35 @@ bool HTTPServer::DequeueRequest(QueuedRequest &req)
 
 void HTTPServer::EnqueueResponse(int id, ScriptVariable & rVal)
 {
-	lock_guard<mutex> lock(responses_mutex);
+	unique_lock<mutex> lock(responses_mutex);
 	responses.emplace_back(id, rVal);
+	lock.unlock();
+	responses_cv.notify_all();
 }
 
 void HTTPServer::EnqueueResponse(int id, QueuedResponse::ResponseType tp)
 {
-	lock_guard<mutex> lock(responses_mutex);
+	unique_lock<mutex> lock(responses_mutex);
 	responses.emplace_back(id, tp);
+	lock.unlock();
+	responses_cv.notify_all();
 }
 
-bool HTTPServer::DequeueResponse(int id, QueuedResponse & res)
+//blocks untill responseID is found
+void HTTPServer::DequeueResponse(int id, QueuedResponse & res)
 {
-	lock_guard<mutex> lock(responses_mutex);
-
-	for (auto it = responses.begin(); it != responses.end(); it++)
+	unique_lock<mutex> lock(responses_mutex);
+	while (!shouldShutdown)
 	{
-		if (it->getID() == id)
+		for (auto it = responses.begin(); it != responses.end(); it++)
 		{
-			res = *it;
-			responses.erase(it);
-			return true;
+			if (it->getID() == id)
+			{
+				res = *it;
+				responses.erase(it);
+				return;
+			}
 		}
+		responses_cv.wait(lock);
 	}
-	return false;
 }
