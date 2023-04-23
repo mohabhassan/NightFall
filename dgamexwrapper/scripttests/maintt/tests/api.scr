@@ -1,14 +1,17 @@
 main:
 	//wait 3
-	//waitthread register_api_route_test			: success
+	//waitthread register_api_route_get_test		: success
+	//waitthread register_api_route_post_test			//: success
 	
 	//wait 30
-	//waitthread unregister_api_route_test			: success
+	//waitthread unregister_api_route_get_test			: success
+	//waitthread unregister_api_route_post_test			: success
 	
-	//waitthread create_api_request_test			: success
+	//waitthread create_api_get_request_test			: success
+	waitthread create_api_post_request_test			//: success
 end
 
-register_api_route_test:
+register_api_route_get_test:
 	println("\n\n~~~~~~~Testing register_api_route: / ~~~~~~~~~~~")
 	local.result = register_api_route "/" "get" tests/api.scr::get_handler
 	println ("~~local.result~~")
@@ -16,6 +19,17 @@ register_api_route_test:
 	println "\\u"
 end
 
+register_api_route_post_test:
+	println("\n\n~~~~~~~Testing register_api_route post: /posttest ~~~~~~~~~~~")
+	local.result = register_api_route "/posttest" "post" tests/api.scr::post_handler
+	println ("~~local.result~~")
+	println local.result
+	println "\\u"
+end
+
+//simple test: iwr -Uri 'http://localhost:8080?a=b&c=d'
+//stress test: remove all printlns, then: while(1) {iwr -Uri 'http://localhost:8080?a=b&c=d' }
+//wait test: add wait 20 before end (to confirm gameplay is not paused)
 get_handler local.query_strings:
 	println "query_strings======="
 	for( local.i = int 0 ; local.i < local.query_strings.size ; local.i++ )
@@ -31,27 +45,68 @@ get_handler local.query_strings:
 	println local.arr[1]
 end local.arr
 
-unregister_api_route_test:
-	println("\n\n~~~~~~~Testing unregister_api_route_test: / ~~~~~~~~~~~")
+//simple test: iwr -Method 'POST' -Uri 'http://localhost:8080/posttest' -Body '{ "pi": 3.141, "happy": true, "name": "Niels", "nothing": null, "answer": { "everything": 42 }, "list": [1, 0, 2], "object": { "currency": "USD", "value": 42.99 } }'
+post_handler local.parsed_body:
+	println "parsed_body======="
+	println (local.parsed_body == NULL)
+	println json_stringify local.parsed_body
+	println "=======parsed_body"
+	local.arr[2] = wewewewewew;
+	local.arr[1] = etaseg;
+	local.arr[0] = sdgfdsg;
+	println local.arr[0]
+	println local.arr[2]
+	println local.arr[1]
+end local.arr
+
+unregister_api_route_get_test:
+	println("\n\n~~~~~~~Testing unregister_api_route_test get: / ~~~~~~~~~~~")
 	local.result = unregister_api_route "/" "get"
 	println ("~~local.result~~")
 	println local.result
 end
 
-create_api_request_test:
-	println("\n\n~~~~~~~Testing create_api_request 10 times: / ~~~~~~~~~~~")
+unregister_api_route_post_test:
+	println("\n\n~~~~~~~Testing unregister_api_route_test post: /posttest ~~~~~~~~~~~")
+	local.result = unregister_api_route "/posttest" "post"
+	println ("~~local.result~~")
+	println local.result
+end
+
+create_api_get_request_test:
+	println("\n\n~~~~~~~Testing create_api_request get 10 times: / ~~~~~~~~~~~")
 	for(local.i = 1; local.i <=10; local.i++)
 	{
 		println "~~attempt " local.i "~~" 
-		local.result = create_api_request "http://jsonplaceholder.typicode.com/todos/1" "get" tests/api.scr::request_handler local.i
+		local.result = create_api_request "http://jsonplaceholder.typicode.com/todos/1" "get" tests/api.scr::get_request_handler local.i
 		println ("~~local.result~~")
 		println local.result
 		waitframe
 	}
 end
 
-request_handler local.http_code local.resp local.user_data:
+get_request_handler local.http_code local.resp local.user_data:
+	println "~~~~~~~~get_response~~~~~~"
+	println "http_code: " local.http_code
+	println "resp: " local.resp
+	println "user_data: " local.user_data
 	println "~~~~~~~~~~~~~~~~~~~~~~~~~~"
+end
+
+create_api_post_request_test:
+	println("\n\n~~~~~~~Testing create_api_request get 10 times: / ~~~~~~~~~~~")
+	for(local.i = 1; local.i <=10; local.i++)
+	{
+		println "~~attempt " local.i "~~" 
+		local.result = create_api_request "http://jsonplaceholder.typicode.com/posts" "post" tests/api.scr::post_request_handler local.i
+		println ("~~local.result~~")
+		println local.result
+		waitframe
+	}
+end
+
+post_request_handler local.http_code local.resp local.user_data:
+	println "~~~~~~~post_response~~~~~~"
 	println "http_code: " local.http_code
 	println "resp: " local.resp
 	println "user_data: " local.user_data

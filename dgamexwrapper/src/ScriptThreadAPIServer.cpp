@@ -60,7 +60,7 @@ void ScriptThread::RegisterAPIRouteEvent(Event * ev)
 	str method = ev->GetString(2);
 	method.tolower();
 
-	if (method.length() == 0 || method != "get")
+	if (method.length() == 0 || (method != "get" && method != "post"))
 	{
 		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to register_api_route!\n", method.c_str());
 		ev->AddInteger(APIR_INVALID);
@@ -137,7 +137,7 @@ void ScriptThread::UnregisterAPIRouteEvent(Event * ev)
 	str method = ev->GetString(2);
 	method.tolower();
 
-	if (method.length() == 0 || method != "get" )
+	if (method.length() == 0 || (method != "get"  && method != "post"))
 	{
 		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to unregister_api_route!\n", method.c_str());
 		ev->AddInteger(APIR_INVALID);

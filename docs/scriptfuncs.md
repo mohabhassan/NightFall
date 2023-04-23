@@ -11,7 +11,7 @@
 	register_api_route(string uri, string method, string/array scriptname)
 Registers callback handler for give api route/method.
 
-Current allowed values for `method` is `"get"`.
+Current allowed values for `method` are `"get"` and `"post"`.
 
 See [api_server.md](api_server.md) for server api configuration settings and more info.
 
@@ -38,7 +38,7 @@ local.result will have one of the following values:
 	unregister_api_route(string uri, string method)
 Un-registers callback handler for give api route/method.
 
-Current allowed values for `method` is `"get"`.
+Current allowed values for `method` are `"get"` and `"post"`.
 
 See [api_server.md](api_server.md) for server api configuration settings and more info.
 
@@ -67,9 +67,13 @@ Creates an http request from the server to url/method combination.
 
 Calls script after request is done.
 
-Url may contain query string.
+Url may contain query string for GET requests.
 
-Current allowed values for `method` is `"get"`.
+Current allowed values for `method` are `"get"` and `"post"`.
+
+For GET requests, user_data is simply passed to the handle script.
+
+For POST requests, user_data is json-parsed and used as the HTTP POST request body. It's also passed to the handle script.
 
 See [api_client.md](api_client.md) for client api configuration settings and more info.
 

@@ -9,6 +9,19 @@ bool ScriptedEvent::eventRegistered[SEV_MAX] = { false };
 
 extern DirectorClass *Director;
 
+vector<string> ScriptedEvent::ScriptedEventTypeStr =
+{
+	"connected",
+	"disconnected",
+	"spawn",
+	"damage",
+	"kill",
+	"keypress",
+	"intermission",
+	"servercommand",
+	"dmmessage"
+};
+
 ScriptedEvent::ScriptedEvent(ScriptedEventType type)
 	: m_Type (type)
 {
@@ -20,45 +33,25 @@ ScriptedEvent::~ScriptedEvent()
 
 ScriptedEventType ScriptedEvent::ParseType(str type)
 {
-	if (type == "connected")
+	auto it = find(ScriptedEventTypeStr.begin(), ScriptedEventTypeStr.end(), type.c_str());
+	if (it == ScriptedEventTypeStr.end())
 	{
-		return SEV_CONNECTED;
-	}
-	else if (type == "disconnected")
-	{
-		return SEV_DISCONNECTED;
-	}
-	else if (type == "spawn")
-	{
-		return SEV_SPAWN;
-	}
-	else if (type == "damage")
-	{
-		return SEV_DAMAGE;
-	}
-	else if (type == "kill")
-	{
-		return SEV_KILL;
-	}
-	else if (type == "keypress")
-	{
-		return SEV_KEYPRESS;
-	}
-	else if (type == "servercommand")
-	{
-		return SEV_SERVERCOMMAND;
-	}
-	else if (type == "intermission")
-	{
-		return SEV_INTERMISSION;
-	}
-	else if (type == "dmmessage")
-	{
-		return SEV_DMMESSAGE;
+		return SEV_UNK;
 	}
 	else
 	{
-		return SEV_UNK;
+		return ScriptedEventType(it - ScriptedEventTypeStr.begin());
+	}
+}
+string ScriptedEvent::GetTypeStr(ScriptedEventType type)
+{
+	if (type == SEV_UNK || type == SEV_MAX)
+	{
+		return "unknown";
+	}
+	else
+	{
+		return ScriptedEventTypeStr[type];
 	}
 }
 
@@ -122,8 +115,7 @@ void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args, ScriptVaria
 	}
 	catch (const ScriptException& e)
 	{
-		str wht = e.string;
-		throw;//shouldn't interfere with mohbt
+		gi.Printf(PATCH_NAME " Scripted event error for event %s: %s\n", GetTypeStr(m_Type).c_str(), e.string.c_str());
 	}
 }
 

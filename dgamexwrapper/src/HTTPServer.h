@@ -7,6 +7,7 @@
 #define NO_SSL
 #include "CivetServer.h"
 #include "ScriptVariable.h"
+#include "g_json.h"
 #include <list>
 #include <mutex>
 #include <atomic>
@@ -51,11 +52,12 @@ class QueuedRequest
 {
 	string route;
 	string method;
-	vector<pair<string, string>> query_strings;//without starting '?'
+	json req_params;	//for get: it's query string without starting '?'
+						//for post: it's parsed body as json
 	unsigned int id;
 public:
-	QueuedRequest(string rt, string mt, vector<pair<string, string>> qss, unsigned int iid)
-	: route(rt), method(mt), query_strings(qss), id(iid)
+	QueuedRequest(string rt, string mt, json rqp, unsigned int iid)
+	: route(rt), method(mt), req_params(rqp), id(iid)
 	{
 
 	}
@@ -81,9 +83,9 @@ public:
 	{
 		return method;
 	}
-	vector<pair<string, string>> & getQueryStrings()
+	json & getRequestParameters()
 	{
-		return query_strings;
+		return req_params;
 	}
 private:
 
@@ -184,7 +186,9 @@ class HTTPServer
 
 	static list<QueuedResponse> responses;
 	static mutex responses_mutex;
+	static condition_variable responses_cv;
 
+	static bool shouldShutdown;
 public:
 	HTTPServer();
 	~HTTPServer();
@@ -200,11 +204,11 @@ public:
 	static void HandleNextAPIResponse();
 
 	//thread safe funcs:
-	static int EnqueueRequest(string &route, string method, vector<pair<string,string>> &query_strings);
+	static int EnqueueRequest(string &route, string method, json &req_params);
 	static bool DequeueRequest(QueuedRequest &req);
 
 	static void EnqueueResponse(int id, ScriptVariable &rVal);
 	static void EnqueueResponse(int id, QueuedResponse::ResponseType tp);
-	static bool DequeueResponse(int id, QueuedResponse &res);
+	static void DequeueResponse(int id, QueuedResponse &res);
 };
 

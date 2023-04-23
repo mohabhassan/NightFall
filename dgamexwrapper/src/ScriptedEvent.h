@@ -38,7 +38,7 @@ class ScriptedEvent
 {
 	static ScriptVariable *eventScripts[SEV_MAX];
 	static bool eventRegistered[SEV_MAX];
-
+	static vector<string> ScriptedEventTypeStr;
 
 	ScriptedEventType m_Type;
 public:
@@ -47,6 +47,7 @@ public:
 	~ScriptedEvent();
 
 	static ScriptedEventType ParseType(str type);
+	static string GetTypeStr(ScriptedEventType type);
 	static void Shutdown();
 
 	void Trigger(std::vector<ScriptedEventArgument> args, ScriptVariable * returnValue = NULL);

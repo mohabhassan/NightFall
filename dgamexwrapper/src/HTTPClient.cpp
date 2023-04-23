@@ -7,7 +7,7 @@
 #include "CustomCvar.h"
 #include "Director.h"
 #include "Event.h"
-
+#include "g_json.h"
 condition_variable HTTPClient::cv;
 mutex HTTPClient::cv_mutex;//mutex for cv
 
@@ -64,7 +64,21 @@ void HTTPClient::CreateRequest(QueuedClientRequest & req)
 		request.setOpt(new curlpp::options::Url(req.getURL()));
 		request.setOpt(new curlpp::options::Verbose(false));
 
-
+		list<string> headers;
+		if (req.getMethod() == "post")
+		{
+			//set post
+			request.setOpt(new curlpp::options::Post(true));
+			//set headers
+			headers.emplace_back("Accept: application/json");
+			headers.emplace_back("Content-Type: application/json");
+			headers.emplace_back("charset: utf-8");
+			request.setOpt(new curlpp::options::HttpHeader(headers));
+			//add user data to request body
+			json j_user_data;
+			GameVarToJson(req.getUserData(), j_user_data);
+			request.setOpt(new curlpp::options::PostFields(j_user_data.dump()));
+		}
 
 		//fail on error
 		request.setOpt(new curlpp::options::FailOnError(true));
@@ -204,9 +218,9 @@ void HTTPClient::HandleNextAPIResponse()
 		{
 			Director->ExecuteScript(&ev);
 		}
-		catch (const ScriptException&)
+		catch (const ScriptException&e)
 		{
-			//TODO: report
+			gi.Printf(PATCH_NAME " HTTP Client API response error: %s\n", e.string.c_str());
 		}
 	}
 }
