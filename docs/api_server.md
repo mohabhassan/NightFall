@@ -81,7 +81,7 @@ end local.resp
 ```
 For GET requests, `local.req_params` is the query strings provided in the HTTP GET request. Looping the query strings is done as specified in the callback example.
 
-For POST requests, `local.req_params` is the json-parsed body provided in the HTTP POST request.
+For POST requests, `local.req_params` is the json-parsed body provided in the HTTP POST request. If POST body cannot be parsed, `local.req_params` will be NULL.
 
 
 API server will return local.resp as JSON string, so expected HTTP response body is:
