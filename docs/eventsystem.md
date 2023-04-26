@@ -82,17 +82,17 @@ loca.text[4] = "noob"
 | Name | damage |
 |--|--|
 | Description | Damage event, occurs when any entity is damaged. |
-| Arguments | `local.target` - target entity isn't always player or actor entity. It can be a weapon entity or world entity<br>`local.inflictor` - inflictor entity, entity that deals damage<br>`local.damage` - float damage, damage amount<br>`local.position` - vector position<br>`local.direction` - vector direction<br>`local.normal` - vector normal<br>`local.knockback` - int knockback value<br>`local.damageflags` - int damageflags<br>`local.meansofdeath` - int meansofdeath<br>`local.location` - int location id<br>`local.entity` - entity that get's damage, often a player but can be any oder damageable entity<br> |
+| Arguments | `local.attacker` - attacker entity <br>`local.inflictor` - inflictor entity, entity that deals damage, isn't always player or actor entity. It can be a weapon entity or world entity<br>`local.damage` - float damage, damage amount<br>`local.position` - vector position<br>`local.direction` - vector direction<br>`local.normal` - vector normal<br>`local.knockback` - int knockback value<br>`local.damageflags` - int damageflags<br>`local.meansofdeath` - int meansofdeath<br>`local.location` - int location id<br>`local.entity` - entity that gets damage, often a player but can be any other damageable entity<br> |
 
 **Example usage:**
 ```
 local.resullt = registerev "damage" tests/reborn_events.scr::damage
 
 
-damage local.target local.inflictor local.damage local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.entity:
+damage local.attacker local.inflictor local.damage local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.entity:
 
 	iprintln ("==========DAMAGED==========")
-	iprintln ("Target: " + local.target)
+	iprintln ("Attacker: " + local.attacker)
 	iprintln ("Inflictor: " + local.inflictor)
 	iprintln ("Damage: " + local.damage)
 	iprintln ("Position: " + local.position)
@@ -108,8 +108,14 @@ damage local.target local.inflictor local.damage local.position local.direction 
 
 end
 ```
+### Differences compared to reborn:
+
 **Important Note:** If inflictor entity was NULL, it's considered world.
+
 **Important Note:** If attacker entity was NULL, it's considered world.
+
+**Important Note:** First argument is attacker, not target.
+
 
 ---
 ### keypress
