@@ -67,7 +67,7 @@ void ScriptedEvent::Shutdown()
 	}
 }
 
-//returns return value index in returnValues, should remove it manaually by calling func.
+//returns return value index in returnValues, should remove it manually by calling func.
 //returns defaultReturnValueIndex if no return value.
 void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args, ScriptVariable * returnValue)
 {

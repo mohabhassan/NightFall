@@ -66,7 +66,7 @@ qboolean MOD_matches(int incoming_damage, int damage_type)
  * Hooked for ScriptedEvent usage.
  **/
 //TODO: make better hook by hooking the event itself.
-void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
+void __fastcall Damage(Entity * _this, void* edx, Entity * pInflictorEntity, Entity* pAttackerEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
 {
 	if (MOD_matches(meansofdeath, _this->damage_type))
 	{
@@ -75,7 +75,7 @@ void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity 
 		{
 			//Entity target, Entity inflictor, Float damage, Vector position, Vector direction, Vector normal, Integer knockback, Integer damageflags, Integer meansofdeath, Integer location, Entity entity
 			sev.Trigger({
-				pTargetEntity,
+				pAttackerEntity,
 				pInflictorEntity,
 				damage,
 				Vector(vectPositionx,	vectPositiony,	vectPositionz),
@@ -89,8 +89,8 @@ void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity 
 				});
 		}
 	}
-	_this->Damage_Orignal(_this, pTargetEntity,
-		pInflictorEntity,
+	_this->Damage_Orignal(_this, pInflictorEntity,
+		pAttackerEntity,
 		damage, 
 		vectPositionx, vectPositiony, vectPositionz,
 		vectDirectionx, vectDirectiony, vectDirectionz,

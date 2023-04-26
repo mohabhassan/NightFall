@@ -33,7 +33,6 @@ private:
 		unsigned int requestID = HTTPServer::EnqueueRequest(string(req_info->local_uri), method, j_req_params);
 
 
-		//todo: replace polling by condition_varaible
 		QueuedResponse res;
 		HTTPServer::DequeueResponse(requestID, res);
 
