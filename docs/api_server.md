@@ -84,7 +84,7 @@ For GET requests, `local.req_params` is the query strings provided in the HTTP G
 For POST requests, `local.req_params` is the json-parsed body provided in the HTTP POST request. If POST body cannot be parsed, `local.req_params` will be NULL.
 
 
-API server will return local.resp as JSON string, so expected HTTP response body is:
+API server will return local.resp as JSON string (using [json_stringify](scriptfuncs.md#json_stringify)) and store it under `message` key, so expected HTTP response body is:
 
  `{"message":{"content":"yay!","type":"string"},"status":"success"}`
 
@@ -106,14 +106,7 @@ is sent.
  * In case of success, a response of:  
 
 `{"status":"success", "message" : variable_json_str_here}`  
-where `variable_json_str_here` is a JSON string of the value of the variable returned by the callback script.
+where `variable_json_str_here` is a JSON string of the value of the variable returned by the callback script (converted using [json_stringify](scriptfuncs.md#json_stringify)).
 
-**IMPORTANT NOTE:** Non constant arrays have string indices instead of integer indices. Use [constarray](scriptfuncs.md#constarray) to convert an array to a constant array which will have integer indices.
 
-**IMPORTANT NOTE:** Some variable types are not supported for conversion to JSON, these include: 
-
- - container, an array of listeners, $player for example
- - safe container, an array of listeners, $player for example
- - pointer, not usually used in scripts
- - reference, a reference to array, usually not used in scripts
 

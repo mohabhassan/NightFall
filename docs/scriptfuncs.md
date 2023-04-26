@@ -73,7 +73,7 @@ Current allowed values for `method` are `"get"` and `"post"`.
 
 For GET requests, user_data is simply passed to the handle script.
 
-For POST requests, user_data is json-parsed and used as the HTTP POST request body. It's also passed to the handle script.
+For POST requests, user_data is json-parsed (via [json_stringify](scriptfuncs.md#json_stringify)) and used as the HTTP POST request body. It's also passed to the handle script.
 
 See [api_client.md](api_client.md) for client api configuration settings and more info.
 
@@ -172,10 +172,12 @@ local.result[pi]: 3.141
 	json_stringify(variable var)
 Convert given `var` into a json string.
 
+Resulting string will desribe a JSON object containing 2 keys: `content` and `type`.
+
 
 Example:
 ```
-local.result = json_stringify "{ \"happy\": true, \"pi\": 3.141 }"
+local.result = json_stringify aaa::bb::cc
 
 ```
 Result:
@@ -183,6 +185,16 @@ Result:
 local.result = json_stringify aaa::bb::cc
 local.result = {"conent":[{"content":"aaa","type":"string"},{"content":"bb","type":"string"},{"content":"cc","type":"string"}],"type":"array"}
 ```
+
+**IMPORTANT NOTE:** Non constant arrays have string indices instead of integer indices. Use [constarray](scriptfuncs.md#constarray) to convert an array to a constant array which will have integer indices.
+
+**IMPORTANT NOTE:** Some variable types are not supported for conversion to JSON, these include: 
+
+ - container, an array of listeners, $player for example
+ - safe container, an array of listeners, $player for example
+ - pointer, not usually used in scripts
+ - reference, a reference to array, usually not used in scripts
+
 ---
 ## Slightly modified reborn functions
 ---
