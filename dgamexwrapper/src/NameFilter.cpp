@@ -205,7 +205,7 @@ bool NameFilter::AddName(string name_str)
 	bool any = false;
 	if (name_str.size() > anyStr.size())
 	{
-		if (name_str.compare(name_str.size() - anyStr.size() - 1, anyStr.size(), anyStr))
+		if (name_str.compare(name_str.size() - anyStr.size(), anyStr.size(), anyStr) == 0)
 		{
 			name_str.erase(name_str.size() - anyStr.size());
 			any = true;
