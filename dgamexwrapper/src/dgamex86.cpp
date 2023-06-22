@@ -570,6 +570,12 @@ void shutdownConsoleCommands()
 void startCrashReporter()
 {
 	gi.Printf(PATCH_NAME ": starting crash reporter \n");
+	if (IsDebuggerPresent())
+	{
+		gi.Printf("crash reporter already running\n");
+		return;
+	}
+
 	CustomCvar sv_crashrpt_poll_delay("sv_crashrpt_poll_delay", "5", CVAR_ARCHIVE);//in seconds
 	CustomCvar sv_crashrpt_hang_wait("sv_crashrpt_hang_wait", "30", CVAR_ARCHIVE);//in seconds
 
