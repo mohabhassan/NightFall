@@ -375,7 +375,7 @@ string NameFilter::GetNamesInPage(int page_num)
 		return "Name Ban List Empty";
 	}
 
-	if (startIndex > NameEntries.size() - 1 || startIndex < 1)
+	if (startIndex > NameEntries.size() - 1 || startIndex < 0)
 	{
 		return "Page Empty";
 	}
@@ -418,7 +418,7 @@ string NameFilter::GetProtectedNamesInPage(int page_num)
 		return "Protected Name List Empty";
 	}
 
-	if (startIndex > ProtectedNameEntries.size() - 1 || startIndex < 1)
+	if (startIndex > ProtectedNameEntries.size() - 1 || startIndex < 0)
 	{
 		return "Page Empty";
 	}

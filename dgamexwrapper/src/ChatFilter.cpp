@@ -425,7 +425,7 @@ string ChatFilter::GetWordsInPage(int page_num)
 		return "Chat Filter List Empty";
 	}
 
-	if (startIndex > ChatEntries.size() - 1 || startIndex < 1)
+	if (startIndex > ChatEntries.size() - 1 || startIndex < 0)
 	{
 		return "Page Empty";
 	}

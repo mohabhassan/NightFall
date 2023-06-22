@@ -754,6 +754,11 @@ void Player::AdminListNamesEvent(Event * ev)
 	}
 
 	int page_num = ev->GetInteger(1);
+	if (page_num < 1)
+	{
+		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		return;
+	}
 	string namelist_str = admin.ListNamePage(page_num);
 	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", namelist_str.c_str());
 }
@@ -839,6 +844,11 @@ void Player::AdminListProtectedNamesEvent(Event * ev)
 	}
 
 	int page_num = ev->GetInteger(1);
+	if (page_num < 1)
+	{
+		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		return;
+	}
 	string namelist_str = admin.ListProtectedNamePage(page_num);
 	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", namelist_str.c_str());
 }
@@ -917,6 +927,11 @@ void Player::AdminListWordsEvent(Event * ev)
 	}
 
 	int page_num = ev->GetInteger(1);
+	if (page_num < 1)
+	{
+		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		return;
+	}
 	string wordlist_str = admin.ListChatPage(page_num);
 	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", wordlist_str.c_str());
 }
@@ -1158,7 +1173,7 @@ void Player::AdminStatusEvent(Event * ev)
 		ss << i << " | ";
 		ss << cl->ping << " | ";
 		ss << cl->name << " | ";
-		ss << to_string(cl->netchan.remoteAddress.ip[0]) + "." + to_string(cl->netchan.remoteAddress.ip[1]) + "." + to_string(cl->netchan.remoteAddress.ip[2]) + "." + to_string(cl->netchan.remoteAddress.ip[3]) << " | ";
+		ss << GetIPFromClient(cl) << " | ";
 		ss << ntohs(cl->netchan.remoteAddress.port) << " | ";
 		ss << cl->rate << " | ";
 		ss << endl;

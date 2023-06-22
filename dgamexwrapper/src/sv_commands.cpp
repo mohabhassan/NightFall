@@ -415,6 +415,11 @@ void SV_ListNames()
 	}
 
 	int page_num = atoi(gi.Argv(1));
+	if (page_num < 1)
+	{
+		gi.Printf("Invalid page number.\n");
+		return;
+	}
 	string namelist_str = admin.ListNamePage(page_num);
 	gi.Printf("%s\n", namelist_str.c_str());
 }
@@ -488,6 +493,11 @@ void SV_ListProtectedNames()
 	}
 
 	int page_num = atoi(gi.Argv(1));
+	if (page_num < 1)
+	{
+		gi.Printf("Invalid page number.\n");
+		return;
+	}
 	string namelist_str = admin.ListProtectedNamePage(page_num);
 	gi.Printf("%s\n", namelist_str.c_str());
 }
@@ -558,6 +568,11 @@ void SV_ListWords()
 	}
 
 	int page_num = atoi(gi.Argv(1));
+	if (page_num < 1)
+	{
+		gi.Printf("Invalid page number.\n");
+		return;
+	}
 	string wordlist_str = admin.ListProtectedNamePage(page_num);
 	gi.Printf("%s\n", wordlist_str.c_str());
 }
