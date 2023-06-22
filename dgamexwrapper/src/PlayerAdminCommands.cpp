@@ -661,6 +661,12 @@ void Player::AdminListIPsEvent(Event * ev)
 	}
 
 	int page_num = ev->GetInteger(1);
+	if (page_num < 1)
+	{
+		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		return;
+	}
+
 	string iplist_str = admin.ListIPPage(page_num);
 	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", iplist_str.c_str());
 

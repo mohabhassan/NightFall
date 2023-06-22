@@ -14,7 +14,7 @@ vector<ConsoleCommand> ConsoleCommands = {
 	{"banid",					SV_ClientBan},
 	{"banidr",					SV_ClientBanReason},
 	{"unbanip",					SV_UnbanIP},
-	{"listsips",				SV_ListIPs},
+	{"listips",					SV_ListIPs},
 	{"banname",					SV_BanName},
 	{"unbanname",				SV_UnbanName},
 	{"listnames",				SV_ListNames},
@@ -205,7 +205,7 @@ void SV_BanIP()
 		gi.Printf("USAGE: banip <ip>\n");
 		return;
 	}
-	string ip = gi.Argv(1);
+	string ip = gi.Argv(1);//TODO: kick all matching ips
 
 	if (!validateIP(ip.c_str()))
 	{
@@ -243,7 +243,7 @@ void SV_BanIPReason()
 		return;
 	}
 
-	string reason = gi.Argv(2);//never used
+	string reason = gi.Argv(2);//TODO: kick all matching ips with reason
 
 	if (admin.AddIPBan(ip.c_str()))
 	{
@@ -336,6 +336,13 @@ void SV_ListIPs()
 	}
 
 	int page_num = atoi(gi.Argv(1));
+
+	if (page_num < 1)
+	{
+		gi.Printf("Invalid page number.\n");
+		return;
+	}
+
 	string iplist_str = admin.ListIPPage(page_num);
 	gi.Printf("%s\n", iplist_str.c_str());
 }

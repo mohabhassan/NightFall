@@ -293,7 +293,7 @@ string IPFilter::GetIPsInPage(int page_num)
 		return "IP Ban List Empty";
 	}
 
-	if (startIndex > IPEntries.size() - 1 || startIndex < 1)
+	if (startIndex > IPEntries.size() - 1 || startIndex < 0)
 	{
 		return "Page Empty";
 	}
