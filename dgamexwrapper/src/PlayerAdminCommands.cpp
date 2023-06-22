@@ -364,7 +364,7 @@ void Player::AdminLoginEvent(Event * ev)
 	gi.SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have been authed as admin \n\"");
 
 
-	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged IN as admin using login \"%s\" and password \"%s\"\n", Info_ValueForKey(client->pers.userinfo, "ip"), client->pers.netname, client->ps.clientNum, login.c_str(), password.c_str());
+	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged IN as admin using login \"%s\" and password \"%s\"\n", GetIPFromClient(GetClientByClientNum(client->ps.clientNum)), client->pers.netname, client->ps.clientNum, login.c_str(), password.c_str());
 
 }
 
@@ -377,7 +377,7 @@ void Player::AdminLogoutEvent(Event * ev)
 	}
 
 	gi.SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have logged out as admin \n\"");
-	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged OUT as admin\n", Info_ValueForKey(client->pers.userinfo, "ip"), client->pers.netname, client->ps.clientNum);
+	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged OUT as admin\n", GetIPFromClient(GetClientByClientNum(client->ps.clientNum)), client->pers.netname, client->ps.clientNum);
 
 }
 
@@ -508,7 +508,7 @@ void Player::AdminBanIPEvent(Event * ev)
 		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banip <ip>\n\"");
 		return;
 	}
-	str ip = ev->GetString(1);
+	str ip = ev->GetString(1);//TODO: kick all matching ips
 
 	if (!validateIP(ip.c_str()))
 	{
@@ -544,7 +544,7 @@ void Player::AdminBanIPReasonEvent(Event * ev)
 		return;
 	}
 	str ip = ev->GetString(1);
-	str reason = ev->GetString(2);//never used
+	str reason = ev->GetString(2);//TODO: kick all matching ips with reason
 	if (!validateIP(ip.c_str()))
 	{
 		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid IP format!\n\"");

@@ -434,13 +434,13 @@ void ClientAdmin::AddBan(int bannedClientNum, bool hasReason, string reason)
 		return;
 	}
 
-	char * ip = Info_ValueForKey(cl->userinfo, "ip");
+	string ip = GetIPFromClient(cl);
 
 	for (size_t i = 0; ip[i] != NULL; i++)
 	{
 		if (ip[i] == ':')
 		{
-			ip[i] = NULL;
+			ip.resize(i, ' ');
 			break;
 		}
 	}
@@ -451,7 +451,7 @@ void ClientAdmin::AddBan(int bannedClientNum, bool hasReason, string reason)
 	}
 	else
 	{
-		gi.Printf(PATCH_NAME " ClientAdmin system error: could not ban ip of client num: %d, name: %s empty ip!\n", clientNum, cl->name);
+		gi.Printf(PATCH_NAME " ClientAdmin system error: could not ban ip of client num: %d, name: %s empty ip!\n", bannedClientNum, cl->name);
 	}
 
 }

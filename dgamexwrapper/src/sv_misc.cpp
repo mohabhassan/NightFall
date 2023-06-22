@@ -1,5 +1,10 @@
 #include "sv_misc.h"
 
+#include <string>
+
+using std::string;
+using std::to_string;
+
 client_t **svs_clients;
 int *svs_numclients;
 
@@ -27,6 +32,11 @@ void __cdecl NET_OutOfBandPrint(netSrc_t sock, netAdr_t adr, const char * format
 	vsnprintf(string, sizeof(string), format, argptr);
 	va_end(argptr);
 	NET_OutOfBandPrint_Real(sock, adr, string);
+}
+
+const char* GetIPFromClient(client_t* cl)
+{
+	return string(to_string(cl->netchan.remoteAddress.ip[0]) + "." + to_string(cl->netchan.remoteAddress.ip[1]) + "." + to_string(cl->netchan.remoteAddress.ip[2]) + "." + to_string(cl->netchan.remoteAddress.ip[3])).c_str();
 }
 
 void SV_Misc_Init()

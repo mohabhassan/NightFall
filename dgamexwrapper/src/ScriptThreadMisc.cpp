@@ -6,7 +6,7 @@
 #include "CustomCvar.h"
 #include <regex>
 #include "g_json.h"
-
+#include "sv_misc.h"
 
 
 void ScriptThread::MiscInit()
@@ -276,7 +276,7 @@ void ScriptThread::PlayerGetIpEvent(Event * ev)
 
 	if (ent != NULL && ent->client != NULL)
 	{
-		ip = Info_ValueForKey(ent->client->pers.userinfo, "ip");
+		ip = GetIPFromClient(GetClientByClientNum(ent->client->ps.clientNum));
 	}
 	//string uinfo = ent->client->pers.userinfo;
 	//string ip = "";
