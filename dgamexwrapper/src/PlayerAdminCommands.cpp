@@ -336,6 +336,16 @@ void Player::AdminCommandsInit()
 		"list loggedin admins"
 	),
 		&Player::AdminListAdminsEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"ad_rcon",
+		EV_CONSOLE,
+		"s",
+		"command",
+		"execute command in console"
+	),
+		&Player::AdminRCONEvent);
+
 	// misc
 	/////////////////////////////////
 }
@@ -1194,4 +1204,31 @@ void Player::AdminListAdminsEvent(Event * ev)
 
 	gi.SendServerCommand(client->ps.clientNum, "print \"%s\"\n", admin.ListOnlineAdmins().c_str());
 
+}
+
+void Player::AdminRCONEvent(Event* ev)
+{
+	ClientAdmin admin(client->ps.clientNum);
+
+	if (!admin.isAdmin() || !admin.hasRight(ClientAdmin::Rcon))
+	{
+		return;
+	}
+
+	if (ev->NumArgs() < 1)
+	{
+		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_rcon <command>\n\"");
+		return;
+	}
+	str cmdStr;
+	for (size_t i = 1; i <= ev->NumArgs(); i++)
+	{
+		cmdStr += ev->GetString(i);
+		cmdStr += " ";
+	}
+
+	cmdStr -= 1;//remove last space
+
+	gi.SendConsoleCommand(cmdStr.c_str());
+	gi.SendServerCommand(client->ps.clientNum, "print \"Executed RCON command.\n\"");
 }

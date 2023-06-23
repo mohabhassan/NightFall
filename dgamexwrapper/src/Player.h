@@ -109,6 +109,8 @@ public:
 	void AdminSayPrivateEvent(Event *ev);
 	void AdminStatusEvent(Event *ev);
 	void AdminListAdminsEvent(Event *ev);
+	void Player::AdminRCONEvent(Event *ev);
+
 };
 
 void __fastcall Respawn(Player *_this, void * edx, Event * ev);
