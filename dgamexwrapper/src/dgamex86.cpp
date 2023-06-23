@@ -557,6 +557,7 @@ void initConsoleCommands()
 	ClientAdmin::Init();
 	IPFilter::Init();
 	NameFilter::Init();
+	ChatFilter::Init();
 	SV_Misc_Init();
 }
 
@@ -565,6 +566,7 @@ void shutdownConsoleCommands()
 	ClientAdmin::Shutdown();
 	IPFilter::Shutdown();
 	NameFilter::Shutdown();
+	ChatFilter::Shutdown();
 }
 
 void startCrashReporter()
