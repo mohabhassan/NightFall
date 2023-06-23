@@ -87,3 +87,21 @@ void G_PrintToAllClients(const char *pszString, qboolean bBold)
 		gi.SendServerCommand(-1, "print \"" HUD_MESSAGE_YELLOW "%s\n\"", pszString);
 	}
 }
+
+void G_PrintToClient(int clientnum, const char* pszString)
+{
+	constexpr int buf_len = 500;
+	static char buf[buf_len];
+	int remlen = strlen(pszString);
+	int curr_index = 0;
+	while (remlen > buf_len-1)
+	{
+		strncpy(buf, pszString+curr_index, buf_len - 1);
+		buf[buf_len-1] = NULL;
+		remlen = remlen - buf_len - 1;
+		curr_index += buf_len - 1;
+		gi.SendServerCommand(clientnum, "print \"%s\"", buf);
+	}
+	strncpy(buf, pszString + curr_index, buf_len - 1);
+	gi.SendServerCommand(clientnum, "print \"%s\n\"", buf);
+}

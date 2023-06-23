@@ -9,3 +9,4 @@ int G_GetEntityIndex(gentity_t * ent);
 gentity_t *G_GetGEntity(int ent_num);
 
 void G_PrintToAllClients(const char *pszString, qboolean bBold = qtrue);
+void G_PrintToClient(int clientnum, const char* pszString);

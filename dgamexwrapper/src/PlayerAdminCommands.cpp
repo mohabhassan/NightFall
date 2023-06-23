@@ -850,7 +850,7 @@ void Player::AdminListProtectedNamesEvent(Event * ev)
 		return;
 	}
 	string namelist_str = admin.ListProtectedNamePage(page_num);
-	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", namelist_str.c_str());
+	G_PrintToClient(client->ps.clientNum, namelist_str.c_str());
 }
 
 void Player::AdminBanWordEvent(Event * ev)

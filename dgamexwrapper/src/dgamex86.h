@@ -4193,7 +4193,7 @@ typedef struct gameImport_s
 	void(*Cbuf_ExecuteText) (int exec_when, const char *text);//3: Cbuf_ExecuteText
 #endif
 	void(*DebugGraph)(float value, int color);
-	void(*SendServerCommand)(int client, const char *format, ...);
+	void(*SendServerCommand)(int client, const char *format, ...);//shouldn't exceed 500 bytes
 	void(*DropClient)(int client, const char *reason);
 	void(*MSG_WriteBits)(int value, int bits);
 	void(*MSG_WriteChar)(int c);
