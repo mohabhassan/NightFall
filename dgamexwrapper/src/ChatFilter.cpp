@@ -253,20 +253,18 @@ bool ChatFilter::RemoveWord(string word_str)
 bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &shouldKick, string & rejectReason)
 {
 
-	//sayteam test1 test2 test3 test4 test5 sdfgfsg
-	//args are:
-	//clientnum part1 part2 part3 part4 ...
+	//say test1 test2 test3 test4 test5 sdfgfsg
+	//chat_args are:
+	//part1 part2 part3 part4 ...
 	//example:
-	//1 test1 test2 test3 test4 ...
+	//test1 test2 test3 test4 ...
 	//
-	//test1 is arg 2
-	//sayteam is -1
-	//normal say is 0
-	//sayprivate & sayone: clientnum is actualy clientnum (it's a bit fuzzy when using sv_privateclients)
+	//test1 is arg 0
+	//for taunts it's always 1 arg eg. "*11" or "*22"
 	//important checks first.
-	bool isTaunt = chat_args[1].size() == 3 && chat_args[1][0] == '*' && chat_args[1][1] >= '1' && chat_args[1][1] <= '9' && chat_args[1][2] >= '1' && chat_args[1][2] <= '9';
+	bool isTaunt = chat_args.size() == 1 && chat_args[0].size() == 3 && chat_args[0][0] == '*' && chat_args[0][1] >= '1' && chat_args[0][1] <= '9' && chat_args[0][2] >= '1' && chat_args[0][2] <= '9';
 	shouldKick = false;
-
+	
 	CustomCvar sv_disablechat("sv_disablechat", "0", CVAR_ARCHIVE);
 	if (sv_disablechat.GetIntValue() == 1)
 	{
