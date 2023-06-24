@@ -249,7 +249,16 @@ void ScriptThread::PlayerNetNameEvent(Event * ev)
 
 void ScriptThread::StuffSrvEvent(Event*ev)
 {
-	gi.SendConsoleCommand(ev->GetString(1));
+	str cmdStr;
+	for (size_t i = 1; i <= ev->NumArgs(); i++)
+	{
+		cmdStr += ev->GetString(i);
+		cmdStr += " ";
+	}
+
+	cmdStr -= 1;//remove last space
+
+	gi.SendConsoleCommand(cmdStr.c_str());
 }
 
 
