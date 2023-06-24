@@ -547,7 +547,7 @@ void SV_UnbanWord()
 
 	if (admin.RemoveChatBan(word.c_str()))
 	{
-		gi.Printf("Word %s removed from chat filter.\n", word.c_str());
+		gi.Printf("Word removed from chat filter.\n");
 		return;
 	}
 	else
@@ -573,7 +573,7 @@ void SV_ListWords()
 		gi.Printf("Invalid page number.\n");
 		return;
 	}
-	string wordlist_str = admin.ListProtectedNamePage(page_num);
+	string wordlist_str = admin.ListChatPage(page_num);
 	gi.Printf("%s\n", wordlist_str.c_str());
 }
 
