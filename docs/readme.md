@@ -10,7 +10,8 @@ Here you'll find most of the thing you'll need to know in order to use NightFall
 
  - [Cvars Documentation](cvars.md)
  - [Rcon Commands Documentation](rconcmds.md)
- - [Client Admin Commands Documentation](clientcmds.md)
+ - [Client Admin Commands Documentation](clientadmincmds.md)
+ - [Client Commands Documentation](clientcmds.md)
  - [Filters Documentation](filters.md)
  - [Crash Reporter Documentation](crash_reporter.md)
 ---
