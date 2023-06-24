@@ -10,7 +10,7 @@ void Player::ClientCommandsInit()
 		NULL,
 		"Print current patch version"
 	),
-		&Player::AdminLoginEvent);
+		&Player::PatchVersionEvent);
 }
 
 void Player::PatchVersionEvent(Event * ev)
