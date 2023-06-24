@@ -7,6 +7,7 @@
 #include <regex>
 #include "g_json.h"
 #include "sv_misc.h"
+#include <time.h>
 
 
 void ScriptThread::MiscInit()
@@ -383,38 +384,19 @@ void ScriptThread::GetTimeEvent(Event *ev)
 
 void ScriptThread::GetTimeZoneEvent(Event *ev)
 {
-	int gmttime;
-	int local;
-
-	time_t rawtime;
-	struct tm * timeinfo, *ptm;
-
-	int timediff;
-	int tmp;
-
-	tmp = ev->GetInteger(1);
-
-	time(&rawtime);
-	timeinfo = localtime(&rawtime);
-
-	local = timeinfo->tm_hour;
-
-	ptm = gmtime(&rawtime);
-
-	gmttime = ptm->tm_hour;
-
-	timediff = local - gmttime;
-	//fix: gmt-22 -> gmt+2
-	if (timediff < 12)
+	long timediff_secs;
+	_tzset();
+	errno_t err = _get_timezone(&timediff_secs);
+	if (err)
 	{
-		timediff = 24 + timediff;
-	}
-	else if (timediff > 12)
-	{
-		timediff = 24 - timediff;
+
+		char errStr[128] = { 0 };
+		strerror_s(errStr, err);
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: gettimezone failed to get time zone: %s!\n", errStr);
+		return;
 	}
 
-	ev->AddInteger(timediff);
+	ev->AddInteger(-timediff_secs / 3600);
 }
 /*
 void ScriptThread::GetDateEvent(Event *ev)
@@ -433,7 +415,7 @@ void ScriptThread::GetDateEvent(Event *ev)
 */
 void ScriptThread::GetDateFormattedEvent(Event *ev)
 {
-	char buff[1024] = {0};
+	char buff[512] = {0};
 	time_t rawtime;
 	struct tm * timeinfo;
 
@@ -448,11 +430,11 @@ void ScriptThread::GetDateFormattedEvent(Event *ev)
 
 	if (ev->GetValue(1).GetType() == VARIABLE_INTEGER)
 	{
-		strftime(buff, 1024, "%d.%m.%Y", timeinfo);
+		strftime(buff, 512, "%d.%m.%Y", timeinfo);
 	}
 	else
 	{
-		strftime(buff, 1024, ev->GetString(1).c_str(), timeinfo);
+		strftime(buff, 512, ev->GetString(1).c_str(), timeinfo);
 	}
 
 	ev->AddString(buff);
