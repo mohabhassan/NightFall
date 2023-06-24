@@ -54,8 +54,14 @@ class NameFilter
 	static vector<NameEntry> NameEntries;
 	/* list of protected name entries */
 	static vector<ProtectedNameEntry> ProtectedNameEntries;
+	static void InitNameFilter();
+	static void InitProtectedNameFilter();
+	static void ShutdownNameFilter();
+	static void ShutdownProtectedNameFilter();
+	
 	size_t FindName(string name_str, bool exact);
 	size_t FindProtectedName(string name_str);
+
 public:
 	NameFilter();
 	~NameFilter();

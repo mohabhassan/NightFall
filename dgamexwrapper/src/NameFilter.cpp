@@ -127,6 +127,7 @@ void ProtectedNameEntry::SetName(string name_str, string pw_str)
 	password = pw_str;
 }
 
+
 /*
  * NameFilter::FindName
  * Search for NameEntry that matches name_str.
@@ -437,13 +438,9 @@ string NameFilter::GetProtectedNamesInPage(int page_num)
 }
 
 
-/*
- * NameFilter::Init
- * Initialize name filter & protected name lists, parse name filter file (namefilter.cfg) & protected name filter file (protectednamefilter.cfg)
- *
- * */
-void NameFilter::Init()
+void NameFilter::InitNameFilter()
 {
+
 	ifstream ifs(MAIN_PATH "/namefilter.cfg", ifstream::in);
 	if (!ifs.is_open())
 	{
@@ -476,13 +473,20 @@ void NameFilter::Init()
 	ifs.close();
 	///////////////////////////////////////////////////////////////////////
 
-	ifs.open(MAIN_PATH "/protectednamefilter.cfg", ifstream::in);
+
+}
+
+void NameFilter::InitProtectedNameFilter()
+{
+	ifstream ifs(MAIN_PATH "/protectednamefilter.cfg", ifstream::in);
 	if (!ifs.is_open())
 	{
 		gi.Printf(PATCH_NAME " Protected NameFilter error: could not open " MAIN_PATH "/protectednamefilter.cfg for reading!\n");
 		return;
 	}
 
+	string line;
+	NameFilter filter;
 	for (int lineNum = 1; getline(ifs, line); lineNum++)
 	{
 
@@ -518,14 +522,8 @@ void NameFilter::Init()
 
 }
 
-/*
- * NameFilter::Shutdown
- * Shutdown name filter & protected name filter lists, save to name filter file (namefilter.cfg) & protected name filter file (protectednamefilter.cfg)
- *
- * */
-void NameFilter::Shutdown()
+void NameFilter::ShutdownNameFilter()
 {
-
 	ofstream ofs(MAIN_PATH "/namefilter.cfg", ofstream::out | ofstream::trunc);
 	if (!ofs.is_open())
 	{
@@ -538,7 +536,7 @@ void NameFilter::Shutdown()
 	size_t i;
 	for (i = 0; i < NameEntries.size(); i++)
 	{
-		const NameEntry &e = NameEntries[i];
+		const NameEntry& e = NameEntries[i];
 		ofs << e.GetString() << endl;
 
 	}
@@ -546,9 +544,11 @@ void NameFilter::Shutdown()
 	gi.Printf(PATCH_NAME " NameFilter: saved %d name entries in " MAIN_PATH "/namefilter.cfg\n", i);
 
 	ofs.close();
+}
 
-	//////////////////////////////
-	ofs.open(MAIN_PATH "/protectednamefilter.cfg", ofstream::out | ofstream::trunc);
+void NameFilter::ShutdownProtectedNameFilter()
+{
+	ofstream ofs(MAIN_PATH "/protectednamefilter.cfg", ofstream::out | ofstream::trunc);
 	if (!ofs.is_open())
 	{
 		char errStr[128] = { 0 };
@@ -556,14 +556,36 @@ void NameFilter::Shutdown()
 		gi.Printf(PATCH_NAME " Protected NameFilter error: could not open " MAIN_PATH "/protectednamefilter.cfg for writing : %s!\n", errStr);
 		return;
 	}
-
+	int i;
 	for (i = 0; i < ProtectedNameEntries.size(); i++)
 	{
-		const ProtectedNameEntry &e = ProtectedNameEntries[i];
+		const ProtectedNameEntry& e = ProtectedNameEntries[i];
 		ofs << e.GetString() << endl;
 
 	}
 
 	gi.Printf(PATCH_NAME " Protected NameFilter: saved %d name entries in " MAIN_PATH "/protectednamefilter.cfg\n", i);
+}
+
+/*
+ * NameFilter::Shutdown
+ * Shutdown name filter & protected name filter lists, save to name filter file (namefilter.cfg) & protected name filter file (protectednamefilter.cfg)
+ *
+ * */
+void NameFilter::Shutdown()
+{
+	ShutdownNameFilter();
+	ShutdownProtectedNameFilter();
+}
+
+/*
+ * NameFilter::Init
+ * Initialize name filter & protected name lists, parse name filter file (namefilter.cfg) & protected name filter file (protectednamefilter.cfg)
+ *
+ * */
+void NameFilter::Init()
+{
+	InitNameFilter();
+	InitProtectedNameFilter();
 }
 
