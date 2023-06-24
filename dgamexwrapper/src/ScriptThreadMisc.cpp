@@ -250,6 +250,12 @@ void ScriptThread::PlayerNetNameEvent(Event * ev)
 
 void ScriptThread::StuffSrvEvent(Event*ev)
 {
+	if (ev->NumArgs() < 1)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for stuffsrv!\n");
+		return;
+	}
+
 	str cmdStr;
 	for (size_t i = 1; i <= ev->NumArgs(); i++)
 	{
@@ -751,7 +757,7 @@ void ScriptThread::CastConstArrayEvent(Event * ev)
 	ScriptVariable &arr = ev->GetValue(1);
 	if (arr.GetType() != VARIABLE_ARRAY)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Invalid argument type for constarray, must be a const array. Given %s instead!\n", arr.GetTypeName());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Invalid argument type for constarray, must be an array. Given %s instead!\n", arr.GetTypeName());
 		return;
 	}
 	ScriptVariable ret;
@@ -761,7 +767,7 @@ void ScriptThread::CastConstArrayEvent(Event * ev)
 	}
 	else
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: constarray: array passed cannot be converted to const array!\n", arr.GetTypeName());
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: constarray: array passed cannot be converted to const array!\n");
 		ev->AddNil();
 	}
 }
