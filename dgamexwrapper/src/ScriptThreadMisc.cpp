@@ -276,7 +276,7 @@ void ScriptThread::PlayerGetIpEvent(Event * ev)
 
 	if (ent != NULL && ent->client != NULL)
 	{
-		ip = GetIPFromClient(GetClientByClientNum(ent->client->ps.clientNum));
+		ip = GetIPFromClient(GetClientByClientNum(ent->client->ps.clientNum)).c_str();
 	}
 	//string uinfo = ent->client->pers.userinfo;
 	//string ip = "";

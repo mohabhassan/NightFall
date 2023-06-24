@@ -374,7 +374,7 @@ void Player::AdminLoginEvent(Event * ev)
 	gi.SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have been authed as admin \n\"");
 
 
-	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged IN as admin using login \"%s\" and password \"%s\"\n", GetIPFromClient(GetClientByClientNum(client->ps.clientNum)), client->pers.netname, client->ps.clientNum, login.c_str(), password.c_str());
+	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged IN as admin using login \"%s\" and password \"%s\"\n", GetIPFromClient(GetClientByClientNum(client->ps.clientNum)).c_str(), client->pers.netname, client->ps.clientNum, login.c_str(), password.c_str());
 
 }
 
@@ -387,7 +387,7 @@ void Player::AdminLogoutEvent(Event * ev)
 	}
 
 	gi.SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have logged out as admin \n\"");
-	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged OUT as admin\n", GetIPFromClient(GetClientByClientNum(client->ps.clientNum)), client->pers.netname, client->ps.clientNum);
+	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged OUT as admin\n", GetIPFromClient(GetClientByClientNum(client->ps.clientNum)).c_str(), client->pers.netname, client->ps.clientNum);
 
 }
 

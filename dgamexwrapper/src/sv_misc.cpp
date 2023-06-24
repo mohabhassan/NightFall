@@ -1,8 +1,5 @@
 #include "sv_misc.h"
 
-#include <string>
-
-using std::string;
 using std::to_string;
 
 client_t **svs_clients;
@@ -34,9 +31,16 @@ void __cdecl NET_OutOfBandPrint(netSrc_t sock, netAdr_t adr, const char * format
 	NET_OutOfBandPrint_Real(sock, adr, string);
 }
 
-const char* GetIPFromClient(client_t* cl)
+string GetIPFromClient(client_t* cl)
 {
-	return string(to_string(cl->netchan.remoteAddress.ip[0]) + "." + to_string(cl->netchan.remoteAddress.ip[1]) + "." + to_string(cl->netchan.remoteAddress.ip[2]) + "." + to_string(cl->netchan.remoteAddress.ip[3])).c_str();
+	if (!cl)
+		return "";
+	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
+		return "127.0.0.1";
+	else if (cl->netchan.remoteAddress.type == NA_IP)
+		return string(to_string(cl->netchan.remoteAddress.ip[0]) + "." + to_string(cl->netchan.remoteAddress.ip[1]) + "." + to_string(cl->netchan.remoteAddress.ip[2]) + "." + to_string(cl->netchan.remoteAddress.ip[3]));
+	else
+		return "";
 }
 
 void SV_Misc_Init()

@@ -436,15 +436,6 @@ void ClientAdmin::AddBan(int bannedClientNum, bool hasReason, string reason)
 
 	string ip = GetIPFromClient(cl);
 
-	for (size_t i = 0; ip[i] != NULL; i++)
-	{
-		if (ip[i] == ':')
-		{
-			ip.resize(i, ' ');
-			break;
-		}
-	}
-
 	if (ip != "")
 	{
 		bans.emplace_back(bannedClientNum, hasReason, reason, ip);
