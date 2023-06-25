@@ -104,6 +104,7 @@ bool ScriptVariable::CastConstArray(ScriptVariable &var)
 
 	int max_index = 0;
 	int min_index = std::numeric_limits<int>::max();
+	//for now, we can loop on hash table, it might have empty/null entries, but that's ok.
 	for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
 	{
 		for (entry = table[i]; entry != NULL; entry = entry->next)
@@ -139,7 +140,7 @@ bool ScriptVariable::CastConstArray(ScriptVariable &var)
 
 	int newVarSize = max_index - min_index + 1;
 	ScriptVariable *pVar = new ScriptVariable[newVarSize];
-
+	//for now, we can loop on hash table, it might have empty/null entries, but that's ok.
 	for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
 	{
 		for (entry = table[i]; entry != NULL; entry = entry->next)

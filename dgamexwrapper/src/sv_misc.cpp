@@ -1,4 +1,5 @@
 #include "sv_misc.h"
+#include "Winsock2.h"
 
 using std::to_string;
 
@@ -41,6 +42,20 @@ string GetIPFromClient(client_t* cl)
 		return string(to_string(cl->netchan.remoteAddress.ip[0]) + "." + to_string(cl->netchan.remoteAddress.ip[1]) + "." + to_string(cl->netchan.remoteAddress.ip[2]) + "." + to_string(cl->netchan.remoteAddress.ip[3]));
 	else
 		return "";
+}
+
+string GetPortFromClient(client_t* cl)
+{
+	if (!cl)
+		return "";
+	return to_string(ntohs(cl->netchan.remoteAddress.port));
+}
+
+string GetIPPortFromClient(client_t* cl)
+{
+	if (!cl)
+		return "";
+	return GetIPFromClient(cl) + ":" + GetPortFromClient(cl);
 }
 
 void SV_Misc_Init()

@@ -292,7 +292,8 @@ void ScriptThread::PlayerGetIpEvent(Event * ev)
 
 	if (ent != NULL && ent->client != NULL)
 	{
-		ip = GetIPFromClient(GetClientByClientNum(ent->client->ps.clientNum)).c_str();
+		client_t* cl = GetClientByClientNum(ent->client->ps.clientNum);
+		ip = (GetIPPortFromClient(cl)).c_str();
 	}
 	//string uinfo = ent->client->pers.userinfo;
 	//string ip = "";
@@ -310,7 +311,7 @@ void ScriptThread::PlayerGetIpEvent(Event * ev)
 void ScriptThread::PlayerGetPingEvent(Event * ev)
 {
 	Entity *ent = NULL;
-	str ping = "";
+	int ping = -1;
 
 	ent = (Entity*)ev->GetEntity(1);
 
@@ -319,14 +320,14 @@ void ScriptThread::PlayerGetPingEvent(Event * ev)
 		ping = ent->client->ps.ping;
 	}
 
-	ev->AddString(ping);
+	ev->AddInteger(ping);
 }
 
 
 void ScriptThread::PlayerGetClientNumEvent(Event * ev)
 {
 	Entity *ent = NULL;
-	str clientnum = "";
+	int clientnum = -1;
 
 	ent = (Entity*)ev->GetEntity(1);
 
@@ -335,7 +336,7 @@ void ScriptThread::PlayerGetClientNumEvent(Event * ev)
 		clientnum = ent->client->ps.clientNum;
 	}
 
-	ev->AddString(clientnum);
+	ev->AddInteger(clientnum);
 }
 
 void ScriptThread::GetEntityEvent(Event *ev)
