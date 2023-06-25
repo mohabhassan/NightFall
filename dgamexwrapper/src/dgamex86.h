@@ -21,6 +21,7 @@
 #if defined(_WIN32) || defined(__MINGW32__)
 	//  windows-only
 	#define WIN32_LEAN_AND_MEAN
+	#define NOMINMAX
 	#include <windows.h>	//Windows header
 	#include <process.h>
 	#include <shlwapi.h>

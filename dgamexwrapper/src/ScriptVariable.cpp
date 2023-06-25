@@ -3,6 +3,9 @@
 #include "Class.h"
 
 #include <string>
+#include <algorithm>
+
+using std::max;
 
 Listener	*(__thiscall *ScriptVariable::listenerValue)(ScriptVariable*_this);
 void		(__thiscall *ScriptVariable::RealClearInternal)(ScriptVariable*_this);
@@ -90,80 +93,76 @@ void ScriptVariable::CastString(void)
 bool ScriptVariable::CastConstArray(ScriptVariable &var)
 {
 	//only do our stuff if it's a "VARIABLE_ARRAY"
-	if (var.GetType() == VARIABLE_ARRAY)
+	if (var.GetType() != VARIABLE_ARRAY)
+		return false;
+	Entry_scriptarrayholder		** const table = var.arrayValue()->arrayValue.getConSet().getTable();
+	Entry_scriptarrayholder *entry;
+	if (var.arrayValue()->arrayValue.getConSet().getCount() == 0)
 	{
+		return false;
+	}
 
-		Entry_scriptarrayholder		** const table = var.arrayValue()->arrayValue.getConSet().getTable();
-		Entry_scriptarrayholder *entry;
-		if (var.arrayValue()->arrayValue.getConSet().getCount() == 0)
+	int max_index = 0;
+	int min_index = std::numeric_limits<int>::max();
+	for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
+	{
+		for (entry = table[i]; entry != NULL; entry = entry->next)
 		{
-			return false;
-		}
-
-		int max_index = 0;
-		for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
-		{
-			for (entry = table[i]; entry != NULL; entry = entry->next)
+			ScriptVariable &key = entry->key;
+			variabletype type = key.GetType();
+			if (type == VARIABLE_STRING || type == VARIABLE_CONSTSTRING)
 			{
-				ScriptVariable &key = entry->key;
-				variabletype type = key.GetType();
-				if (type == VARIABLE_STRING || type == VARIABLE_CONSTSTRING)
+				str val = key.stringValue();
+				try
 				{
-					str val = key.stringValue();
-					try
-					{
-						int i = std::stoi(val.c_str());
-						if (i > max_index)
-						{
-							max_index = i;
-						}
-					}
-					catch (const std::exception&)
-					{
-						return false;
-					}
+					int i = std::stoi(val.c_str());
+					max_index = std::max(max_index, i);
+					min_index = std::min(min_index, i);
 				}
-				else if(type == VARIABLE_INTEGER)
-				{
-					int i = key.intValue();
-					if (i > max_index)
-					{
-						max_index = i;
-					}
-				}
-				else
+				catch (const std::exception&)
 				{
 					return false;
 				}
 			}
-		}
-
-		ScriptVariable *pVar = new ScriptVariable[max_index + 1];
-
-		for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
-		{
-			for (entry = table[i]; entry != NULL; entry = entry->next)
+			else if(type == VARIABLE_INTEGER)
 			{
-				ScriptVariable &key = entry->key;
-				variabletype type = key.GetType();
-				if (type == VARIABLE_STRING || type == VARIABLE_CONSTSTRING)
-				{
-					str val = key.stringValue();
-					int i = std::stoi(val.c_str());
-					pVar[i] = entry->value;
-				}
-				else if (type == VARIABLE_INTEGER)
-				{
-					int i = key.intValue();
-					pVar[i] = entry->value;
-				}
+				int i = key.intValue();
+				max_index = std::max(max_index, i);
+				min_index = std::min(min_index, i);
+			}
+			else
+			{
+				return false;
 			}
 		}
-		setConstArrayValue(pVar, max_index + 1);
-		delete[] pVar;
-		return true;
 	}
-	return false;
+
+	int newVarSize = max_index - min_index + 1;
+	ScriptVariable *pVar = new ScriptVariable[newVarSize];
+
+	for (size_t i = 0; i < var.arrayValue()->arrayValue.getConSet().getTableLength(); i++)
+	{
+		for (entry = table[i]; entry != NULL; entry = entry->next)
+		{
+			ScriptVariable &key = entry->key;
+			variabletype type = key.GetType();
+			if (type == VARIABLE_STRING || type == VARIABLE_CONSTSTRING)
+			{
+				str val = key.stringValue();
+				int i = std::stoi(val.c_str()) - min_index;
+				pVar[i] = entry->value;
+			}
+			else if (type == VARIABLE_INTEGER)
+			{
+				int i = key.intValue() - min_index;
+				pVar[i] = entry->value;
+			}
+		}
+	}
+	setConstArrayValue(pVar, newVarSize);
+	delete[] pVar;
+	return true;
+	
 }
 
 
