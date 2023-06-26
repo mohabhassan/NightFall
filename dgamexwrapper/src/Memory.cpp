@@ -1,49 +1,64 @@
 #include <new>
 #include "dgamex86.h"
-/*
-void * operator new(std::size_t n) throw(std::bad_alloc)
-{
-	void *p = MemoryMalloc(n);
-	if (!p)
-	{
-		std::bad_alloc e;
-		throw e;
-	}
-	return p;
-}
-void* __cdecl operator new[](
-	size_t n,
-	std::nothrow_t const&
-	) noexcept
-{
 
-	void *p = MemoryMalloc(n);
-	return p;
-}
-void operator delete(void * p) throw()
-{
-	MemoryFree(p);
-}
 
-void *operator new[](std::size_t n) throw(std::bad_alloc)
-{
-	void *p = MemoryMalloc(n);
-	if (!p)
-	{
-		std::bad_alloc e;
-		throw e;
-	}
-	return p;
-}
-
-void operator delete[](void *p) throw()
-{
-	MemoryFree(p);
-}
-
-void operator delete[](void* p, size_t n) throw()
-{
-	MemoryFree(p);
-}
-#endif
-#*/
+//
+//// no inline, required by [replacement.functions]/3
+//void* operator new(std::size_t s)
+//{
+//    int* p;
+//
+//    if (s == 0)
+//        throw std::bad_alloc{};
+//
+//    s += sizeof(int);
+//    p = (int*)gi.Malloc(s);
+//    if (!p)
+//        throw std::bad_alloc{};
+//    *p = s;
+//    return p + 1;
+//}
+//
+//// no inline, required by [replacement.functions]/3
+//void* operator new[](std::size_t s)
+//{
+//    int* p;
+//
+//    if (s == 0)
+//        throw std::bad_alloc{};
+//
+//    s += sizeof(int);
+//    p = (int*)gi.Malloc(s);
+//    if (!p)
+//        throw std::bad_alloc{};
+//    *p = s;
+//    return p + 1;
+//}
+//
+//void operator delete(void* ptr) noexcept
+//{
+//    int* p;
+//    p = ((int*)ptr) - 1;
+//    gi.Free(p);
+//}
+//
+//void operator delete(void* ptr, std::size_t size) noexcept
+//{
+//    int* p;
+//    p = ((int*)ptr) - 1;
+//    gi.Free(p);
+//}
+//
+//void operator delete[](void* ptr) noexcept
+//{
+//    int* p;
+//    p = ((int*)ptr) - 1;
+//    gi.Free(p);
+//}
+//
+//void operator delete[](void* ptr, std::size_t size) noexcept
+//{
+//    int* p;
+//    p = ((int*)ptr) - 1;
+//    gi.Free(p);
+//}
