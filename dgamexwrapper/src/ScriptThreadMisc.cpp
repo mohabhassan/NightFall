@@ -782,7 +782,17 @@ void ScriptThread::RegexParseEvent(Event * ev)
 		return;
 	}
 	
-	regex r(ev->GetString(1).c_str());
+	regex r;
+	try
+	{
+		r = ev->GetString(1).c_str();
+	}
+	catch (const std::regex_error& e)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Invalid regex pattern for regex_parse: %s!\n", e.what());
+		return;
+	}
+
 	smatch sm;
 	bool whole_match = ev->GetInteger(3);
 	bool good;
