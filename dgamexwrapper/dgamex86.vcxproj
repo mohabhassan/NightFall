@@ -465,6 +465,7 @@
     <ClInclude Include="src\AddressDefinitions.h" />
     <ClInclude Include="src\AddressManager.h" />
     <ClInclude Include="src\ChatFilter.h" />
+    <ClInclude Include="src\ClassMemory.h" />
     <ClInclude Include="src\ClientAdmin.h" />
     <ClInclude Include="src\ClientFilter.h" />
     <ClInclude Include="src\CustomCvar.h" />

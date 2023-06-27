@@ -12,6 +12,10 @@ main:
 	
 	//waitthread setproperty_test 		: success
 	//waitthread getproperty_test 		: success
+	//waitthread constarray_test 		: success
+	//waitthread regex_parse_test 		: success
+	//waitthread json_parse_test 		: success
+	//waitthread json_stringify_test 	: success
 	
 	//while(!$player) waitframe;
 	//waitthread getentity_test 		: success
@@ -19,10 +23,6 @@ main:
 	//waitthread getip_test 			: success
 	//thread getping_test 				: success
 	//waitthread getclientnum_test 		: success
-	//waitthread constarray_test 		: success
-	//waitthread regex_parse_test 		: success
-	//waitthread json_parse_test 		: success
-	//waitthread json_stringify_test 	: success
 end
 stuffsrv_test:
 	println("\n\n~~~~~~~Testing stuffsrv: say blah~~~~~~~~~~~")

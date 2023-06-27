@@ -326,6 +326,9 @@
     <ClInclude Include="src\Weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ClassMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="libs\civetweb\src\handle_form.inl">
