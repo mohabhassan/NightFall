@@ -217,8 +217,10 @@ void ScriptThread::FOpenEvent(Event *ev)
 	FILE *fp = NULL;
 	str filename, a_type;
 	int argnum = ev->NumArgs();
+	int share_flags = 0;
+	int _shFlags = _SH_DENYRW;
 
-	if (argnum != 2)
+	if (argnum != 2 && argnum != 3)
 	{
 		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fopen!\n");
 		return;
@@ -233,12 +235,22 @@ void ScriptThread::FOpenEvent(Event *ev)
 
 	filename = ev->GetString(1);
 	a_type = ev->GetString(2);
-	int err = fopen_s(&fp, filename.c_str(), a_type.c_str());
-
-	if (err != 0)
+	if (argnum == 3)
 	{
-		fp = NULL;
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: fopen: could not open file: %s with access: %s ! error code: %d\n", filename.c_str(), a_type.c_str(), err);
+		share_flags = ev->GetInteger(3);
+	}
+	if (share_flags == 1)
+		_shFlags = _SH_DENYWR;
+	else if (share_flags == 2)
+		_shFlags = _SH_DENYRD;
+	else if(share_flags == 3)
+		_shFlags = _SH_DENYNO;
+
+	fp = _fsopen(filename.c_str(), a_type.c_str(), _shFlags);
+
+	if (fp == NULL)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: fopen: could not open file: %s with access: %s ! error code: %d\n", filename.c_str(), a_type.c_str(), errno);
 	}
 	else
 	{
@@ -253,7 +265,7 @@ void ScriptThread::FCloseEvent(Event *ev)
 {
 	using namespace std;
 	FILE *fp = NULL;
-	int ret = 1;//error on default
+	int ret = -2;//error on default
 	int argnum = ev->NumArgs();
 
 	vector<FILE*>::iterator it;
@@ -501,7 +513,6 @@ void ScriptThread::FGetcEvent(Event *ev)
 void ScriptThread::FGetsEvent(Event *ev)
 {
 	FILE *fp = NULL;
-	int ret = NULL;//error on default
 	char *Str, *p;
 	str retStr = "";
 	int slen;
@@ -521,6 +532,7 @@ void ScriptThread::FGetsEvent(Event *ev)
 	if (it == scriptFiles.end())
 	{
 		gi.Printf(PATCH_NAME " SCRIPT ERROR: fgets: invalid file handle!\n");
+		ev->AddInteger(0);
 	}
 	else
 	{
@@ -528,6 +540,7 @@ void ScriptThread::FGetsEvent(Event *ev)
 		if (slen <=0)
 		{
 			gi.Printf(PATCH_NAME " SCRIPT ERROR: fgets: invalid buffer size: %d!\n", slen);
+			ev->AddInteger(0);
 		}
 		else
 		{

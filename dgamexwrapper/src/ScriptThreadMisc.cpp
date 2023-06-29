@@ -555,8 +555,8 @@ void ScriptThread::TypeofEvent(Event *ev)
 void ScriptThread::TraceDetailsEvent(Event *ev)
 {
 	int numArgs = 0;
-	int pass_entity = 0;
-	int mask = 0x2000B01;
+	int pass_entity = -1;
+	int mask = 0;// 0x2000B01;
 	trace_t trace;
 	Vector vecStart, vecEnd, vecMins, vecMaxs;
 	Entity *entity;
@@ -604,7 +604,7 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 	value.setFloatValue(trace.fraction);
 	resultArray.setArrayAtRef(index, value);
 
-	index.setStringValue("endpos");
+	index.setStringValue("endPos");
 	value.setVectorValue(trace.endpos);
 	resultArray.setArrayAtRef(index, value);
 
@@ -636,7 +636,6 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 		index.setStringValue("entity");
 		value.setListenerValue(entity);
 		resultArray.setArrayAtRef(index, value);
-
 	}
 
 	ev->AddValue(resultArray);
