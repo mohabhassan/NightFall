@@ -114,11 +114,24 @@ void Player::GetDeathsEvent(Event *ev)
 
 void Player::GetConnStateEvent(Event *ev)
 {
-	ev->AddInteger(client->pers.connectionState);
+	client_t* cl = GetClientByClientNum(client->ps.clientNum);
+	if(!cl)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Invalid player for getconnstate!\n");
+		return;
+	}
+	
+	ev->AddInteger(cl->state);
 }
 
 void Player::GetActiveWeapEvent(Event *ev)
 {
+	weaponhand_t hand = (weaponhand_t)ev->GetInteger(1);
+	if (hand >= WEAPON_ERROR)
+	{
+		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong hand number for getactiveweap: %d, maximum is: %d\n", int(hand), int(WEAPON_ERROR-1));
+		return;
+	}
 	ev->AddListener(GetActiveWeapon((weaponhand_t)ev->GetInteger(1)));
 }
 
