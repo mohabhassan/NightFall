@@ -39,8 +39,8 @@ typedef gameExport_t *(*pGetGameAPI_spec)( gameImport_t *import );
 pGetGameAPI_spec pGetGameAPI;
 
 
-typedef void (__cdecl*pG_BeginIntermission_spec)(const char *map_name, INTTYPE_e transtype, bool shouldFade);
-pG_BeginIntermission_spec G_BeginIntermission_original;
+typedef void (__cdecl*pG_BeginIntermission2_spec)();
+pG_BeginIntermission2_spec G_BeginIntermission2_original;
 
 typedef void *(*pMemoryMalloc_spec)(int size);
 pMemoryMalloc_spec pMemoryMalloc;
@@ -474,7 +474,7 @@ void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
 	globals_backup.ClientUserinfoChanged(gent,userInfo);
 }
 
-void __cdecl G_BeginIntermission(const char *map_name, INTTYPE_e transtype, bool shouldFade)
+void __cdecl G_BeginIntermission2()
 {
 
 	ScriptedEvent sev(SEV_INTERMISSION);
@@ -483,7 +483,7 @@ void __cdecl G_BeginIntermission(const char *map_name, INTTYPE_e transtype, bool
 	{
 		sev.Trigger({ INTERM_SCREEN });
 	}
-	G_BeginIntermission_original(map_name, transtype, shouldFade);
+	G_BeginIntermission2_original();
 }
 
 void __cdecl G_CleanUp(qboolean samemap)
@@ -496,7 +496,7 @@ void initScriptHooks()
 
 	AddressManager::Init((unsigned int) hmod);
 
-	G_BeginIntermission_original = reinterpret_cast<pG_BeginIntermission_spec>((int)BEGININTERMISSION_ADDR);
+	G_BeginIntermission2_original = reinterpret_cast<pG_BeginIntermission2_spec>((int)BEGININTERMISSION2_ADDR);
 	SV_Commands_Init();
 	Event::Init();
 	ClassDef::Init();
@@ -520,7 +520,7 @@ void initScriptHooks()
 
 	ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourAttach(&(PVOID&)(G_BeginIntermission_original), (PVOID)(&G_BeginIntermission));
+	ret = DetourAttach(&(PVOID&)(G_BeginIntermission2_original), (PVOID)(&G_BeginIntermission2));
 	ret = DetourTransactionCommit();
 
 
@@ -545,7 +545,7 @@ void shutdownScriptHooks()
 
 	ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourDetach(&(PVOID&)(G_BeginIntermission_original), (PVOID)(&G_BeginIntermission));
+	ret = DetourDetach(&(PVOID&)(G_BeginIntermission2_original), (PVOID)(&G_BeginIntermission2));
 	ret = DetourTransactionCommit();
 
 	AddressManager::Shutdown();

@@ -49,7 +49,7 @@ extern AddressEntry& BUILDREPONSELIST_ADDRESS;//string, nEvent system initialize
 extern AddressEntry& ADDNEWKEYENTRY_ADDR;
 
 //dgamex86.cpp
-extern AddressEntry& BEGININTERMISSION_ADDR;//string, endnode1
+extern AddressEntry& BEGININTERMISSION2_ADDR;//string, endnode1
 extern AddressEntry& CMDFUNCTIONS_ADDR; //string, Cmd_AddCommand
 
 //Director.cpp
