@@ -414,7 +414,7 @@ void  G_ClientCommand ( gentity_t *ent ){
 				}
 				catch (const std::exception&)
 				{
-					gi.Printf(PATCH_NAME " dmmessage error: invalid chat target %s or invalid scritp return value ! Ignoring...\n", gi.Argv(1));
+					gi.Printf(PATCH_NAME " dmmessage error: invalid chat target %s or invalid script return value ! Ignoring...\n", gi.Argv(1));
 				}
 			}
 	}
