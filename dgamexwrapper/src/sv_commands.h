@@ -31,7 +31,9 @@ void SV_Commands_Shutdown();
 
 
 
+void SV_Kick2();
 void SV_KickReason();
+void SV_ClientKick2();
 void SV_ClientKickReason();
 void SV_BanIP();
 void SV_BanIPReason();

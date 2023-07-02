@@ -7,7 +7,9 @@
 #include "misc.h"
 
 vector<ConsoleCommand> ConsoleCommands = {
+	{"kick",					SV_Kick2},
 	{"kickr",					SV_KickReason},
+	{"clientkick",				SV_ClientKick2},
 	{"clientkickr",				SV_ClientKickReason},
 	{"banip",					SV_BanIP},
 	{"banipr",					SV_BanIPReason},
@@ -34,6 +36,9 @@ vector<ConsoleCommand> ConsoleCommands = {
 xcommand_t SV_MapRestart_original;
 xcommand_t SV_Map_original;
 xcommand_t SV_GameMap_original;
+
+xcommand_t SV_Kick_f_original;
+xcommand_t SV_KickNum_f_original;
 
 bool Cmd_HookCommand(const char* cmd_name, xcommand_t *oldFunc, xcommand_t newFunc)
 {
@@ -116,6 +121,16 @@ void SV_Commands_Init()
 	{
 		gi.Printf(PATCH_NAME " INIT ERROR: failed to hook SV_GameMap !\n");
 	}
+	success = Cmd_HookCommand("kick", &SV_Kick_f_original, &SV_Kick2);
+	if (!success)
+	{
+		gi.Printf(PATCH_NAME " INIT ERROR: failed to hook SV_Kick_f !\n");
+	}
+	success = Cmd_HookCommand("clientkick", &SV_KickNum_f_original, &SV_ClientKick2);
+	if (!success)
+	{
+		gi.Printf(PATCH_NAME " INIT ERROR: failed to hook SV_KickNum_f !\n");
+	}
 
 	//add our stuff
 	for (size_t i = 0; i < ConsoleCommands.size(); i++)
@@ -145,6 +160,34 @@ void SV_Commands_Shutdown()
 	Cmd_UnHookCommand(SV_GameMap_original, &SV_GameMap);
 	Cmd_UnHookCommand(SV_Map_original, &SV_Map);
 	Cmd_UnHookCommand(SV_MapRestart_original, &SV_MapRestart);
+	
+	Cmd_UnHookCommand(SV_Kick_f_original, &SV_Kick2);
+	Cmd_UnHookCommand(SV_KickNum_f_original, &SV_ClientKick2);
+}
+
+/* same behaviour as normal kicks, but displays to the kicked user that he was kicked. */
+/* original game behaviour will display a "server disconnected" message instead of "kicked from server". */
+void SV_Kick2()
+{
+	ClientAdmin admin(rconClientNum);
+
+	if (gi.Argc() != 2)
+	{
+		gi.Printf("USAGE: kick <name>\n");
+		return;
+	}
+
+	gentity_t* gent = G_GetEntityByClientName(gi.Argv(1));
+	if (gent)
+	{
+		admin.AddKick(gent->client->ps.clientNum);
+		gi.DropClient(gent->client->ps.clientNum, "was kicked");
+	}
+	else
+	{
+		gi.Printf("Client name not in server\n");
+		return;
+	}
 }
 
 void SV_KickReason()
@@ -168,6 +211,32 @@ void SV_KickReason()
 	else
 	{
 		gi.Printf("Client name not in server\n");
+		return;
+	}
+}
+
+/* same behaviour as normal kicks, but displays to the kicked user that he was kicked. */
+/* original game behaviour will display a "server disconnected" message instead of "kicked from server". */
+
+void SV_ClientKick2()
+{
+	ClientAdmin admin(rconClientNum);
+
+	if (gi.Argc() != 2)
+	{
+		gi.Printf("USAGE: clientkick <num>\n");
+		return;
+	}
+
+	client_t* cl = GetClientByClientNum(atoi(gi.Argv(1)));
+	if (cl && cl->state != CS_FREE)
+	{
+		admin.AddKick(cl->gentity->client->ps.clientNum);
+		gi.DropClient(cl->gentity->client->ps.clientNum, "was kicked");
+	}
+	else
+	{
+		gi.Printf("Client num not in server\n");
 		return;
 	}
 }
