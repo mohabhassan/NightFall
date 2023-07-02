@@ -264,33 +264,33 @@ char* G_ClientConnect(int clientNum, qboolean firstTime, int a3)
 
 void G_ClientDisconnect(gentity_t *ent)
 {
-	if (ent != NULL && ent->client != NULL)
+	if (ent == NULL || ent->client == NULL || ent->entity == NULL)
 	{
-		ScriptedEvent sev(SEV_DISCONNECTED);
-
-		if (sev.isRegistered())
-		{
-			sev.Trigger({ (Entity*)ent->entity });
-		}
-		
-		ClientAdmin admin(ent->client->ps.clientNum);
-		admin.HandlePreDisconnect();
 		globals_backup.ClientDisconnect(ent);
-		admin.HandlePostDisconnect();
-
-		{
-			ChatFilter filter;
-			filter.ClientDisconnected(ent->client->ps.clientNum);
-		}
-
-		{
-			ClientFilter filter;
-			filter.ClientDisconnected(ent->client->ps.clientNum);
-		}
+		return;
 	}
-	else
+
+	ScriptedEvent sev(SEV_DISCONNECTED);
+
+	if (sev.isRegistered())
 	{
-		globals_backup.ClientDisconnect(ent);
+		sev.Trigger({ (Entity*)ent->entity });
+	}
+	int clientNum = ent->client->ps.clientNum;
+
+	ClientAdmin admin(clientNum);
+	admin.HandlePreDisconnect();
+	globals_backup.ClientDisconnect(ent);
+	admin.HandlePostDisconnect();
+
+	{
+		ChatFilter filter;
+		filter.ClientDisconnected(clientNum);
+	}
+
+	{
+		ClientFilter filter;
+		filter.ClientDisconnected(clientNum);
 	}
 }
 /*
