@@ -78,7 +78,7 @@ function Build-cURLpp {
 	cd ./build
 	cmake .. -A Win32 -DCURL_LIBRARY="$rootdir/libs/curl/build/Win32/VC14.10/LIB Release - LIB wolfSSL/libcurl.lib" -DCURL_INCLUDE_DIR="$rootdir/libs/curl/include"
 	cd $rootdir
-	$Env:_CL_='/MT'
+	$Env:_CL_='/MT /DCURL_STATICLIB'
 	msbuild libs/curlpp/build/curlpp.sln /t:'"curlpp_static:Clean;Rebuild"' /p:Configuration="Release" /p:Platform="Win32" /p:PlatformToolset="v141_xp" /p:nowarn='"MSB8051;D9025;C4244"' /nologo /verbosity:quiet
 }
 function Build-detours {
