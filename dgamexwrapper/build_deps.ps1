@@ -73,7 +73,7 @@ function Build-cURLpp {
 	echo 'Building cURLpp...'
 	echo '==================='
 	cd ./libs/curlpp/
-	Remove-Item ./build -Recurse -Force
+	if(Test-Path ./build) {Remove-Item ./build -Recurse -Force}
 	New-Item ./build -ItemType Directory | Out-Null
 	cd ./build
 	cmake .. -A Win32 -DCURL_LIBRARY="$rootdir/libs/curl/build/Win32/VC14.10/LIB Release - LIB wolfSSL/libcurl.lib" -DCURL_INCLUDE_DIR="$rootdir/libs/curl/include"
@@ -100,7 +100,7 @@ function Build-SQLiteCpp {
 	echo 'Building SQLiteCpp...'
 	echo '==================='
 	cd ./libs/SQLiteCpp/
-	Remove-Item ./build -Recurse -Force
+	if(Test-Path ./build) {Remove-Item ./build -Recurse -Force}
 	New-Item ./build -ItemType Directory | Out-Null
 	cd ./build
 	cmake .. -A Win32
