@@ -315,7 +315,6 @@ bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &s
 	}
 	else
 	{
-
 		CustomCvar sv_filterchat("sv_filterchat", "1", CVAR_ARCHIVE);
 		if (sv_filterchat.GetIntValue())
 		{
