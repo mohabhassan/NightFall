@@ -39,7 +39,7 @@ It allows modders to communicate to the outside world via HTTP/JSON.
 Once [sv_api](api_server.md#sv_api) cvar is set to one, and upon map load, API server is started. API server will have a number of [sv_api_numthreads](api_server.md#sv_api_numthreads) idle running worker threads to serve the HTTP server. Server will listen to all specified [sv_api_ports](api_server.md#sv_api_ports).
 
 ### Run-time
-Whilst the API server is running, modder can choose to register a callback script that will handle incoming requests. See [register_api_route](scriptfuncs.md#register_api_route) and [Script Usage](#Script-Usage) for more info.
+Whilst the API server is running, modder can choose to register a callback script that will handle incoming requests. See [register_api_route](scriptfuncs.md#register_api_route) and [Script Usage](#script-usage) for more info.
 
 If a request is made that matches a registered callback script(registered by [register_api_route](scriptfuncs.md#register_api_route)), API server will call that specified script with request information. 
 
@@ -78,10 +78,14 @@ get_handler local.req_params:
 	}
 	local.resp = "yay!"
 end local.resp
+
+post_handler local.parsed_body:
+	local.resp = "yay!"
+end local.resp
 ```
 For GET requests, `local.req_params` is the query strings provided in the HTTP GET request. Looping the query strings is done as specified in the callback example.
 
-For POST requests, `local.req_params` is the json-parsed body provided in the HTTP POST request. If POST body cannot be parsed, `local.req_params` will be NULL.
+For POST requests, `local.parsed_body` is the json-parsed body provided in the HTTP POST request. If POST body cannot be parsed or it is empty, `local.parsed_body` will be NULL.
 
 
 API server will return local.resp as JSON string (using [json_stringify](scriptfuncs.md#json_stringify)) and store it under `message` key, so expected HTTP response body is:
@@ -90,23 +94,20 @@ API server will return local.resp as JSON string (using [json_stringify](scriptf
 
 The response JSON object has 2 keys, `"message"` and `"status"`.
 
-The possible values of `"status"` are as follows:
+The possible values of `"status"` are as follows (for all types of requests):
 
  * In case of an internal error, a response of:  
 
 `{"status":"error_internal", "message" : "Internal server error."}`  
- is sent.
+ is sent. HTTP status code will be `500`.
  
  * In case of a not found error, a response of:  
 
 `{"status":"error_not_found", "message" : "Not found."}`  
 
-is sent.
+is sent. HTTP status code will be `404`.
 
  * In case of success, a response of:  
 
 `{"status":"success", "message" : variable_json_str_here}`  
-where `variable_json_str_here` is a JSON string of the value of the variable returned by the callback script (converted using [json_stringify](scriptfuncs.md#json_stringify)).
-
-
-
+where `variable_json_str_here` is a JSON string of the value of the variable returned by the callback script (converted using [json_stringify](scriptfuncs.md#json_stringify)). HTTP status code will be `200`.
