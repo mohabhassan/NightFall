@@ -21,7 +21,7 @@ function Build-WolfSSL-Client {
 	$Env:_CL_='/MT'
 	Copy-Item -Force -Path ./libs/curl/projects/wolfssl_options.h -Destination ./libs/wolfSSL/cyassl/options.h -Recurse
 	Copy-Item -Force -Path ./libs/curl/projects/wolfssl_options.h -Destination ./libs/wolfSSL/wolfssl/options.h -Recurse
-	msbuild libs/wolfSSL/wolfssl64.sln /t:'"client:Clean;Rebuild"' /p:Configuration="Release" /p:Platform="Win32" /p:PlatformToolset="v141_xp" /p:nowarn='"MSB8051;D9025"' /p:CustomAfterMicrosoftCommonTargets="$rootdir/libs/curl/projects/wolfssl_override.props" /nologo /verbosity:quiet
+	msbuild libs/wolfSSL/wolfssl64.sln /t:'"client:Clean;Rebuild"' /p:Configuration="Release" /p:Platform="Win32" /p:PlatformToolset="v141_xp" /p:nowarn='"MSB8051;D9025"' /p:CustomAfterMicrosoftCommonTargets="$rootdir/libs/curl/projects/wolfssl_override.props" /p:OutDir="$rootdir/libs/wolfSSL/build/Win32/VC14.10/LIB Release/" /nologo /verbosity:quiet
 }
 function Build-libcURL {
 	param (
