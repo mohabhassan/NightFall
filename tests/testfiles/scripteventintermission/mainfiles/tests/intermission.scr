@@ -1,0 +1,88 @@
+main:
+	wait 1
+	//total success
+    local.cvarval = getcvar test_intermissionevent_status
+    if (local.cvarval == running) // ok, not the first time this is executed, only add necessary checks.
+    {
+        //restore our variables
+        level.intermissionevent_testcases_passed = int(getcvar intermissionevent_testcases_passed)
+        level.intermissionevent_testcases_total = int(getcvar intermissionevent_testcases_total)
+        level.intermissionevent_failed_testscases = getcvar intermissionevent_failed_testscases
+        local.intermission_event = registerev "intermission" tests/intermission.scr::intermission
+    }
+    else if(local.cvarval != finished)
+    {
+        level.intermissionevent_testcases_passed = 0
+        level.intermissionevent_testcases_total = 0
+        level.intermissionevent_failed_testscases = ""
+        setcvar test_intermissionevent_status running
+        setcvar intermission_test_progress0 0
+        setcvar intermission_test_progress1 0
+        setcvar intermission_test_progress2 0
+        local.intermission_event = registerev "intermission" tests/intermission.scr::intermission
+        waitthread validate_test local.intermission_event 0 "(intermission_event test1)"
+
+        local.intermission_event = registerev "intermission" tests/intermission.scr::intermission
+        waitthread validate_test local.intermission_event 1 "(intermission_event test2)"
+        while(!$player || $player.size < 2) waitframe;
+        
+        while($player[1].dmteam == spectator || $player[2].dmteam == spectator) waitframe;
+
+        wait 4
+        println "generating killed event...."
+        $player[1] killed $player[2] 100 $player[2] (0 0 0) (0 0 0) (0 0 0) 0 0 0 -1
+    }
+
+
+    while(int(getcvar intermission_test_progress0) < 1) wait 1;
+    while(int(getcvar intermission_test_progress1) < 1) wait 1;
+    while(int(getcvar intermission_test_progress2) < 1) wait 1;
+
+
+    println("Intermission event test: passed " + level.intermissionevent_testcases_passed + " out of " + level.intermissionevent_testcases_total + " tests.")
+    setcvar test_intermissionevent_score (level.intermissionevent_testcases_passed + "/" + level.intermissionevent_testcases_total)
+    setcvar test_intermissionevent_status finished
+    setcvar test_intermissionevent_failed level.intermissionevent_failed_testscases
+
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("intermission event test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.intermissionevent_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.intermissionevent_testcases_passed++
+    }
+    level.intermissionevent_testcases_total++
+    setcvar intermissionevent_testcases_passed level.intermissionevent_testcases_passed
+    setcvar intermissionevent_testcases_total level.intermissionevent_testcases_total
+    setcvar intermissionevent_failed_testscases level.intermissionevent_failed_testscases
+end
+
+intermission local.type:
+    local.prog0 = int(getcvar intermission_test_progress0)
+    local.prog1 = int(getcvar intermission_test_progress1)
+    local.prog2 = int(getcvar intermission_test_progress2)
+	if(local.type == 0)
+	{
+		println "Player Intermission Triggered!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        local.prog0++
+	}
+	else if(local.type == 1)
+	{
+		println "Map change Intermission Triggered!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        local.prog1++
+	}
+	else if(local.type == 2)
+	{
+		println "Map Restart Intermission Triggered!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        local.prog2++
+	}
+    setcvar intermission_test_progress0 local.prog0
+    setcvar intermission_test_progress1 local.prog1
+    setcvar intermission_test_progress2 local.prog2
+	
+end

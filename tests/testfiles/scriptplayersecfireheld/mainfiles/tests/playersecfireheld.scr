@@ -1,0 +1,42 @@
+main:
+	wait 1
+
+    level.playersecfireheld_testcases_passed = 0
+    level.playersecfireheld_testcases_total = 0
+    level.playersecfireheld_failed_testscases = ""
+
+    setcvar test_playersecfireheld_status running
+
+    while(!$player) waitframe;
+
+    println "waiting for player to spawn ::::::::::::::::::::::"
+    println "secfireheld:"
+    println $player.secfireheld
+    while($player && $player.dmteam == spectator) waitframe;
+    println "player spawned ::::::::::::::::::::::"
+    wait 5; //wait for player to spawn
+    while(getcvar test_playersecfireheld_botstatus != secfireheld) waitframe;
+    println "secfireheld:"
+    println $player.secfireheld
+    waitthread validate_test $player.secfireheld 1 "($player.secfireheld1)"
+    while(getcvar test_playersecfireheld_botstatus != nosecfireheld) waitframe;
+    waitthread validate_test $player.secfireheld 0 "($player.secfireheld0)"
+    
+    
+    setcvar test_playersecfireheld_score (level.playersecfireheld_testcases_passed + "/" + level.playersecfireheld_testcases_total)
+    setcvar test_playersecfireheld_failed level.playersecfireheld_failed_testscases
+    setcvar test_playersecfireheld_status finished
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("playersecfireheld test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.playersecfireheld_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.playersecfireheld_testcases_passed++
+    }
+    level.playersecfireheld_testcases_total++
+end

@@ -1,0 +1,135 @@
+main:
+	wait 1
+
+    level.misc_testcases_passed = 0
+    level.misc_testcases_total = 0
+    level.misc_failed_testscases = ""
+
+    setcvar test_misc_status running
+
+    waitthread test_stuffsrv
+
+    waitthread validate_test (md5string teststr) "66d9eb425630871676f66e6fafc3fbf9" "(md5string teststr)"
+    waitthread validate_test (md5string teststrssss) "af6ef1514fff38b504cc3861c694d38f" "(md5string teststrssss)"
+    waitthread validate_test (md5file "test.txt") "db89bb5ceab87f9c0fcc2ab36c189c2c" "(md5file test.txt)"
+    waitthread validate_test (typeof 1) "int" "(typeof 1)"
+    local.t = 2.0
+    waitthread validate_test (typeof local.t) "float" "(typeof local.t=2.0)"
+    local.t = false
+    waitthread validate_test (typeof local.t) "const string" "(typeof local.t=false)"
+    local.t = "ttt"
+    waitthread validate_test (typeof local.t) "const string" "(typeof local.t=ttt)"
+
+    waitthread validate_test (getproperty "nightfall_test") -3 "(getproperty nightfall_test)"
+    waitthread validate_test (setproperty "nightfall_test" "nf_t_1") 0 "(setproperty nightfall_test nf_t_1)"
+    waitthread validate_test (getproperty "nightfall_test") "nf_t_1" "(getproperty nightfall_test)"
+
+    waitthread test_constarray
+    waitthread test_regex_parse
+    waitthread test_json_parse
+    waitthread test_json_stringify
+
+    while(!$player) waitframe;
+    local.s = string(getentity 1)
+    waitthread validate_test local.s "player" "(getentity 1)"
+
+    waitthread validate_test (netname $player) "mohpc_test0" "(netname $player)"
+    local.ip = getip $player
+    local.ipresult = regex_parse "127\\.0\\.0\\.1:\\d+" local.ip 0
+    waitthread validate_test local.ipresult[success] 1 ("local.ipresult[success]:" + local.ip)
+    local.ping = getping $player
+    println("player ping:" + local.ping)
+    local.pingresult = local.ping != -1
+    waitthread validate_test local.pingresult 1 ("local.pingresult")
+
+    waitthread validate_test (getclientnum $player) 1 "(getclientnum $player)"
+
+    waitthread test_traced
+
+
+    setcvar test_misc_score (level.misc_testcases_passed + "/" + level.misc_testcases_total)
+    setcvar test_misc_failed level.misc_failed_testscases
+    setcvar test_misc_status finished
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("Misc test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.misc_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.misc_testcases_passed++
+    }
+    level.misc_testcases_total++
+end
+
+test_stuffsrv:
+    setcvar stuffsrv_test no
+    stuffsrv set stuffsrv_test yes
+    wait 1
+    if(getcvar stuffsrv_test != yes)
+    {
+        level.misc_failed_testscases += "(stuffsrv set stuffsrv_test yes)=" + (getcvar stuffsrv_test ) + "|"
+    }
+    else
+    {
+        level.misc_testcases_passed++
+    }
+    level.misc_testcases_total++
+end
+
+test_constarray:
+    local.arr[1] = xtesddfgsf;//local.arr is a hasttable array
+    local.arr[2] = 2222;//local.arr is a hasttable array
+
+    local.caresult = constarray local.arr //local.caresult is a constarray
+
+    // equivalent to: local.caresult=xtesddfgsf::2222
+    waitthread validate_test (typeof local.caresult) "const array" "(typeof local.caresult)"
+    waitthread validate_test local.caresult[1] local.arr[1] "(local.caresult[1])"
+    waitthread validate_test local.caresult[2] local.arr[2] "(local.caresult[2])"
+
+end
+
+test_regex_parse:
+    local.reresult1 = regex_parse "a(a)*b" "baaaby" 0
+    waitthread validate_test local.reresult1[success] 1 "local.reresult1[success]"
+    waitthread validate_test local.reresult1[matches].size 2 "local.reresult1[matches].size"
+    waitthread validate_test local.reresult1[matches][0] aaab "local.reresult1[matches][0]"
+    waitthread validate_test local.reresult1[matches][1] a "local.reresult1[matches][1]"
+
+	local.reresult2 = regex_parse "([a-z]+)\\.([a-z]+)" "foo.txt" 1
+    waitthread validate_test local.reresult2[success] 1 "local.reresult2[success]"
+    waitthread validate_test local.reresult2[matches].size 3 "local.reresult2[matches].size"
+    waitthread validate_test local.reresult2[matches][0] foo.txt "local.reresult2[matches][0]"
+    waitthread validate_test local.reresult2[matches][1] foo "local.reresult2[matches][1]"
+    waitthread validate_test local.reresult2[matches][2] txt "local.reresult2[matches][2]"
+
+end
+test_json_parse:
+    local.joresult = json_parse "{ \"happy\": true, \"pi\": 3.141 }"
+    waitthread validate_test local.joresult.size 2 "local.joresult.size"
+    waitthread validate_test local.joresult[happy] 1 "local.joresult[happy]"
+    waitthread validate_test local.joresult[pi] 3.141 "local.joresult[pi]"
+end
+test_json_stringify:
+    local.jsresult = json_stringify aaa::bb::cc
+    waitthread validate_test local.jsresult "{\"content\":[{\"content\":\"aaa\",\"type\":\"string\"},{\"content\":\"bb\",\"type\":\"string\"},{\"content\":\"cc\",\"type\":\"string\"}],\"type\":\"array\"}" "local.jsresult"
+end
+
+test_traced:
+    local.trace = traced (0 0 0) (1900 0 0) 0 (0 0 0) (0 0 0) 1
+    waitthread validate_test (local.trace[allSolid]) 0 "local.trace[allSolid]"
+    waitthread validate_test (local.trace[startSolid]) 1 "local.trace[startSolid]"
+    waitthread validate_test (local.trace[fraction]>0.82&&local.trace[fraction]<0.84) 1 "local.trace[fraction]"
+    waitthread validate_test (local.trace[endPos][0]) 1583.875000 "local.trace[endPos][0]"
+    waitthread validate_test (local.trace[endPos][1]) 0 "local.trace[endPos][1]"
+    waitthread validate_test (local.trace[endPos][2]) 0 "local.trace[endPos][2]"
+    waitthread validate_test (local.trace[surfaceFlags]) 268468224 "local.trace[surfaceFlags]"
+    waitthread validate_test (local.trace[shaderNum]) 57 "local.trace[shaderNum]"
+    waitthread validate_test (local.trace[contents]) 671088641 "local.trace[contents]"
+    waitthread validate_test (local.trace[entityNum]) 1022 "local.trace[entityNum]"
+    waitthread validate_test (local.trace[location]) -1 "local.trace[location]"
+end

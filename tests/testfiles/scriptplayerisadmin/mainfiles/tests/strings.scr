@@ -1,0 +1,1101 @@
+/*
+20/10/2011
+Updated clean_filename and added safechardata
+
+// 05 August 2011, Added trim
+Not going to handle 1 as the start anymore. going to make them like normal strings.Taking 0.
+This may break some mods, even admin pro..
+
+
+strip_newlines
+trim
+cut_right
+cut_left
+makeline
+split_string
+add_quotes
+clean_filename
+updated instr to have start position
+rewritten mid
+split_string   - to replace split_line
+split_string rewritten, simpler, still deals with multiple spacers and drops admin pro support
+
+
+team_count
+random_light
+light_from_string
+
+// 11 september 2005 added 3 new functions
+array_to_int
+array_to_str
+array_to_float
+
+array_to_lower
+array_to_upper
+to_lower
+to_upper
+instr
+right
+left
+mid
+reverse
+split_line
+replace
+remove
+format_replace
+array_to_int
+array_to_str
+array_to_float
+safechardata
+*/
+
+
+
+////////////////////////////////////////////////////////////////////////
+// safechardata
+// all chgars which can be safe in a file name
+////////////////////////////////////////////////////////////////////////
+safechardata:
+
+	local.array = makearray
+	"a"       
+	"b"       
+	"c"        
+	"d"       
+	"e"       
+	"f"        
+	"g"       
+	"h"       
+	"i"        
+	"j"        
+	"k"       
+	"l"        
+	"m"      
+	"n"       
+	"o"       
+	"p"       
+	"q"       
+	"r"        
+	"s"        
+	"t"        
+	"u"       
+	"v"       
+	"w"       
+	"x"       
+	"y"       
+	"z"  
+	"A"  	
+	"B"  
+	"C"   
+	"D"   
+	"E"   
+	"F"   
+	"G"   
+	"H"   
+	"I"    
+	"J"    
+	"K"   
+	"L"    
+	"M"  
+	"N"   
+	"O"   
+	"P"   
+	"Q"   
+	"R"    
+	"S"   
+	"T"   
+	"U"   	
+	"V"  
+	"W"  
+	"X"  
+	"Y"   
+	"Z"   
+	"1"
+	"2"
+	"3"
+	"4"
+	"5"
+	"6"
+	"7"
+	"8"
+	"9"
+	"10"
+	"."
+endarray
+end local.array
+////////////////////////////////////////////////////////////////////////
+// strip_newlines
+// Removes all new line chars
+// useage: local.name = waitexec global/strings.scr::strip_newlines "str\ning"
+////////////////////////////////////////////////////////////////////////
+strip_newlines local.string:
+	//strip new lines
+	local.string = waitthread remove local.string "\n"
+end local.string
+////////////////////////////////////////////////////////////////////////
+// clean_filename
+// Removes invalid chars from a string for save filesave
+// useage: local.name = waitexec global/strings.scr::clean_filename "filename"
+////////////////////////////////////////////////////////////////////////
+clean_filename local.filename:
+
+	//get safe data
+	local.chardata = waitthread safechardata
+	
+	//init new name
+	local.newname = ""
+
+	//go through the name
+	for(local.i = 0; local.i <= local.filename.size - 1; local.i++)
+	{
+		local.letter = local.filename[local.i]
+	
+		//are we safe
+		local.issafe = 0
+
+		//check if its in the alphabet
+		for(local.t = 1; local.t <= local.chardata.size; local.t++)
+		{
+			if(local.letter == local.chardata[local.t][1])
+			{
+				//issafe
+				local.issafe = 1
+				break
+			}
+		}
+
+		//if its safe
+		if(local.issafe)
+		{
+			local.newname += local.letter
+		}
+	}
+
+	//if its long enough
+	if(local.newname.size <= 0)
+	{
+		end
+	}
+
+end local.newname
+// RGB light from string
+// Will produce a light from a string
+// returns a array of the light as int
+light_from_string local.string:
+
+	//split the line
+	local.light_array = waitexec global/strings.scr::split_line local.string 1
+	// first set is the split words
+	local.light = local.light_array[1]
+	//convert to int
+	local.light = waitexec global/strings.scr::array_to_float local.light
+
+	//check the colours are not broken
+	for(local.i = 1;local.i < 3;local.i++)
+	{
+		if(local.light[local.i] == NIL)
+		{
+			local.light[local.i] = randomfloat(1.0)
+
+		}
+	}
+
+end local.light
+
+// produces a random light
+// returns a array of the light as int
+random_light:
+
+	local.colour_is_pretty = 1
+	while(local.colour_is_pretty == 1)
+	{
+		for(local.i = 1;local.i <= 3;local.i++)
+		{
+			local.light[local.i] = randomint(2)
+		}
+
+		local.colour_is_pretty = (int(local.light[1] == 0) && int(local.light[2] == 0) && int(local.light[3] == 0))
+
+		if(local.colour_is_pretty != 1)
+		{
+			end local.light
+		}
+
+		waitframe
+	}
+
+
+end local.light
+
+
+// team_count
+// returns an array with string index's "allies" , "axis" and "spectator"
+// used to count players on a team.
+team_count:
+
+
+	local.team[allies] = 0
+	local.team[axis] = 0
+	local.team[spectator] = 0
+
+	for(local.i = 1 ; local.i <= $player.size ; local.i++)
+	{
+		local.team[$player[local.i].dmteam] ++
+	}
+
+end local.team
+
+// makeline
+// turns the string into a line
+// eg
+// local.string = waitexec global/strings.scr::makeline "hello"
+// local.string will be '\nhello\n'
+makeline local.string:
+
+	local.string = ("\n" + local.string + "\n" )
+
+end local.string
+
+// add_quotes
+// adds quotes to the string
+// eg
+// local.string = waitexec global/strings.scr::add_quotes "hello"
+// local.string will be '"hello"'
+add_quotes local.string:
+	local.string = ("\"" + local.string + "\"")
+end local.string
+
+// cut_left
+// like left and left, but, will cut the count of strings away from the left or left.
+// usage: waitexec global/strings.scr::cut_left ( string string , int cut count)
+// eg
+// local.string = waitexec global/strings.scr::cut_left "hello" 3
+// local.string will be 'he'
+cut_left local.string local.cutcount:
+
+	//get the size of the string.
+	local.number = local.string.size - local.cutcount
+	//
+	local.number++
+
+	//cut the string reversed left
+	local.string = waitthread right local.number local.string
+
+end local.string
+
+// cut_right
+// like right and left, but, will cut the count of strings away from the left or right.
+// usage: waitexec global/strings.scr::cut_right ( string string , int cut count)
+// eg
+// local.string = waitexec global/strings.scr::cut_right "hello" 3
+// local.string will be 'he'
+cut_right local.string local.cutcount:
+
+	//get the size of the string.
+	local.number = local.string.size - local.cutcount
+	
+	//
+	local.number++
+
+	//cut the string reversed left
+	local.string = waitthread left local.number local.string
+
+end local.string
+
+
+// trim
+// removed trailing spaces from front and back of a string.
+// usage: local.str = waitexec global/strings.scr::trim (str string)
+// returns: trimmed string
+trim local.string:
+
+	if(local.string == "")
+	{
+		end
+	}
+
+	//do this twice, start,end
+	for(local.times = 1; local.times <= 2 ;local.times++ )
+	{
+		//have we trimmed the start?
+		local.donestart = 0
+
+		//have 0 spaces right now
+		local.spaces = 0
+
+		//if we are at the start
+		if(local.times == 1)
+		{
+			local.start = 0
+			local.end = local.string.size - 1
+			local.step = 1
+		}
+		else
+		{
+			//run reverse
+			local.start = local.string.size - 1
+			local.end = 0
+			local.step = -1
+		}
+
+		//from the start.
+		for(local.i = local.start; local.i != local.end; local.i += local.step)
+		{
+			//if we have done the start, break and start reverse
+			if(local.donestart)
+			{
+				break
+			}
+
+			//is the char a space?
+			if(local.string[local.i] != " ")
+			{
+				//we trimmed the start
+				local.donestart = 1
+			}
+
+			//how many spaces at the front?
+			local.spaces++
+		}
+
+		//need this
+		local.spaces--
+
+		//if we had spaces, remove them
+		if(local.spaces > 0)
+		{
+			if(local.times == 1)
+			{
+				local.string = waitthread cut_left local.string local.spaces
+			}
+			else
+			{
+				local.string = waitthread cut_right local.string local.spaces
+			}
+		}
+	}
+
+end local.string
+
+// convert a array to lower  case.
+// usage: exec global/strings.scr::array_to_lower (const array of strings)
+// returns: array of lower case strings
+array_to_lower local.strings:
+
+	for(local.linni = 1; local.linni <= local.strings.size; local.linni++)
+	{
+		for(local.anniken = 1; local.anniken <= local.strings[local.linni].size; local.anniken++)
+		{
+			local.string = local.strings[local.linni] [local.anniken]
+			local.strings[local.linni][local.anniken] = waitthread to_lower local.string
+		}
+	}
+
+end  local.strings
+
+
+
+// convert a array to upper case.
+// usage: exec global/strings.scr::array_to_upper (const array of strings)
+// returns: array of upper case strings
+array_to_upper local.strings:
+
+	local.lower = waitthread chardata_uppercase
+	local.upper = waitthread chardata_lowercase
+
+	for(local.linni = 1; local.linni <= local.strings.size; local.linni++)
+	{
+		for(local.anniken = 1; local.anniken <= local.strings[local.linni].size; local.anniken++)
+		{
+			local.string = local.strings[local.linni] [local.anniken]
+			local.strings[local.linni][local.anniken] = waitthread to_upper local.string
+		}
+	}
+
+end  local.strings
+
+
+// returns all lowercase chars
+chardata:
+
+	local.array = makearray
+	"a"          "A"
+	"b"          "B"
+	"c"         "C"
+	"d"         "D"
+	"e"          "E"
+	"f"          "F"
+	"g"         "G"
+	"h"         "H"
+	"i"          "I"
+	"j"          "J"
+	"k"         "K"
+	"l"          "L"
+	"m"         "M"
+	"n"         "N"
+	"o"         "O"
+	"p"          "P"
+	"q"         "Q"
+	"r"         "R"
+	"s"          "S"
+	"t"          "T"
+	"u"         "U"
+	"v"          "V"
+	"w"         "W"
+	"x"          "X"
+	"y"          "Y"
+	"z"          "Z"
+	endarray
+
+end local.array
+
+
+// instr
+// instr will find the position in wich a string is found at.
+// usage: waitexec global/strings.scr::instr (str string to find) ( str string ) ( int start position )
+// returns the position of string_to_find
+// eg
+// exec global/strings.scr::instr "\" "hell\o"
+// gives 4 because it starts at 0
+
+// if none found it will return NIL
+instr local.char local.string local.startpos:
+
+	if(local.string == "")
+	{
+		end
+	}
+
+	if(local.startpos == NIL)
+	{
+		local.startpos = 0
+	}
+
+	if(local.startpos  > local.string.size)
+	{
+		end
+	}
+
+	if(local.startpos < 0)
+	{
+		local.startpos = 0
+	}
+	//how many do we need?
+	local.sizeneeded = local.char.size
+
+	//need is
+	local.sofar = 0
+
+	//where we found it
+	local.position = 0
+
+//println ( "INSTRU : Needed is: \"" +  local.sizeneeded + "\" IN \"" )
+
+	for(local.i = local.startpos; local.i <= local.string.size - 1; local.i++)
+	{
+		local.position = local.i - (local.sizeneeded - 1)
+
+		//println ( "FINDING : \"" + local.char[local.sofar]  + "\" IN \"" + local.string[local.i] + "\" at pos " + local.position + " so far is: " + local.sofar )
+		if(local.char[local.sofar] ==  local.string[local.i])
+		{
+		//println  "  - found"
+			//how many found?
+			local.sofar++
+
+			//is this our first matching char
+			if(local.sofar == 1)
+			{
+				//this is our first character
+				local.position = local.i
+			}
+
+			if(local.sofar != local.sizeneeded)
+			{
+				continue
+			}
+
+			//set out position
+			//where are we at, take how many chars long the string to find was, minus 1,
+			// if find 1, take 0, if find 3, we are at 1, moved 3 = 4, take 3
+
+			//done
+			end local.position
+		}
+		else
+		{
+			//reset so far
+			local.sofar = 0
+		}
+	}
+
+end
+
+
+
+// right
+// right will return a string of characters from the right.
+// usage: waitexec global/strings.scr::right ( number of characters#, string string )
+// returns a string right from the number given as position
+// eg
+// local.string = waitexec global/strings.scr::right 3 "hello"
+// local.string will be 'llo'
+right local.pos local.string:
+
+	local.start = local.string.size - local.pos
+	local.right = ""
+
+	for(local.i = local.start; local.i <= local.string.size; local.i++)
+	{
+		local.right += local.string[local.i]
+	}
+
+end local.right
+
+
+
+// left
+// left will return left of the string for the given number.
+// usage: waitexec global/strings.scr::left (number of characters left, string string )
+// returns a string left from the number given as position
+// eg
+// local.string = waitexec global/strings.scr::left 3 "hello"
+// local.string will be 'hel'
+//
+left local.pos local.string:
+
+	local.pos--
+	local.left = ""
+	for(local.i = 0; local.i <=  local.pos; local.i++)
+	{
+		local.left += local.string[local.i]
+	}
+
+end local.left
+
+
+
+//mid
+//mid will return a string from a given position for a given number of characters.
+// usage: local.string = waitexec global/strings.scr::mid ( start pos, string, count)
+// returns: the string from start pos of string along the count.
+//
+//eg
+// local.string = waitexec global/strings.scr 2 "hello" 2
+// local.string would become 'll'
+mid local.start local.string local.count:
+
+	//init string
+	local.mid = ""
+
+	for(local.i = 1; local.i <= local.count;local.i++)
+	{
+		if(local.start >( local.string.size - 1 ))
+		{
+			break
+		}
+
+		local.mid += local.string[local.start]
+		local.start++
+
+	}
+
+end local.mid
+
+
+
+
+//reverse
+// reverse will reverse a given string.
+//useage:: local.string = waitexec global/strings.scr (string string)
+// result: gives a string that is backwards to the string given.
+//
+//eg
+// local.string = waitexec global/strings.scr::reverse "hello"
+// local.string would become 'olleh'
+reverse local.string:
+
+	local.left = ""
+	for(local.i = local.string.size - 1; local.i >=  0; local.i--)
+	{
+		local.left += local.string[local.i]
+	}
+
+end local.left
+
+
+
+// to_lower
+// this will convert a given string to lower case
+// usage local.string = waitexec global/strings.scr::to_lower (string string, index to convert)
+// result: a lower case string
+//
+//eg
+// local.string = waitexec global/strings.scr::to_lower "hello"
+// local.string will become 'hello'
+//eg2
+// local.string = waitexec global/strings.scr::to_lower "hello" 0
+// local.string will become 'hello'
+to_lower local.string local.index:
+
+	local.chardata = waitthread chardata
+
+	for(local.i = 0; local.i <= local.string.size - 1; local.i++)
+	{
+		local.letter = local.string[local.i]
+
+		if(local.i == local.index || local.index == NIL)
+		{
+			for(local.t = 1; local.t <= local.chardata.size; local.t++)
+			{
+				if(local.letter == local.chardata[local.t][1])
+				{
+					local.letter = local.chardata[local.t][2]
+					local.string[local.i] = local.letter
+				}
+			}
+		}
+		else
+		{
+			local.string[local.i] = local.letter
+		}
+
+	}
+
+end local.string
+
+
+
+// to_upper
+// this will convert a given string to upper case
+// usage local.string = waitexec global/strings.scr::to_upper (string string, index to convert)
+// result: a upper case string
+//
+//eg
+// local.string = waitexec global/strings.scr::to_upper "hello"
+// local.string will become 'hello'
+//eg2
+// local.string = waitexec global/strings.scr::to_upper "hello" 0
+// local.string will become 'hello'
+
+to_upper local.string local.index:
+
+	local.chardata = waitthread chardata
+
+	for(local.i = 0; local.i <= local.string.size - 1; local.i++)
+	{
+		local.letter = local.string[local.i]
+
+		if(local.i == local.index || local.index == NIL)
+		{
+			for(local.t = 1; local.t <= local.chardata.size; local.t++)
+			{
+				if(local.letter == local.chardata[local.t][1])
+				{
+					local.letter = local.chardata[local.t][2]
+					local.string[local.i] = local.letter
+				}
+			}
+		}
+		else
+		{
+			local.string[local.i] = local.letter
+		}
+
+	}
+
+end local.string
+
+
+
+// used to split a line of words into a array of words. return with word count
+// localinfo == line to split
+// local.spacer = what to use to split the line. if none is set then " " will be used.
+// usage local.wordarray = waitexec global/strings.scr::split_string ( string string , string spacer)
+// returns array of strings.
+// local.word[1] etc is a word
+split_string local.string local.spacer:
+
+	//which word are we on
+	local.word = 1
+	//init words
+	local.words[1] = ""
+
+	//default check spacer
+	if(local.spacer == NIL)
+	{
+		local.spacer = " "
+	}
+
+	for(local.i = 0 ; local.i <= local.string.size - 1; local.i++ )
+	{
+		//if the spacer is in the string
+		if(local.spacer == local.string[local.i])
+		{
+			if(!(local.string[local.i - 1]  == local.spacer && local.string[local.i + 1]  == local.spacer))
+			{
+				if(local.words[local.word] != "")
+				{
+					//new word
+					//local.words[local.word] = waitthread add_quotes local.words[local.word]
+					local.word++
+					//init the word
+					local.words[local.word] = ""
+				}
+				continue
+			}
+		}
+
+		//add the string to the word
+		local.words[local.word] += local.string[local.i]
+	}
+
+end local.words
+
+
+// Used to split a line of words into a array of words. return with word count
+// localinfo == line to split
+// local.say = say to admins input detected or not, set 1 usualy
+// local.spacer = What to use to split the line. If none is set then " " will be used.
+// usage local.wordarray = waitexec global/strings.scr::split_line ( STRING STRING , CONSOLE FEEDBACK, STRING SPACER)
+//
+//eg
+//  local.wordarray = waitexec global/strings.scr::split_line "hello_mummy" 1 "_"
+// local.wordarray is a const array
+//
+// local.wordarray[1] = array of words
+// local.wordarray[2] word count
+// local.wordarray[3] full string with " " spaces
+//
+// local.wordarray[1][1] is 'hello'
+// local.wordarray[1][1] is 'mummy'
+//
+// local.wordarray[2] is 2 'two words'
+//
+// local.wordarray[3] is 'hello mummy'
+//
+
+split_line local.info local.dont_say local.spacer:
+
+	local.wordcount = 1
+
+	if(local.spacer==NIL)
+	{
+		if(local.info[0] == "`")
+		{
+			local.spacer = "_"
+			local.start = 1
+		}
+		else if(local.info[0] == " " || local.info[0] == "")
+		{
+			local.spacer = " "
+
+			for(local.i = 0;local.i <= local.info.size;local.i++)
+			{
+				if(local.info[local.i] != " " && local.info[local.i] != "")
+				{
+					local.start = local.i
+					break
+				}
+			}
+
+		}
+		else
+		{
+			local.spacer = " "
+			local.start = 0
+		}
+	}
+	else
+	{
+		local.start = 0
+		local.altcheck = 1
+	}
+
+	for(local.i=local.start;local.i<=local.info.size - 1;local.i++)
+	{
+		if(local.info[local.i]!=local.spacer && local.info[local.i] != "`")
+		{
+			if(local.words[local.wordcount]==NIL)
+			{
+				local.words[local.wordcount]=""
+			}
+
+			local.words[local.wordcount] += local.info[local.i]
+		}
+		else
+		{
+			if(local.altcheck != 1)
+			{
+				if(local.spacer == "_" && local.info[local.i + 1] == "`")	// if its like ui_hud 1. sud be ui_`hud so it knows:).
+				{
+					local.words[local.wordcount] += local.info[local.i]
+				}
+				else if(local.spacer == "_" && local.info[local.i ] != "`")
+				{
+					local.wordcount++
+				}
+				else if(local.spacer == " " && local.info[local.i ] == " ")
+				{
+					if(local.i != local.info.size - 1)
+					{
+						if(local.info[local.i + 1] != " " && local.info[local.i + 1] != NIL)
+						{
+							local.wordcount++
+						}
+					}
+				}
+			}
+			else
+			{
+				if(local.info[local.i ] == local.spacer)
+				{
+					local.wordcount++
+				}
+			}
+		}
+	}
+
+	if(local.spacer == "_")
+	{
+		local.actual = ""
+
+		for(local.i=3;local.i<=local.words.size;local.i++)
+		{
+			if(local.i < local.words.size)
+			{
+				local.space = " "
+			}
+			else
+			{
+				local.space = ""
+			}
+			local.actual += ( local.words[local.i] + local.space )
+		}
+
+		if(local.dont_say != 1)
+		{
+			exec global/ac/console_feedback.scr ( "> Input detected: " + local.actual )
+		}
+	}
+	else
+	{
+		if(local.dont_say != 1)
+		{
+			exec global/ac/console_feedback.scr ( "> Input detected: " + local.info)
+			local.actual = local.info
+		}
+	}
+
+end ( local.words::local.wordcount::local.actual)
+
+// replace is used just like replace in notepad or any text editor.
+// it will replace any string in a string with a string of any size.
+//
+// exec global/strings::replace ( string string , string string to replace, string string to replace with )
+//
+// eg
+// local.string = waitexec global/strings.scr::replace "once_upon_a_time_there_was__a_mod" "_" " "
+// local.string would become
+// "once upon a time there was  a mod"
+
+replace local.string local.replace local.replace_with:
+
+	if(local.string == "")
+	{
+		end ""
+	}
+
+	//set last position
+	local.lastposition = 0
+
+	//eeek
+	for (local.i = 0;local.i <= local.string.size; local.i++)
+	{
+		//get our first
+		local.position = waitthread instr local.replace local.string
+
+		//did we find it
+		if(local.position == NIL)
+		{
+			break
+		}
+
+		//get before it
+		local.textleft = waitthread left local.position local.string
+
+		//get length to the end
+
+		//replace , biggest string
+		if(local.replace.size < local.replace_with.size)
+		{
+			local.bigger = local.replace_with.size
+		}
+		else
+		{
+			local.bigger = local.replace.size
+		}
+
+		local.start = local.position + local.bigger
+		local.length = (local.string.size - local.start)
+
+		//get after it
+		local.textright = waitthread mid local.start local.string local.length
+
+		//update temp, and file text
+		local.string = local.textleft + local.replace_with + local.textright
+
+		//sorted next position
+		local.lastposition = local.position
+	}
+
+end local.string
+
+
+
+
+// remove is used to remove words or single characters from a line.
+//
+// exec global/strings::remove ( string string , string string to remove )
+//
+// eg
+// local.string = waitexec global/strings.scr::remove "hello you idiot" "idiot"
+// local.string would become
+// "hello you"
+remove local.string local.string_remove:
+	local.string = waitthread replace local.string local.string_remove ""
+end local.string
+
+// format_replace is used like replace except it will only replace a single instance in a group of the same character.
+// it will only replace single characters.
+//
+// exec global/strings::replace ( string string , string string to replace, string string to replace with )
+//
+// eg
+// local.string = waitexec global/strings.scr::format_replace "once_upon_a_time_there_was__a_mod" "_" " "
+// local.string would become
+// "once upon a time there was_a mod"
+
+format_replace local.string local.replace local.replace_with:
+
+	local.new_str = ""
+
+	for(local.i = 0; local.i <= local.string.size - 1; local.i++)
+	{
+
+		local.check =  (local.replace ==  local.string[local.i] && local.replace != local.string[local.i + 1])
+
+		if(local.check)
+		{
+			if ( local.string[local.i - 1] !=  local.replace)
+			{
+				local.new_str += local.replace_with
+			}
+		}
+		else
+		{
+			local.new_str += local.string[local.i]
+		}
+	}
+
+end local.new_str
+
+///////////////////////////////////////////////////////////
+// combine combines a array of stirngs into one single string of all.
+// exec global/strings:;combine (array , int start in array)
+///////////////////////////////////////////////////////////
+combine local.words local.start:
+
+	local.actual = ""
+
+	if(!local.start)
+	{
+		if(local.words[0])
+		{
+
+		}
+	}
+
+	for(local.i=local.start;local.i<=local.words.size;local.i++)
+	{
+		if(local.i < local.words.size)
+		{
+			local.space = " "
+		}
+		else
+		{
+			local.space = ""
+		}
+
+		local.actual += ( local.words[local.i] + local.space )
+	}
+
+end local.actual
+
+///////////////////////////////////////////////////////////
+// array_to_int
+// converts a array into interger
+// returns the array as int
+///////////////////////////////////////////////////////////
+array_to_int local.array:
+
+	if(local.array[0] != NIL)
+	{
+		local.start = 0
+	}
+	else
+	{
+		local.start = 1
+	}
+
+	for(local.i = local.start;local.i <= local.array.size; local.i++)
+	{
+		 local.array[local.i] = int local.array[local.i]
+	}
+
+end local.array
+
+///////////////////////////////////////////////////////////
+// array_to_str
+// converts a array into string
+// returns the array as string
+///////////////////////////////////////////////////////////
+array_to_str local.array:
+
+	if(local.array[0] != NIL)
+	{
+		local.start = 0
+	}
+	else
+	{
+		local.start = 1
+	}
+
+	for(local.i = local.start;local.i <= local.array.size; local.i++)
+	{
+		 local.array[local.i] = string local.array[local.i]
+	}
+
+end local.array
+
+///////////////////////////////////////////////////////////
+// array_to_float
+// converts a array into float
+// returns the array as float
+///////////////////////////////////////////////////////////
+array_to_float local.array:
+
+	if(local.array[0] != NIL)
+	{
+		local.start = 0
+	}
+	else
+	{
+		local.start = 1
+	}
+
+	for(local.i = local.start;local.i <= local.array.size; local.i++)
+	{
+		 local.array[local.i] = float local.array[local.i]
+	}
+
+end local.array

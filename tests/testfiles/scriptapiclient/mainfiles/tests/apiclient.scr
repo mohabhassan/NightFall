@@ -1,0 +1,124 @@
+main:
+	wait 1
+	//total success
+    level.apiclient_testcases_passed = 0
+    level.apiclient_testcases_total = 0
+    level.apiclient_failed_testscases = ""
+    setcvar test_apiclient_status running
+    level.apiclient_testcount = 0
+
+    waitthread test_create_api_get_request
+
+
+    
+    waitthread test_create_api_post_request
+    while(level.apiclient_testcount < 20) waitframe;
+    println("API Client test: passed " + level.apiclient_testcases_passed + " out of " + level.apiclient_testcases_total + " tests.")
+    setcvar test_apiclient_score (level.apiclient_testcases_passed + "/" + level.apiclient_testcases_total)
+    setcvar test_apiclient_status finished
+    setcvar test_apiclient_failed level.apiclient_failed_testscases
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("API Client test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.apiclient_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.apiclient_testcases_passed++
+    }
+    level.apiclient_testcases_total++
+end
+
+test_create_api_get_request:
+	println("~~~~~~~Testing create_api_request get 10 times: ~~~~~~~\n")
+    local.get_response_titles = makeArray
+    "delectus aut autem"
+    "quis ut nam facilis et officia qui"
+    "fugiat veniam minus"
+    "et porro tempora"
+    "laboriosam mollitia et enim quasi adipisci quia provident illum"
+    "qui ullam ratione quibusdam voluptatem quia omnis"
+    "illo expedita consequatur quia in"
+    "quo adipisci enim quam ut ab"
+    "molestiae perspiciatis ipsa"
+    "illo est ratione doloremque quia maiores aut"
+    endArray
+	for(local.i = 1; local.i <=10; local.i++)
+	{
+        local.user_data = NIL
+        local.user_data[i] = local.i
+        local.user_data[title] = local.get_response_titles[local.i][1]
+		//println "~~attempt " local.i "~~" 
+		local.result = create_api_request ("https://jsonplaceholder.typicode.com/todos/" + string(local.i)) "get" tests/apiclient.scr::get_request_handler local.user_data
+		waitthread validate_test local.result 0 ("(create_api_request get" + local.i + ")")
+        //println ("~~local.result~~")
+		//println local.result
+		waitframe
+	}
+    println("~~~~~~~ Done ~~~~~~~\n")
+end
+
+get_request_handler local.http_code local.resp local.user_data:
+    local.i = local.user_data[i]
+    local.title = local.user_data[title]
+    waitthread validate_test local.http_code 200 ("(get_request_handler" + local.i + " http_code)")
+    if(local.http_code == -1)
+    {
+        println "get_request_handler http error:"   
+        println local.resp
+        end
+    }
+    local.resp_parsed = json_parse local.resp
+    waitthread validate_test local.resp_parsed.size 4 ("(get_request_handler" + local.i + " resp size)")
+    waitthread validate_test local.resp_parsed[userId] 1 ("(get_request_handler" + local.i + " resp userId)")
+    waitthread validate_test local.resp_parsed[id] local.i ("(get_request_handler" + local.i + " resp id)")
+    waitthread validate_test local.resp_parsed[title] local.title ("(get_request_handler" + local.i + " resp title)")
+    waitthread validate_test (local.resp_parsed[completed]==1||local.resp_parsed[completed]==0) 1 ("(get_request_handler" + local.i + " resp completed)")
+    level.apiclient_testcount++
+end
+
+
+
+
+test_create_api_post_request:
+	println("~~~~~~~Testing create_api_request post 10 times: ~~~~~~~\n")
+	for(local.i = 1; local.i <=10; local.i++)
+	{
+        local.user_data = NIL
+        local.user_data[i] = local.i
+        local.user_data[str] = ("test"+string(local.i))
+		//println "~~attempt " local.i "~~" 
+		local.result = create_api_request ("https://jsonplaceholder.typicode.com/posts/") "post" tests/apiclient.scr::post_request_handler local.user_data
+		waitthread validate_test local.result 0 ("(create_api_request post" + local.i + ")")
+        //println ("~~local.result~~")
+		//println local.result
+		waitframe
+	}
+    println("~~~~~~~ Done ~~~~~~~\n")
+end
+
+post_request_handler local.http_code local.resp local.user_data:
+    local.i = local.user_data[i]
+    local.str = local.user_data[str]
+    waitthread validate_test local.http_code 201 ("(post_request_handler" + local.i + " http_code)")
+    if(local.http_code == -1)
+    {
+        println "post_request_handler http error:"   
+        println local.resp
+        end
+    }
+    local.resp_parsed = json_parse local.resp
+    waitthread validate_test local.resp_parsed.size 3 ("(post_request_handler" + local.i + " resp size)")
+    waitthread validate_test local.resp_parsed[content].size 2 ("(post_request_handler" + local.i + " resp content size)")
+    waitthread validate_test local.resp_parsed[type] "array_object" ("(post_request_handler" + local.i + " resp content type)")
+    waitthread validate_test local.resp_parsed[content][i].size 2 ("(post_request_handler" + local.i + " resp content i size)")
+    waitthread validate_test local.resp_parsed[content][i][type] "integer" ("(post_request_handler" + local.i + " resp content i type)")
+    waitthread validate_test local.resp_parsed[content][i][content] local.i ("(post_request_handler" + local.i + " resp content i content)")
+    waitthread validate_test local.resp_parsed[content][str].size 2 ("(post_request_handler" + local.i + " resp content str size)")
+    waitthread validate_test local.resp_parsed[content][str][type] "string" ("(post_request_handler" + local.i + " resp content str type)")
+    waitthread validate_test local.resp_parsed[content][str][content] local.str ("(post_request_handler" + local.i + " resp content str content)")
+    level.apiclient_testcount++
+end

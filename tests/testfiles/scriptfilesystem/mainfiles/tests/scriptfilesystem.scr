@@ -1,0 +1,232 @@
+main:
+	wait 1
+
+    level.filesystem_testcases_passed = 0
+    level.filesystem_testcases_total = 0
+    level.filesystem_failed_testscases = ""
+
+    setcvar test_filesystem_status running
+
+    local.file = fopen "test.txt" "r"
+    waitthread validate_test (local.file!=0) 1 "(fopen test)"
+
+    local.ret = fclose local.file
+    waitthread validate_test (local.ret==0) 1 "(fclose test)"
+    
+    waitthread test_feof
+    waitthread test_fseek_ftell
+    waitthread test_frewind
+    waitthread test_fgetc
+    waitthread test_fputc
+    waitthread test_fgets
+    waitthread test_fputs
+    waitthread test_ferror
+    waitthread test_fflush
+
+    waitthread validate_test (fexists "test.txt") 1 "(fexists test1)"
+    waitthread validate_test (fexists "test_fexists.txt") 0 "(fexists test2)"
+
+    waitthread test_freadall
+    waitthread test_fsaveall
+
+    waitthread test_fremove
+    waitthread test_frename
+    waitthread test_fcopy
+    waitthread test_freadpak
+    waitthread test_flist
+
+    setcvar test_filesystem_score (level.filesystem_testcases_passed + "/" + level.filesystem_testcases_total)
+    setcvar test_filesystem_failed level.filesystem_failed_testscases
+    setcvar test_filesystem_status finished
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("filesystem test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.filesystem_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.filesystem_testcases_passed++
+    }
+    level.filesystem_testcases_total++
+end
+
+test_feof:
+    local.file = fopen "test.txt" "r"
+    waitthread validate_test (local.file!=0) 1 "(fopen test2)"
+    local.ret = feof local.file
+    waitthread validate_test (local.ret) 0 "(feof test)"
+    local.ret = fclose local.file
+end
+
+test_fseek_ftell:
+    local.file = fopen "test.txt" "r"
+    waitthread validate_test (local.file!=0) 1 "(fopen test3)"
+    local.ret = fseek local.file 5 0
+    waitthread validate_test (local.ret==0) 1 "(fseek test)"
+    local.ret = ftell local.file
+    waitthread validate_test (local.ret==5) 1 "(ftell test)"
+    local.ret = fclose local.file
+end
+
+
+test_frewind:
+    local.file = fopen "test.txt" "r"
+    waitthread validate_test (local.file!=0) 1 "(fopen test3)"
+    local.ret = frewind local.file
+    local.ret = ftell local.file
+    waitthread validate_test (local.ret==0) 1 "(frewind test)"
+    local.ret = fclose local.file
+end
+
+test_fgetc:
+    local.file = fopen "test.txt" "r"
+    local.c = fgetc local.file
+    waitthread validate_test (local.c) 76 "(fgetc test)"
+    local.ret = fclose local.file
+end
+
+test_fputc:
+    local.file = fopen "test_fputc.txt" "w+"
+    local.c = fputc local.file "a"
+    waitthread validate_test (local.c) 97 "(fputc test)"
+    local.ret = fclose local.file
+    local.file = fopen "test_fputc.txt" "r"
+    local.c = fgetc local.file
+    waitthread validate_test (local.c) 97 "(fputc test2)"
+    local.ret = fclose local.file
+end
+
+test_fgets:
+    local.file = fopen "test.txt" "r"
+    local.s = fgets local.file 256
+    waitthread validate_test (local.s) "Lorem ipsum dolor sit amet\n" "(fgets test)"
+    local.ret = fclose local.file
+end
+
+test_fputs:
+    local.file = fopen "test_fputs.txt" "w+"
+    local.ret = fputs local.file "consectetur adipiscing elit"
+    waitthread validate_test (local.ret>=0) 1 "(fputs test)"
+    local.ret = fclose local.file
+    local.file = fopen "test_fputs.txt" "r"
+    local.s = fgets local.file 256
+    waitthread validate_test (local.s) "consectetur adipiscing elit" "(fputs test2)"
+    local.ret = fclose local.file
+end
+
+test_ferror:
+	local.file = fopen "test.txt" "r"
+	local.ret = fputc local.file "a" // force error, can't write into file opened with "r"
+    local.ret = ferror local.file
+    waitthread validate_test (local.ret!=0) 1 "(ferror test)"
+    local.ret = fclose local.file
+end
+
+test_fflush:
+    // first clear file
+	local.file = fopen "test_fflush.txt" "w+" 3
+    local.ret= fclose local.file
+    
+    // test without flushing
+	local.file = fopen "test_fflush.txt" "w+" 3
+	local.ret = fputs local.file "Hello, world!"
+    local.file2 = fopen "test_fflush.txt" "r" 3
+    local.str2 = fgets local.file2 256
+    waitthread validate_test ("Hello, world!"!=local.str2) 1 "(fflush test1)"
+    local.ret = fclose local.file2
+    local.ret = fclose local.file
+
+    // first clear file
+	local.file = fopen "test_fflush.txt" "w+" 3
+    local.ret= fclose local.file
+    
+    // test without flushing
+	local.file = fopen "test_fflush.txt" "w+" 3
+	local.ret = fputs local.file "Hello, world!"
+    local.ret = fflush local.file
+    local.file2 = fopen "test_fflush.txt" "r" 3
+    waitthread validate_test (local.file2!=0) 1 "(fflush test2)"
+    local.str2 = fgets local.file2 256
+    waitthread validate_test (local.str2) "Hello, world!" "(fflush test3)"
+
+    local.ret = fclose local.file
+    local.ret = fclose local.file2
+end
+
+test_freadall:
+    local.file = fopen "test_freadall.txt" "r"
+    local.s = freadall local.file
+    waitthread validate_test (local.s) "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." "(freadall test)"
+    local.ret = fclose local.file
+end
+test_fsaveall:
+    local.file = fopen "test_fsaveall.txt" "w+"
+    local.str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    local.ret = fsaveall local.file local.str
+    waitthread validate_test local.ret local.str.size "(fsaveall test1)"
+    local.ret = fclose local.file
+
+    local.file = fopen "test_fsaveall.txt" "r"
+    local.s = freadall local.file
+    waitthread validate_test (local.s) "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." "(fsaveall test2)"
+    local.ret = fclose local.file
+end
+
+test_fremove:
+    waitthread validate_test (fexists "test_fremove.txt") 1 "(fremove test1)"
+    local.ret = fremove "test_fremove.txt"
+    waitthread validate_test (local.ret==0) 1 "(fremove test2)"
+    waitthread validate_test (fexists "test_fremove.txt") 0 "(fremove test3)"
+end
+
+test_frename:
+    waitthread validate_test (fexists "test_frename.txt") 1 "(frename test1)"
+    local.ret = frename "test_frename.txt" "test_frename_new.txt"
+    waitthread validate_test (local.ret==0) 1 "(frename test2)"
+    waitthread validate_test (fexists "test_frename_new.txt") 1 "(frename test3)"
+    local.ret = frename "test_frename_new.txt" "test_frename.txt"
+    waitthread validate_test (local.ret==0) 1 "(frename test4)"
+end
+
+test_fcopy:
+    waitthread validate_test (fexists "test_fcopy.txt") 1 "(fcopy test1)"
+    local.ret = fcopy "test_fcopy.txt" "test_fcopy_copy.txt"
+    waitthread validate_test (local.ret==0) 1 "(fcopy test2)"
+    waitthread validate_test (fexists "test_fcopy_copy.txt") 1 "(fcopy test3)"
+    local.ret = fremove "test_fcopy_copy.txt"
+    waitthread validate_test (local.ret==0) 1 "(fcopy test4)"
+end
+
+test_freadpak:
+    waitthread validate_test (freadpak "test_freadpak.txt") "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." "(freadpak test1)"
+end
+
+test_flist:
+    local.ret = flist "" "cczzzz" 1
+    waitthread validate_test (local.ret!=NIL) 1 "(flist test1)"
+    waitthread validate_test (local.ret.size==3) 1 "(flist test2)"
+    waitthread validate_test (local.ret[0]) "aaaaaaacccccczzzz" "(flist test3)"
+    waitthread validate_test (local.ret[1]) "bbbbcczzzz" "(flist test4)"
+    waitthread validate_test (local.ret[2]) "ddddcczzzz" "(flist test5)"
+
+    local.ret = flist "test_flist_pak/" "" 1
+    waitthread validate_test (local.ret!=NIL) 1 "(flist test11)"
+    waitthread validate_test (local.ret.size==4) 1 "(flist test12)"
+    waitthread validate_test (local.ret[0]) "a" "(flist test13)"
+    waitthread validate_test (local.ret[1]) "b.txt" "(flist test14)"
+    waitthread validate_test (local.ret[2]) "test_folder/" "(flist test15)"
+    waitthread validate_test (local.ret[3]) "test_folder/a" "(flist test16)"
+    
+    
+    local.ret = flist "test_flist_pak/" "" 0
+    waitthread validate_test (local.ret!=NIL) 1 "(flist test21)"
+    waitthread validate_test (local.ret.size==3) 1 "(flist test22)"
+    waitthread validate_test (local.ret[0]) "a" "(flist test23)"
+    waitthread validate_test (local.ret[1]) "b.txt" "(flist test24)"
+    waitthread validate_test (local.ret[2]) "test_folder/" "(flist test25)" 
+
+
+end

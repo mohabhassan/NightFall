@@ -1,0 +1,310 @@
+main:
+	wait 1
+	//total success
+    level.events_testcases_passed = 0
+    level.events_testcases_total = 0
+    level.events_failed_testscases = ""
+    setcvar test_events_status running
+    level.events = 0
+    local.connected_event = registerev "connected" tests/events.scr::connected
+    waitthread validate_test local.connected_event 0 "(connected_event test1)"
+    level.events++
+    local.disconnected_event = registerev "disconnected" tests/events.scr::disconnected
+    waitthread validate_test local.disconnected_event 0 "(disconnected_event test1)"
+    level.events++
+    local.damage_event = registerev "damage" tests/events.scr::damage
+    waitthread validate_test local.damage_event 0 "(damage_event test1)"
+    level.events++
+    local.kill_event = registerev "kill" tests/events.scr::kill
+    waitthread validate_test local.kill_event 0 "(kill_event test1)"
+    level.events++
+    local.spawn_event = registerev "spawn" tests/events.scr::spawn
+    waitthread validate_test local.spawn_event 0 "(spawn_event test1)"
+    level.events++
+    // local.intermission_event = registerev "intermission" tests/events.scr::intermission
+    // waitthread validate_test local.intermission_event 0 "(intermission_event test1)"
+    // level.events++
+    local.scmd_event = registerev "servercommand" tests/events.scr::scmd
+    waitthread validate_test local.scmd_event 0 "(scmd_event test1)"
+    level.events++
+    local.keypress_event = registerev "keypress" tests/events.scr::key_press
+    waitthread validate_test local.keypress_event 0 "(keypress_event test1)"
+    level.events++
+    local.dmmessage_event = registerev "dmmessage" tests/events.scr::dmmessage
+    waitthread validate_test local.dmmessage_event 0 "(dmmessage_event test1)"
+    level.events++
+
+    //now repeat and cofirm the errors
+    local.connected_event = registerev "connected" tests/events.scr::connected
+    waitthread validate_test local.connected_event 1 "(connected_event test2)"
+    local.disconnected_event = registerev "disconnected" tests/events.scr::disconnected
+    waitthread validate_test local.disconnected_event 1 "(disconnected_event test2)"
+    local.damage_event = registerev "damage" tests/events.scr::damage
+    waitthread validate_test local.damage_event 1 "(damage_event test2)"
+    local.kill_event = registerev "kill" tests/events.scr::kill
+    waitthread validate_test local.kill_event 1 "(kill_event test2)"
+    local.spawn_event = registerev "spawn" tests/events.scr::spawn
+    waitthread validate_test local.spawn_event 1 "(spawn_event test2)"
+    // local.intermission_event = registerev "intermission" tests/events.scr::intermission
+    // waitthread validate_test local.intermission_event 1 "(intermission_event test2)"
+    local.scmd_event = registerev "servercommand" tests/events.scr::cmd_press
+    waitthread validate_test local.scmd_event 1 "(scmd_event test2)"
+    local.keypress_event = registerev "keypress" tests/events.scr::key_press
+    waitthread validate_test local.keypress_event 1 "(keypress_event test2)"
+    local.dmmessage_event = registerev "dmmessage" tests/events.scr::dmmessage
+    waitthread validate_test local.dmmessage_event 1 "(dmmessage_event test2)"
+
+    while(!$player[1]) waitframe;
+    
+    while($player[1] && $player[1].dmteam == spectator) waitframe;
+
+    wait 5
+    $player[1].origin = ( 0 0 0 )
+    // emulate events in the same order
+    //damage
+    wait 1
+    $player[1] hurt 10
+    //kill
+    wait 1
+    $player[1] hurt 100
+    //$player[1] stufftext "say testsay"
+    
+    while(level.events>0) waitframe;
+
+
+    println("Events test: passed " + level.events_testcases_passed + " out of " + level.events_testcases_total + " tests.")
+    setcvar test_events_score (level.events_testcases_passed + "/" + level.events_testcases_total)
+    setcvar test_events_status finished
+    setcvar test_events_failed level.events_failed_testscases
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("events test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.events_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.events_testcases_passed++
+    }
+    level.events_testcases_total++
+end
+
+
+
+damage local.attacker local.inflictor local.damage local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.entity:
+    if(!level.damage_happened)
+        level.damage_happened = 1
+    else
+        end
+	println ("==========DAMAGED==========")
+	println ("Attacker: " + local.attacker)
+	println ("Inflictor: " + local.inflictor)
+	println ("Damage: " + local.damage)
+	println ("Position: " + local.position)
+	println ("Direction: " + local.direction)
+	println ("Normal: " + local.normal)
+	println ("Knockback: " + local.knockback)
+	println ("Damageflags: " + local.damageflags)
+	println ("MeansofDeath: " + local.meansofdeath)
+	println ("Location: " + local.location)
+	println ("Entity: " + local.entity)
+	println ("==========================")
+    /*
+    ==========DAMAGED==========
+    Attacker: world
+    Inflictor: world
+    Damage: 10.000
+    Position: (0.000000, 0.000000, 63.125000)
+    Direction: (0.000000, 0.000000, 0.000000)
+    Normal: (-0.999608, 0.027992, 0.000000)
+    Knockback: 10
+    Damageflags: 0
+    MeansofDeath: 2
+    Location: -1
+    Entity: player
+    ==========================
+    */
+    waitthread validate_test local.attacker $world "(damage_event test21)"
+    waitthread validate_test local.inflictor $world "(damage_event test22)"
+    waitthread validate_test (int local.damage) 10 "(damage_event test23)"
+    waitthread validate_test local.damageflags 0 "(damage_event test24)"
+    waitthread validate_test local.meansofdeath 2 "(damage_event test25)"
+    waitthread validate_test local.location -1 "(damage_event test26)"
+    waitthread validate_test local.entity $player[1] "(damage_event test27)"
+    waitthread validate_test (unregisterev damage) 0 "(damage_event test28)"
+    level.events--
+
+end
+
+kill local.attacker local.damage local.inflictor local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.player:
+    if(!level.kill_happened)
+        level.kill_happened = 1
+    else
+        end
+
+	println ("==========KILL==========")
+	println ("Attacker: " + local.attacker)
+	println ("Damage: " + local.damage)
+	println ("Inflictor: " + local.inflictor)
+	println ("Position: " + local.position)
+	println ("Direction: " + local.direction)
+	println ("Normal: " + local.normal)
+	println ("Knockback: " + local.knockback)
+	println ("Damageflags: " + local.damageflags)
+	println ("MeansofDeath: " + local.meansofdeath)
+	println ("Location: " + local.location)
+	println ("Player: " + local.player)
+	println ("==========================")
+    /*
+    ==========KILL==========
+    Attacker: world
+    Damage: 100
+    Inflictor: world
+    Position: (0.000000, 0.000000, 63.125000)
+    Direction: (0.000000, 0.000000, 0.000000)
+    Normal: (-0.978870, 0.204484, 0.000000)
+    Knockback: 100
+    Damageflags: 0
+    MeansofDeath: 2
+    Location: -1
+    Player: player
+    ==========================
+    */
+    waitthread validate_test local.attacker $world "(kill_event test21)"
+    waitthread validate_test local.inflictor $world "(kill_event test22)"
+    waitthread validate_test (int local.damage) 100 "(kill_event test23)"
+    waitthread validate_test local.damageflags 0 "(kill_event test24)"
+    waitthread validate_test local.meansofdeath 2 "(kill_event test25)"
+    waitthread validate_test local.location -1 "(kill_event test26)"
+    waitthread validate_test local.player $player[1] "(kill_event test27)"
+    waitthread validate_test (unregisterev kill) 0 "(kill_event test28)"
+    level.events--
+
+end
+
+spawn local.player:
+    if(!level.spawn_happened)
+        level.spawn_happened = 1
+    else
+        end
+	local.player iprint "You have spawned!"
+    waitthread validate_test local.player $player[1] "(spawn_event test21)"
+    waitthread validate_test (unregisterev spawn) 0 "(spawn_event test22)"
+    level.events--
+end
+
+connected local.player:
+    if(!level.connected_happened)
+        level.connected_happened = 1
+    else
+        end
+	//local.name = netname local.player
+	local.player iprint "You have connected!"
+    println "Player connected to server!"
+    waitthread validate_test local.player $player[1] "(connected_event test21)"
+    waitthread validate_test (unregisterev connected) 0 "(connected_event test22)"
+    level.events--
+
+end
+
+disconnected local.player:
+    if(!level.disconnected_happened)
+        level.disconnected_happened = 1
+    else
+        end
+
+	local.name = netname local.player
+	//local.player iprint "You have connected!"
+	conprintf("Player " + local.name + " have disconnected from server!\n")
+    waitthread validate_test local.player $player[1] "(disconnected_event test21)"
+    waitthread validate_test (unregisterev disconnected) 0 "(disconnected_event test22)"
+    level.events--
+
+end
+
+
+key_press local.player local.key:
+    if(!level.keypress_happened)
+        level.keypress_happened = 1
+    else
+        end
+
+	local.player iprint ("Key Pressed: " + local.key)
+	println ("Key Pressed: " + local.key)
+    
+    waitthread validate_test local.player $player[1] "(keypres_event test21)"
+    waitthread validate_test (unregisterev keypress) 0 "(keypres_event test22)"
+    waitthread validate_test local.key 29 "(keypres_event test23)"
+    level.events--
+end
+
+scmd local.player local.command local.args:
+    if(!level.scmd_happened)
+        level.scmd_happened = 1
+    else
+        end
+	println ("scmd: " + local.command + " " + local.args)
+    
+    waitthread validate_test local.player $player[1] "(scmd_event test21)"
+    waitthread validate_test (unregisterev servercommand) 0 "(scmd_event test22)"
+    waitthread validate_test local.args "test scmd args" "(scmd_event test23)"
+    waitthread validate_test local.command "myscmd" "(scmd_event test24)"
+    level.events--
+end
+/*
+intermission local.type:
+
+	if(local.type == 0)
+	{
+		stuffsrv (" say Player Intermission Triggered;\n")
+	}
+	else if(local.type == 1)
+	{
+		stuffsrv (" say Map change Intermission triggered!\n")
+	}
+	else if(local.type == 2)
+	{
+		stuffsrv (" say Map Restart Intermission triggered!\n")
+	}
+	
+end
+*/
+
+dmmessage local.player local.type local.text:
+    if(!level.dmmessage_happened)
+        level.dmmessage_happened = 1
+    else if(level.dmmessage_happened < 4)
+        level.dmmessage_happened++
+    else
+        end
+	local.name = netname local.player
+	println ( "player " + local.name + " sent message: \"")
+	for(local.i = 0; local.i < local.text.size; local.i++)
+	{
+		println (local.text[local.i] + " ")
+	}
+	println ("\"	of type: \n" + local.type)
+
+    if(level.dmmessage_happened == 1)
+    {
+        waitthread validate_test local.player $player[1] "(dmmessage_event test21)"
+        waitthread validate_test local.text.size 3 "(dmmessage_event test22)"
+        waitthread validate_test local.text[0] "test" "(dmmessage_event test23)"
+        waitthread validate_test local.text[1] "dmmessage" "(dmmessage_event test24)"
+        waitthread validate_test local.text[2] "args" "(dmmessage_event test25)"
+        waitthread validate_test local.type 0 "(dmmessage_event test26)"
+    }
+    else if(level.dmmessage_happened == 2)
+    {
+        waitthread validate_test local.type -1 "(dmmessage_event test27)"
+    }
+    else if(level.dmmessage_happened == 3)
+    {
+        waitthread validate_test local.type 5 "(dmmessage_event test28)"
+        waitthread validate_test (unregisterev dmmessage) 0 "(dmmessage_event test29)"
+        level.events--
+        //println "remaining events: " level.events
+    }
+end 1

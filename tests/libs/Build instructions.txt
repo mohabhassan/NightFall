@@ -1,0 +1,57 @@
+PowerShell as admin
+morfuse:
+clone https://github.com/morfuse/morfuse.git
+download and extract win_flex_bison dir inside libs directory
+cd morfuse
+mkdir cmake
+cd cmake
+cmake -DFLEX_EXECUTABLE="..\..\win_flex_bison-2.5.25\win_flex.exe" -DBISON_EXECUTABLE="..\..\win_flex_bison-2.5.25\win_bison.exe" -DFLEX_INCLUDE_DIR="..\..\win_flex_bison-2.5.25\" -DCMAKE_BUILD_TYPE=Release -A Win32 ..\
+cmake --build . --config RelWithDebInfo
+cmake --install . --config RelWithDebInfo
+cd ../../
+mohpc:
+clone https://github.com/moh-rises/mohpc.git
+cd mohpc
+cd thirdparty
+
+wget https://github.com/nitrocaster/GameSpy/archive/master.zip -Outfile 'GameSpy.zip'
+wget https://github.com/madler/zlib/archive/v1.2.11.zip -Outfile 'zlib-v1.2.11.zip'
+wget ftp://ftp.mars.org/pub/mpeg/libmad-0.15.1b.tar.gz -Outfile 'libmad-0.15.1b.tar.gz'
+wget https://www.ijg.org/files/jpegsr9d.zip -Outfile 'jpegsr9d.zip'
+wget https://github.com/mirror/tclap/archive/refs/tags/v1.2.5.zip -Outfile 'tclap-1.2.5.zip'
+
+if(Test-Path .\GameSpy\) {rm -Force -Recurse .\GameSpy\}
+if(Test-Path .\GameSpy-master\) {rm -Force -Recurse .\GameSpy-master\}
+if(Test-Path .\libmad\) {rm -Force -Recurse .\libmad\}
+if(Test-Path .\libmad-0.15.1b\) {rm -Force -Recurse .\libmad-0.15.1b\}
+if(Test-Path .\zlib\) {rm -Force -Recurse .\zlib\}
+if(Test-Path .\jpeg-9d\) {rm -Force -Recurse .\jpeg-9d\}
+if(Test-Path .\tclap\) {rm -Force -Recurse .\tclap\}
+if(Test-Path .\tclap-1.2.5\) {rm -Force -Recurse .\tclap-1.2.5.zip\}
+
+Expand-Archive .\GameSpy.zip .\ -Force
+ren '.\GameSpy-master' '.\GameSpy'
+
+tar -xvzf .\libmad-0.15.1b.tar.gz
+ren '.\libmad-0.15.1b' '.\libmad'
+
+Expand-Archive .\zlib-v1.2.11.zip .\ -Force
+ren '.\zlib-1.2.11' '.\zlib'
+
+Expand-Archive .\jpegsr9d.zip .\ -Force
+cp .\jpeg-9d\jconfig.vc .\jpeg-9d\jconfig.h -Force
+
+Expand-Archive .\tclap-1.2.5.zip .\ -Force
+ren '.\tclap-1.2.5' '.\tclap'
+
+cd ..
+
+if(Test-Path .\build\) {rm -Force -Recurse .\build\}
+mkdir build
+
+cd build
+
+cmake -A Win32 ..\
+cmake --build . --config RelWithDebInfo
+
+copy mohpc.dll and morfuse.dll to same directory as Network.exe

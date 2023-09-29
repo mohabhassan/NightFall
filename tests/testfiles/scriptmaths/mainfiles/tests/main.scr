@@ -1,0 +1,3 @@
+main:
+    exec tests/maths.scr
+end

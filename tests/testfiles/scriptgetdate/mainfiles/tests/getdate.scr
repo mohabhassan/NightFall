@@ -1,0 +1,11 @@
+main:
+	wait 1
+
+    setcvar test_getdate_status running
+
+    setcvar test_getdate_result1 (getdate 0)
+    setcvar test_getdate_result2 (getdate "%D")
+
+
+    setcvar test_getdate_status finished
+end
