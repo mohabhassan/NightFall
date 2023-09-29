@@ -19,3 +19,9 @@
 [submodule "libs/curlpp"]
 	path = dgamexwrapper/libs/curlpp
 	url = https://github.com/jpbarrette/curlpp.git
+[submodule "tests/libs/mohpc"]
+	path = tests/libs/mohpc
+	url = https://github.com/mohabhassan/mohpc.git
+[submodule "tests/libs/morfuse"]
+	path = tests/libs/morfuse
+	url = https://github.com/morfuse/morfuse.git
