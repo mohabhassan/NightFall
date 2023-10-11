@@ -96,7 +96,7 @@ to be placed into the level.  This will happen every level load,
 and on transition between teams, but doesn't happen on respawns
 ============
 */
-void G_ClientBegin( void *ent, userCmd_t *cmd )
+void G_ClientBegin( gentity_t *ent, userCmd_t *cmd )
 {
 	GEntity gent(ent);
 

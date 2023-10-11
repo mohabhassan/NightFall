@@ -2791,7 +2791,10 @@ typedef struct gentityDSH_s
 } gentityDSH_t;
 
 typedef gentityDSH_t gentityDBT_t;
-//DO NOT USE AS DATA MEMBER.
+
+typedef struct {} gentity_t; // empty defintion to avoid conversion mistakes.
+
+//DO NOT USE AS SUPERCLASS OR AS DATA MEMBER.
 class GEntity
 {
 	union realGentityType
@@ -2803,20 +2806,24 @@ class GEntity
 	realGentityType* realGent;
 public:
 	GClient *client;
-	GEntity(void* gent)
+	void* entity;
+	GEntity(gentity_t* gent)
 		: realGent((realGentityType*)gent)
 	{
 		if (gameInfo.GetExpansion() == gameInfo.AA)
 		{
 			client = (GClient *)realGent->gentAA.client;
+			entity = realGent->gentAA.entity;
 		}
 		else if(gameInfo.GetExpansion() == gameInfo.SH)
 		{
 			client = (GClient*)realGent->gentDSH.client;
+			entity = realGent->gentDSH.entity;
 		}
 		else if (gameInfo.GetExpansion() == gameInfo.BT)
 		{
 			client = (GClient*)realGent->gentDBT.client;
+			entity = realGent->gentDBT.entity;
 		}
 	}
 	
