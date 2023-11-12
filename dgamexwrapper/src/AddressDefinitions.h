@@ -171,7 +171,7 @@ AddressEntry& BUILDREPONSELIST_ADDRESS = AddressManager::AddAddress(0x310B0500);
 AddressEntry& ADDNEWKEYENTRY_ADDR = AddressManager::AddAddress(0x310B1AB0);
 
 //dgamex86.cpp
-AddressEntry& BEGININTERMISSION_ADDR = AddressManager::AddAddress(0x310D86B0);//string, endnode1
+AddressEntry& BEGININTERMISSION2_ADDR = AddressManager::AddAddress(0x310D86B0);//string, endnode1
 AddressEntry& CMDFUNCTIONS_ADDR = AddressManager::AddAddress(0x5D4438, true); //string, Cmd_AddCommand
 
 //Director.cpp
