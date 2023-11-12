@@ -1351,6 +1351,40 @@ typedef struct playerStateDSH_s
 
 typedef playerStateDSH_t playerStateDBT_t;
 
+//DO NOT INHERIT OR USE AS DATAMEMBER
+class PlayerState
+{
+private:
+	union PlayerStateType
+	{
+		playerStateAA_t psAA;
+		playerStateDSH_t psDSH;
+	};
+	PlayerStateType* realPS;
+	int& initClientNum()
+	{
+		if (gameInfo.GetExpansion() == gameInfo.AA)
+			return realPS->psAA.clientNum;
+		else
+			return realPS->psDSH.clientNum;
+	}
+	int& initPing()
+	{
+		if (gameInfo.GetExpansion() == gameInfo.AA)
+			return realPS->psAA.ping;
+		else
+			return realPS->psDSH.ping;
+	}
+public:
+	int& ping;
+	int& clientNum;
+	PlayerState(void* ps)
+		: realPS((PlayerStateType*)ps), ping(initPing()), clientNum(initClientNum())
+	{
+
+	}
+};
+
 typedef struct gclientAA_s
 {
   playerStateAA_t ps;
@@ -1388,10 +1422,18 @@ class GClient
 		else
 			return realGClient->clientDSH.pers;
 	}
+	PlayerState initPS()
+	{
+		if (gameInfo.GetExpansion() == gameInfo.AA)
+			return PlayerState(&realGClient->clientAA.ps);
+		else
+			return PlayerState(&realGClient->clientDSH.ps);
+	}
 public:
 	client_persistant_t& pers;
+	PlayerState ps;
 	GClient(void* gclient)
-		: realGClient((GClientType*)gclient), pers(initPers())
+		: realGClient((GClientType*)gclient), pers(initPers()), ps(initPS())
 	{
 
 	}
@@ -2827,9 +2869,9 @@ public:
 		}
 	}
 	
-	operator void* ()
+	operator gentity_t* ()
 	{
-		return (void*)realGent;
+		return (gentity_t*)realGent;
 	}
 
 	GEntity* operator ->()
@@ -5039,11 +5081,44 @@ typedef struct clientdata_s
 	char		name[32];
 } clientdata_t;
 
+#define IMPORT_FUNCTION(func_name, return_type, ...) virtual return_type func_name(__VA_ARGS__); 
+//void * ( *Malloc )( int size );
 class BaseGameImport
 {
 public:
-	virtual void Printf(char* format, ...) = 0;
+	virtual void Printf(const char* format, ...) = 0;
+	virtual void DPrintf(const char* format, ...) = 0;
+	virtual void centerprintf(gentity_t* ent, const char* format, ...) = 0;
+	virtual void SendServerCommand(int client, const char* format, ...) = 0;//shouldn't exceed 500 bytes
+	virtual void Error (errorParm_t code, char* fmt, ...) = 0;
+	IMPORT_FUNCTION(Malloc, void*, int size);
+	IMPORT_FUNCTION(Free, void, void* ptr);
+	IMPORT_FUNCTION(DropClient, void, int client, const char* reason);
+	IMPORT_FUNCTION(Argv, char*, int arg);
+	IMPORT_FUNCTION(Argc, int, void);
+	IMPORT_FUNCTION(Args, char*, void);
+	IMPORT_FUNCTION(Milliseconds, int, void);
+	IMPORT_FUNCTION(Cvar_Get, cvar_t*, char* varName, char* varValue, int varFlags);
+	IMPORT_FUNCTION(MSG_WriteBits, void, int value, int bits);
+	IMPORT_FUNCTION(MSG_WriteByte, void, int c);
+	IMPORT_FUNCTION(MSG_WriteShort, void, int c);
+	IMPORT_FUNCTION(MSG_WriteFloat, void, float f);
+	IMPORT_FUNCTION(MSG_WriteString, void, const char* s);
+	IMPORT_FUNCTION(MSG_WriteCoord, void, float f);
+	IMPORT_FUNCTION(MSG_StartCGM, void, int type);
+	IMPORT_FUNCTION(MSG_EndCGM, void, void);
+	IMPORT_FUNCTION(MSG_SetClient, void, int client);
+	IMPORT_FUNCTION(FS_ReadFile, int, const char* qpath, void** buffer);
+	IMPORT_FUNCTION(FS_WriteFile, size_t, const char* qpath, const void* buffer, size_t size);
+	IMPORT_FUNCTION(FS_ListFiles, char**, const char* qpath, const char* extension, qboolean wantSubs, int* numFiles);
+	IMPORT_FUNCTION(FS_FreeFileList, void, char** list);
+	IMPORT_FUNCTION(SendConsoleCommand, void, const char* text);
+	IMPORT_FUNCTION(Trace, void, trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask, qboolean cylinder, qboolean traceDeep);
+	IMPORT_FUNCTION(AddCommand, void, const char* cmdName, xcommand_t cmdFunction);
 };
+
+#define ECS(...) __VA_ARGS__ //escapes commas
+#define IMPORT_FUNCTION_OVERRIDE(func_name, return_type, parameter_list, parameter_names) virtual return_type func_name(parameter_list) {return realGameImport.func_name(parameter_names);}; 
 template <class T>
 class GameImport : public BaseGameImport
 {
@@ -5053,48 +5128,102 @@ public:
 		: realGameImport(rgi)
 	{
 	}
-	virtual void Printf(char* format, ...) override
+	virtual void Printf(const char* format, ...) override
 	{
 		va_list args;
 		va_start(args, format);
 		realGameImport.Printf(format, args);
 		va_end(args);
 	}
+	virtual void DPrintf(const char* format, ...) override
+	{
+		va_list args;
+		va_start(args, format);
+		realGameImport.DPrintf(format, args);
+		va_end(args);
+	}
+
+	virtual void centerprintf(gentity_t* ent, const char* format, ...)
+	{
+		va_list args;
+		va_start(args, format);
+		realGameImport.centerprintf(ent, format, args);
+		va_end(args);
+	}
+	virtual void SendServerCommand(int client, const char* format, ...)//shouldn't exceed 500 bytes
+	{
+		va_list args;
+		va_start(args, format);
+		realGameImport.SendServerCommand(client, format, args);
+		va_end(args);
+	}
+	virtual void Error(errorParm_t code, char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, format);
+		realGameImport.Error(code, fmt, args);
+		va_end(args);
+	}
+
+	IMPORT_FUNCTION_OVERRIDE(Malloc, void*, ECS(int size), ECS(size));
+	IMPORT_FUNCTION_OVERRIDE(Free, void, ECS(void* ptr), ECS(ptr));
+	IMPORT_FUNCTION_OVERRIDE(DropClient, void, ECS(int client, const char* reason), ECS(client, reason));
+	IMPORT_FUNCTION_OVERRIDE(Argv, char*, ECS(int arg), ECS(arg));
+	IMPORT_FUNCTION_OVERRIDE(Argc, int, ECS(), ECS());
+	IMPORT_FUNCTION_OVERRIDE(Args, char*, ECS(), ECS());
+	IMPORT_FUNCTION_OVERRIDE(Milliseconds, int, ECS(), ECS());
+	IMPORT_FUNCTION_OVERRIDE(Cvar_Get, cvar_t*, ECS(char* varName, char* varValue, int varFlags), ECS(varName, varValue, varFlags));
+	IMPORT_FUNCTION_OVERRIDE(MSG_WriteBits, void, ECS(int value, int bits), ECS(value, bits));
+	IMPORT_FUNCTION_OVERRIDE(MSG_WriteByte, void, ECS(int c), ECS(c));
+	IMPORT_FUNCTION_OVERRIDE(MSG_WriteShort, void, ECS(int c), ECS(c));
+	IMPORT_FUNCTION_OVERRIDE(MSG_WriteFloat, void, ECS(float f), ECS(f));
+	IMPORT_FUNCTION_OVERRIDE(MSG_WriteString, void, ECS(const char* s), ECS(s));
+	IMPORT_FUNCTION_OVERRIDE(MSG_WriteCoord, void, ECS(float f), ECS(f));
+	IMPORT_FUNCTION_OVERRIDE(MSG_StartCGM, void, ECS(int type), ECS(type));
+	IMPORT_FUNCTION_OVERRIDE(MSG_EndCGM, void, ECS(), ECS());
+	IMPORT_FUNCTION_OVERRIDE(MSG_SetClient, void, ECS(int client), ECS(client));
+	IMPORT_FUNCTION_OVERRIDE(FS_ReadFile, int, ECS(const char* qpath, void** buffer), ECS(qpath, buffer));
+	IMPORT_FUNCTION_OVERRIDE(FS_WriteFile, size_t, ECS(const char* qpath, const void* buffer, size_t size), ECS(qpath, buffer, size));
+	IMPORT_FUNCTION_OVERRIDE(FS_ListFiles, char**, ECS(const char* qpath, const char* extension, qboolean wantSubs, int* numFiles), ECS(qpath, extension, wantSubs, numFiles));
+	IMPORT_FUNCTION_OVERRIDE(FS_FreeFileList, void, ECS(char** flist), ECS(flist));
+	IMPORT_FUNCTION_OVERRIDE(SendConsoleCommand, void, ECS(const char* text), ECS(text));
+	IMPORT_FUNCTION_OVERRIDE(Trace, void, ECS(trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask, qboolean cylinder, qboolean traceDeep), ECS(results, start, mins, maxs, end, passEntityNum, contentMask, cylinder, traceDeep));
+	IMPORT_FUNCTION_OVERRIDE(AddCommand, void, ECS(const char* cmdName, xcommand_t cmdFunction), ECS(cmdName, cmdFunction));
 };
 
 
 class GameImportFactory
 {
-	shared_ptr<BaseGameImport> realGameImport;
+	//shared_ptr<BaseGameImport> realGameImport;
 public:
-	void GetGameImport()
+	static shared_ptr<BaseGameImport> GetGameImport(void *import_actual)
 	{
 		if (gameInfo.GetExpansion() == gameInfo.AA)
 		{
-			realGameImport = make_shared<GameImport<gameImportAA_t>>(gameImportAA_t());
+			return make_shared<GameImport<gameImportAA_t>>(*(gameImportAA_t*)import_actual);
 		}
 		else if (gameInfo.GetExpansion() == gameInfo.SH)
 		{
-			realGameImport = make_shared<GameImport<gameImportDSH_t>>(gameImportDSH_t());
+			return make_shared<GameImport<gameImportDSH_t>>(*(gameImportDSH_t*)import_actual);
 		}
 		else if (gameInfo.GetExpansion() == gameInfo.BT)
 		{
-			realGameImport = make_shared<GameImport<gameImportDBT_t>>(gameImportDBT_t());
+			return make_shared<GameImport<gameImportDBT_t>>(*(gameImportDBT_t*)import_actual);
 		}
 	}
 };
 
-#define EXPORT_SETTER_GETTER(func_name, return_type, ...) virtual void Set##func_name (return_type(*func_name)(__VA_ARGS__)) = 0; virtual return_type(*Get##func_name(__VA_ARGS__)) ()= 0; 
+#define EXPORT_SETTER_GETTER(func_name, return_type, ...) virtual void Set##func_name (return_type(*func_name)(__VA_ARGS__)); virtual return_type(*func_name()) (__VA_ARGS__); 
 class BaseGameExport
 {
 public:
 	EXPORT_SETTER_GETTER(Cleanup, void, qboolean sameMap);
-	EXPORT_SETTER_GETTER(ClientBegin, void, void* ent, userCmd_t* cmd);
-	EXPORT_SETTER_GETTER(ClientCommand, void, void* ent);
+	EXPORT_SETTER_GETTER(ClientBegin, void, gentity_t* ent, userCmd_t* cmd);
+	EXPORT_SETTER_GETTER(ClientCommand, void, gentity_t* ent);
 	EXPORT_SETTER_GETTER(ClientConnect, char*, int clientNum, qboolean firstTime, int a3);// different in sh/bt
-	EXPORT_SETTER_GETTER(ClientDisconnect, void, void* ent);
-	EXPORT_SETTER_GETTER(ClientThink, void, void* ent, userCmd_t* ucmd, userEyes_t* eyeInfo);
-	EXPORT_SETTER_GETTER(ClientUserinfoChanged, void, void* ent, char* userInfo);
+	EXPORT_SETTER_GETTER(ClientDisconnect, void, gentity_t* ent);
+	EXPORT_SETTER_GETTER(ClientThink, void, gentity_t* ent, userCmd_t* ucmd, userEyes_t* eyeInfo);
+	EXPORT_SETTER_GETTER(ClientUserinfoChanged, void, gentity_t* ent, char* userInfo);
 	EXPORT_SETTER_GETTER(ConsoleCommand, qboolean, void);
 	EXPORT_SETTER_GETTER(Init, void, int svsStartTime, int randomSeed);
 	EXPORT_SETTER_GETTER(Precache, void, void);
@@ -5105,24 +5234,24 @@ public:
 
 };
 
-#define EXPORT_SETTER_GETTER_OVERRIDE(func_name, return_type, ...) virtual void Set##func_name (return_type(*func_name)(__VA_ARGS__)) {realGameExport.func_name = func_name;} virtual return_type(*Get##func_name(__VA_ARGS__)) () {return realGameExport.func_name}; 
+#define EXPORT_SETTER_GETTER_OVERRIDE(func_name, return_type, ...) virtual void Set##func_name (return_type(*func_name)(__VA_ARGS__)) {realGameExport.func_name = func_name;} virtual return_type(*func_name()) (__VA_ARGS__) {return realGameExport.func_name}; 
 template <class T>
-class GameExport
+class GameExport : public BaseGameExport
 {
 	T& realGameExport;
 public:
-	GameExport(T& rgi)
-		: realGameExport(rgi)
+	GameExport(T& rge)
+		: realGameExport(rge)
 	{
 
 	}
 	EXPORT_SETTER_GETTER_OVERRIDE(Cleanup, void, qboolean sameMap);
-	EXPORT_SETTER_GETTER_OVERRIDE(ClientBegin, void, void* ent, userCmd_t* cmd);
-	EXPORT_SETTER_GETTER_OVERRIDE(ClientCommand, void, void* ent);
+	EXPORT_SETTER_GETTER_OVERRIDE(ClientBegin, void, gentity_t* ent, userCmd_t* cmd);
+	EXPORT_SETTER_GETTER_OVERRIDE(ClientCommand, void, gentity_t* ent);
 	EXPORT_SETTER_GETTER_OVERRIDE(ClientConnect, char*, int clientNum, qboolean firstTime, int a3);// different in sh/bt
-	EXPORT_SETTER_GETTER_OVERRIDE(ClientDisconnect, void, void* ent);
-	EXPORT_SETTER_GETTER_OVERRIDE(ClientThink, void, void* ent, userCmd_t* ucmd, userEyes_t* eyeInfo);
-	EXPORT_SETTER_GETTER_OVERRIDE(ClientUserinfoChanged, void, void* ent, char* userInfo);
+	EXPORT_SETTER_GETTER_OVERRIDE(ClientDisconnect, void, gentity_t* ent);
+	EXPORT_SETTER_GETTER_OVERRIDE(ClientThink, void, gentity_t* ent, userCmd_t* ucmd, userEyes_t* eyeInfo);
+	EXPORT_SETTER_GETTER_OVERRIDE(ClientUserinfoChanged, void, gentity_t* ent, char* userInfo);
 	EXPORT_SETTER_GETTER_OVERRIDE(ConsoleCommand, qboolean, void);
 	EXPORT_SETTER_GETTER_OVERRIDE(Init, void, int svsStartTime, int randomSeed);
 	EXPORT_SETTER_GETTER_OVERRIDE(Precache, void, void);
@@ -5138,30 +5267,30 @@ public:
 
 class GameExportFactory
 {
-	shared_ptr<BaseGameExport> realGameExport;
+	// shared_ptr<BaseGameExport> realGameExport;
 public:
-	void GetGameExport()
+	static shared_ptr<BaseGameExport> GetGameExport(void *export_actual)
 	{
 		if (gameInfo.GetExpansion() == gameInfo.AA)
 		{
-			realGameExport = make_shared<GameExport<gameExportAA_t>>(gameExportAA_t());
+			return make_shared<GameExport<gameExportAA_t>>(*(gameExportAA_t*)export_actual);
 		}
 		else if (gameInfo.GetExpansion() == gameInfo.SH)
 		{
-			realGameExport = make_shared<GameExport<gameExportDSH_t>>(gameExportDSH_t());
+			return make_shared<GameExport<gameExportDSH_t>>(*(gameExportDSH_t*)export_actual);
 		}
 		else if (gameInfo.GetExpansion() == gameInfo.BT)
 		{
-			realGameExport = make_shared<GameExport<gameExportDBT_t>>(gameExportDBT_t());
+			return make_shared<GameExport<gameExportDBT_t>>(*(gameExportDBT_t*)export_actual);
 		}
 	}
 };
 
 /* Added some externs so we can use those variables in misc.c */
 /* Razorapid */
-extern	GameImport	gi;
-extern	GameExport	*globals;
-extern	GameExport	globals_backup;
+extern	shared_ptr<BaseGameImport>	gi;
+extern	shared_ptr<BaseGameExport> globals;
+extern	BaseGameExport	globals_backup;
 
 
 enum INTTYPE_e { TRANS_BSP, TRANS_LEVEL, TRANS_MISSION, TRANS_MISSION_FAILED };

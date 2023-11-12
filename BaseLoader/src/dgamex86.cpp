@@ -50,8 +50,8 @@ pMemoryFree_spec pMemoryFree;
 
 
 GameImport	gi;
-GameExport	*globals;
-GameExport	globals_backup;
+shared_ptr<BaseGameExport> globals;
+BaseGameExport	globals_backup;
 
 clientdata_t clients[32];
 // GLOBALS NEEDED FOR NO-RECOIL DETECTION
@@ -74,7 +74,7 @@ Called per each frame, 20 times a second.
 */
 void G_RunFrame(int svsTime, int frameTime)
 {
-	globals_backup.RunFrame(svsTime, frameTime);
+	globals_backup.RunFrame()(svsTime, frameTime);
 
 	//Server stuff
 	//first: handle new requests
@@ -96,9 +96,8 @@ to be placed into the level.  This will happen every level load,
 and on transition between teams, but doesn't happen on respawns
 ============
 */
-void G_ClientBegin( gentity_t *ent, userCmd_t *cmd )
+void G_ClientBegin(GEntity &gent, userCmd_t *cmd )
 {
-	GEntity gent(ent);
 
 	//sizeof(playerState_t);//676
 	//sizeof(entityState_t);
@@ -110,7 +109,7 @@ void G_ClientBegin( gentity_t *ent, userCmd_t *cmd )
 	gi.centerprintf(gent, "Welcome %s, have fun!", gent->client->pers.netname);
 	//gi.Printf("Player Name: %s : %d\n", ent->client->pers.netname, ent->client->ps.clientNum);
 
-	globals_backup.ClientBegin(gent, cmd );
+	globals_backup.ClientBegin()(gent, cmd );
 
 	ScriptedEvent sev(SEV_CONNECTED);
 
@@ -233,14 +232,27 @@ char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 		return reason;
 	}
 }
-#ifdef MOHAA
+
+char* G_ClientConnect(int clientNum, qboolean firstTime, int a3)
+{
+	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
+	if (reason == NULL)
+	{
+		return globals_backup.ClientConnect()(clientNum, firstTime, a3);
+	}
+	else
+	{
+		return reason;
+	}
+}
 
 char* G_ClientConnect(int clientNum, qboolean firstTime)
 {
 	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
 	if (reason == NULL)
 	{
-		return globals_backup.ClientConnect(clientNum, firstTime);
+		auto actual_ClientConnect = (char* (*)(int, qboolean)) ((void*)globals_backup.ClientConnect());
+		return actual_ClientConnect(clientNum, firstTime);
 	}
 	else
 	{
@@ -248,27 +260,11 @@ char* G_ClientConnect(int clientNum, qboolean firstTime)
 	}
 }
 
-#else
-char* G_ClientConnect(int clientNum, qboolean firstTime, int a3)
-{
-	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
-	if (reason == NULL)
-	{
-		return globals_backup.ClientConnect(clientNum, firstTime, a3);
-	}
-	else
-	{
-		return reason;
-	}
-}
-#endif // MOHAA
-
-
-void G_ClientDisconnect(gentity_t *ent)
+void G_ClientDisconnect(GEntity &ent)
 {
 	if (ent == NULL || ent->client == NULL || ent->entity == NULL)
 	{
-		globals_backup.ClientDisconnect(ent);
+		globals_backup.ClientDisconnect()(ent);
 		return;
 	}
 
@@ -282,7 +278,7 @@ void G_ClientDisconnect(gentity_t *ent)
 
 	ClientAdmin admin(clientNum);
 	admin.HandlePreDisconnect();
-	globals_backup.ClientDisconnect(ent);
+	globals_backup.ClientDisconnect()(ent);
 	admin.HandlePostDisconnect();
 
 	{
@@ -306,7 +302,7 @@ If "g_synchronousClients 1" is set, this will be called exactly
 once for each server frame, which makes for smooth demo recording.
 ==============
 */
-void G_ClientThink( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
+void G_ClientThink(GEntity &ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
 {
 	ClientFilter filter;
 	if (filter.CheckPingKick(ent->client->ps.clientNum, ent->client->ps.ping, ent))
@@ -316,13 +312,13 @@ void G_ClientThink( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
 		gi.DropClient(ent->client->ps.clientNum, "has been kicked for too high ping");
 	}
 
-	globals_backup.ClientThink( ent, ucmd, eyeInfo);
+	globals_backup.ClientThink()( ent, ucmd, eyeInfo);
 	
 }
 
 
 
-void  G_ClientCommand ( gentity_t *ent ){
+void  G_ClientCommand (GEntity &ent ){
 	//gi.Argv(0) dmmessage Gi.Argv(1) 0 gi,Argv(2) blah gi.Args() 0 blah test
 	//gi.Printf("\ngi.Argv(0) %s Gi.Argv(1) %s gi,Argv(2) %s gi.Args() %s\n", gi.Argv(0) ,gi.Argv(1) ,gi.Argv(2) ,gi.Args());
 	char *cmd = gi.Argv(0);
@@ -420,10 +416,10 @@ void  G_ClientCommand ( gentity_t *ent ){
 				}
 			}
 	}
-	globals_backup.ClientCommand(ent);
+	globals_backup.ClientCommand()(ent);
 }
 
-void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
+void G_ClientUserinfoChanged(GEntity &gent, char *userInfo)
 {
 	char * name = Info_ValueForKey(userInfo, "name");
 	if (name == "")
@@ -473,7 +469,7 @@ void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
 
 	}
 
-	globals_backup.ClientUserinfoChanged(gent,userInfo);
+	globals_backup.ClientUserinfoChanged()(gent,userInfo);
 }
 
 void __cdecl G_BeginIntermission2()
@@ -490,7 +486,7 @@ void __cdecl G_BeginIntermission2()
 
 void __cdecl G_CleanUp(qboolean samemap)
 {
-	globals_backup.Cleanup(samemap);
+	globals_backup.Cleanup()(samemap);
 }
 
 void initScriptHooks()
@@ -650,7 +646,7 @@ void G_InitGame( int startTime, int randomSeed )
 	initConsoleCommands();
 
 	startCrashReporter();
-	globals_backup.Init( startTime, randomSeed );
+	globals_backup.Init()( startTime, randomSeed );
 	//gi.Printf("Class count: %d", classcount);
 	gi.Printf(PATCH_NAME " Wrapper inited \n");
 	
@@ -686,7 +682,7 @@ void G_Precache()
 	}
 #endif // MOHAA
 
-	globals_backup.Precache();
+	globals_backup.Precache()();
 }
 
 qboolean G_ConsoleCommand()
@@ -697,7 +693,7 @@ qboolean G_ConsoleCommand()
 	}
 	else
 	{
-		return globals_backup.ConsoleCommand();
+		return globals_backup.ConsoleCommand()();
 	}
 }
 
@@ -720,7 +716,7 @@ void	G_Shutdown (void)
 		uc.CheckForUpdate();
 	}
 
-	globals_backup.Shutdown();
+	globals_backup.Shutdown()();
 
 	#ifndef _WIN32
 		// linux
@@ -733,34 +729,37 @@ void	G_Shutdown (void)
 	#endif	
 }
 
-gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
+//input: gameImport_T* , output: gameExport_t*
+void* __cdecl GetGameAPI( void *import_actual )
 {
 	/****** Linux: Load fgamededmohaa.so ******/
 	#ifndef _WIN32
 
-		dlerror();
+	dlerror();
 
-		hmod = dlopen( "./fgamededmohaa.so", RTLD_LAZY|RTLD_LOCAL );
-		if( !hmod ) 
-		{
-			printf( "dlopen failed. Reason: \"%s\"\n", dlerror() );
-		}
+	hmod = dlopen( "./fgamededmohaa.so", RTLD_LAZY|RTLD_LOCAL );
+	if( !hmod ) 
+	{
+		printf( "dlopen failed. Reason: \"%s\"\n", dlerror() );
+	}
 
-		pGetGameAPI = ( pGetGameAPI_spec ) dlsym( hmod, "GetGameAPI" );
+	pGetGameAPI = ( pGetGameAPI_spec ) dlsym( hmod, "GetGameAPI" );
 
-		if( !pGetGameAPI )	
-			printf( "dlsym failed. reason: \"%s\"\n", dlerror() );
+	if( !pGetGameAPI )	
+		printf( "dlsym failed. reason: \"%s\"\n", dlerror() );
 
 	#endif
+	shared_ptr<BaseGameImport> import = GameImportFactory::GetGameImport(import_actual);
+
 	bool nullRet = false;
 	if (!hmod)
 	{
-		import->Printf(PATCH_NAME " Fatal error: could not load " DGAMEX86_PATH " properly. Exiting...\n");
+		import->Printf((PATCH_NAME " Fatal error: could not load " + DGAMEX86_PATH + " properly. Exiting...\n").c_str());
 		nullRet = true;
 	}
 	if (!systemHMOD)
 	{
-		import->Printf(PATCH_NAME " Fatal error: could not load " SYSTEM86_NAME " properly. Exiting...\n");
+		import->Printf((PATCH_NAME " Fatal error: could not load " + SYSTEM86_NAME + " properly. Exiting...\n").c_str());
 		nullRet = true;
 	}
 
@@ -777,7 +776,7 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 
 	gi = *import;
 //	import->Argv					= argv;
-	globals							= pGetGameAPI( import );
+	globals							= GameExportFactory::GetGameExport(pGetGameAPI( import_actual ));
 	globals_backup					= *globals;
 
 	/*if (!systemHMOD)
@@ -796,64 +795,73 @@ gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
 
 
 #endif // CLIENT
-/*
-	globals->ArchiveFloat			= G_ArchiveFloat;
-	globals->ArchiveInteger			= G_ArchiveInteger;
-	globals->ArchivePersistant		= G_ArchivePersistant;
-	globals->ArchiveString			= G_ArchiveString;
-	globals->ArchiveSvsTime			= G_ArchiveSvsTime;
-	globals->BotBegin				= G_BotBegin;
-	globals->BotThink				= G_BotThink;
-*/
-	globals->Cleanup				= G_CleanUp;
-	globals->ClientBegin			= G_ClientBegin;
+	/*
+	globals->SetArchiveFloat(G_ArchiveFloat);
+	globals->SetArchiveInteger(G_ArchiveInteger);
+	globals->SetArchivePersistant(G_ArchivePersistant);
+	globals->SetArchiveString(G_ArchiveString);
+	globals->SetArchiveSvsTime(G_ArchiveSvsTime);
+	globals->SetBotBegin(G_BotBegin);
+	globals->SetBotThink(G_BotThink);
+	*/
+	globals->SetCleanup(G_CleanUp);
+	globals->SetClientBegin([](gentity_t* ent, userCmd_t* cmd) {return G_ClientBegin(GEntity(ent), cmd); });
 
-	
-	globals->ClientCommand			= G_ClientCommand;
-	globals->ClientConnect			= G_ClientConnect;
 
-	globals->ClientDisconnect		= G_ClientDisconnect;
-	globals->ClientThink			= G_ClientThink;
+	globals->SetClientCommand([](gentity_t* ent) {return G_ClientCommand(GEntity(ent)); });
+	if (gameInfo.GetExpansion() == gameInfo.AA)
+	{
+		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime); }); //todo: handle for AA/SH/BT
+	}
+	else
+	{
+		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime, a3); }); //todo: handle for AA/SH/BT
+	}
 
-	globals->ClientUserinfoChanged	= G_ClientUserinfoChanged;
-	globals->ConsoleCommand			= G_ConsoleCommand;
-	
-/*	globals->DebugCircle			= G_DebugCircle;
-	globals->errorMessage			= G_errorMessage;
-	globals->gentities				= G_gentities;
-	globals->gentitySize			= G_gentitySize;
-*/
-	globals->Init					= G_InitGame;
-/*
-	globals->LevelArchiveValid		= G_LevelArchiveValid;
-	globals->maxEntities			= G_maxEntities;
-	globals->numEntities			= G_numEntities;
-*/
-	globals->Precache				= G_Precache;
-/*
-	globals->PrepFrame				= G_PrepFrame;
-	globals->profStruct				= G_profStruct;
-	globals->ReadLevel				= G_ReadLevel;
-	globals->RegisterSounds			= G_RegisterSounds;
-	globals->Restart				= G_Restart;
-*/
-	globals->RunFrame				= G_RunFrame;
+	globals->SetClientDisconnect([](gentity_t* ent) {return G_ClientDisconnect(GEntity(ent)); });
+	globals->SetClientThink([](gentity_t* ent, userCmd_t* cmd, userEyes_t* eyeInfo) {return G_ClientThink(GEntity(ent), cmd, eyeInfo); });
 
-/*	globals->ServerSpawned			= G_ServerSpawned;
-	globals->SetFrameNumber			= G_SetFrameNumber;
-	globals->SetMap					= G_SetMap;
-	globals->SetTime				= G_SetTime;
-*/
-	globals->Shutdown				= G_Shutdown;
-/*
-	globals->SoundCallback			= G_SoundCallback;
-	globals->SpawnEntities			= G_SpawnEntities;
-	globals->TIKI_Orientation		= G_TIKI_Orientation;
-	globals->WriteLevel				= G_WriteLevel;
-*/
+	globals->SetClientUserinfoChanged([](gentity_t* ent, char* userInfo) {return G_ClientUserinfoChanged(GEntity(ent), userInfo); });
+	globals->SetConsoleCommand(G_ConsoleCommand);
+
+	/*	
+	globals->SetDebugCircle(G_DebugCircle);
+	globals->SeterrorMessage(G_errorMessage);
+	globals->Setgentities(G_gentities);
+	globals->SetgentitySize(G_gentitySize);
+	*/
+	globals->SetInit(G_InitGame);
+	/*
+	globals->SetLevelArchiveValid(G_LevelArchiveValid);
+	globals->SetmaxEntities(G_maxEntities);
+	globals->SetnumEntities(G_numEntities);
+	*/
+	globals->SetPrecache(G_Precache);
+	/*
+	globals->SetPrepFrame(G_PrepFrame);
+	globals->SetprofStruct(G_profStruct);
+	globals->SetReadLevel(G_ReadLevel);
+	globals->SetRegisterSounds(G_RegisterSounds);
+	globals->SetRestart(G_Restart);
+	*/
+	globals->SetRunFrame(G_RunFrame);
+
+	/*	
+	globals->SetServerSpawned(G_ServerSpawned);
+	globals->SetSetFrameNumber(G_SetFrameNumber);
+	globals->SetSetMap(G_SetMap);
+	globals->SetSetTime(G_SetTime);
+	*/
+	globals->SetShutdown(G_Shutdown);
+	/*
+	globals->SetSoundCallback(G_SoundCallback);
+	globals->SetSpawnEntities(G_SpawnEntities);
+	globals->SetTIKI_Orientation(G_TIKI_Orientation);
+	globals->SetWriteLevel(G_WriteLevel);
+	*/
 	//TODO: supress DavenExtra for BT.
-	sizeof(Player);
-	return globals;
+	//sizeof(Player);
+	return globals->GetRealGameExport();
 }
 
 #ifdef _WIN32
@@ -926,14 +934,14 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 		}
 		*/
 
-		hmod = LoadLibrary(DGAMEX86_PATH);
+		hmod = LoadLibraryA(DGAMEX86_PATH.c_str());
 
 		if(hmod)
 		{
 			pGetGameAPI = (pGetGameAPI_spec)GetProcAddress(hmod, "GetGameAPI");
 		}
 		
-		systemHMOD = GetModuleHandleA(SYSTEM86_NAME);
+		systemHMOD = GetModuleHandleA(SYSTEM86_NAME.c_str());
 		if (systemHMOD)
 		{
 			pMemoryMalloc = (pMemoryMalloc_spec)GetProcAddress(systemHMOD, "MemoryMalloc");
