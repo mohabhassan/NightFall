@@ -5,6 +5,9 @@
 #include "Sentient.h"
 #include "DM_Team.h"
 #include "dgamex86.h"
+
+class Player {};//empty defintion to avoid mistakes 
+
 /*
  * Class Player
  * Used as an important utility class in the patch.
@@ -12,104 +15,169 @@
 
 
 class DM_Team;
-class Player : public Sentient //1504
+
+class PlayerAA : public SentientAA //1504
 {
+public:
 	// can't bother to fix the offsets, I'll use direct offests & dummies
 	// for info about offsets, check Player.txt
 	// 
-	
-	uint8_t pfiller1[BUTTONS_OFFSET - sizeof(Sentient)];
+
+	uint8_t pfiller1[BUTTONS_OFFSET_AA - sizeof(SentientAA)];
 	int buttons;
-	uint8_t pfiller2[NUM_DEATHS_OFFSET - sizeof(buttons) - BUTTONS_OFFSET];
+	uint8_t pfiller2[NUM_DEATHS_OFFSET_AA - sizeof(buttons) - BUTTONS_OFFSET_AA];
 	int num_deaths;
 	int num_kills;
-#ifdef MOHAA
-	uint8_t pfiller3[CURRENT_TEAM_OFFSET - sizeof(num_kills) - sizeof(num_deaths) - NUM_DEATHS_OFFSET];
+	uint8_t pfiller3[CURRENT_TEAM_OFFSET_AA - sizeof(num_kills) - sizeof(num_deaths) - NUM_DEATHS_OFFSET_AA];
 	DM_Team* current_team;
-	uint8_t pfiller4[PLAYER_SIZE - sizeof(current_team) - CURRENT_TEAM_OFFSET];
-#else
-	uint8_t pfiller3[PLAYER_SIZE - sizeof(num_kills) - sizeof(num_deaths) - NUM_DEATHS_OFFSET];
-#endif // MOHAA
+	uint8_t pfiller4[PLAYER_SIZE_AA - sizeof(current_team) - CURRENT_TEAM_OFFSET_AA];
+};
 
+class PlayerDSH : public SentientDSH //1504
+{
 public:
-	Player();
-	~Player();
-	static ResponseDef<Player>	*Responses;
-	static CustomEventResponseSet<Player> cerSet;
-	static void PrintOffsets();
+	// can't bother to fix the offsets, I'll use direct offests & dummies
+	// for info about offsets, check Player.txt
+	// 
+
+	uint8_t pfiller1[BUTTONS_OFFSET_DSH - sizeof(SentientDSH)];
+	int buttons;
+	uint8_t pfiller2[NUM_DEATHS_OFFSET_DSH - sizeof(buttons) - BUTTONS_OFFSET_DSH];
+	int num_deaths;
+	int num_kills;
+	uint8_t pfiller3[PLAYER_SIZE_DSH - sizeof(num_kills) - sizeof(num_deaths) - NUM_DEATHS_OFFSET_DSH];
+
+};
+
+using PlayerDBT = PlayerDSH;
+
+class PlayerNF : public SentientNF
+{
+	union realPlayerType
+	{
+		PlayerAA playerAA;
+		PlayerDSH playerDSH;
+		PlayerDBT playerDBT;
+	};
+	realPlayerType* realPlayer;
+
+#define PLAYERNF_MEMEBER_GETTER(varname) \
+		decltype(PlayerAA::varname)& init_##varname() \
+		{\
+			static decltype(PlayerAA::varname) s_##varname; \
+			if (!realPlayer) return s_##varname; \
+			if (gameInfo.IsAA())\
+				return realPlayer->playerAA.varname;\
+			else if (gameInfo.IsSH())\
+				return realPlayer->playerDSH.varname;\
+			else if (gameInfo.IsBT())\
+				return realPlayer->playerDBT.varname;\
+		}
+
+	PLAYERNF_MEMEBER_GETTER(buttons);
+	PLAYERNF_MEMEBER_GETTER(num_kills);
+	PLAYERNF_MEMEBER_GETTER(num_deaths);
+	DM_Team* init_current_team()
+	{
+		if (gameInfo.IsAA())
+			return realPlayer->playerAA.current_team;
+		else
+			return nullptr;
+	}
+#undef PLAYERNF_MEMEBER_GETTER
+public:
+	int& buttons;
+	int& num_kills;
+	int& num_deaths;
+	DM_Team* const & current_team;
+	PlayerNF(Player *p)
+		: SentientNF((Sentient*)p), realPlayer((realPlayerType*)p), buttons(init_buttons()), num_kills(init_num_kills()), num_deaths(init_num_deaths()), current_team(init_current_team())
+	{
+
+	}
+
+	bool isValid()
+	{
+		return realPlayer != NULL;
+	}
+	static ResponseDef<PlayerNF>	*Responses;
+	static CustomEventResponseSet<PlayerNF> cerSet;
+
+
+	//static void PrintOffsets();
 	static void Init();
 	static void Shutdown();
 
 	static void(__thiscall *Respawn_Orignal)(Player*_this, Event *ev);
 	static void(__thiscall *Killed_Orignal)(Player*_this, Event *ev);
 
-	void Test(Event * ev);
+
 	
 	static void		MiscInit();
 	static void		AdminCommandsInit();
 	static void		ClientCommandsInit();
+#define ScriptEventHandler(FuncName) void Pre##FuncName (Event *ev) { PlayerNF p((Player*)this); p.FuncName(ev);}; void FuncName(Event* ev);
 
+	ScriptEventHandler(Test);
+	ScriptEventHandler(GetKillsEvent);
+	ScriptEventHandler(GetDeathsEvent);
+	ScriptEventHandler(GetConnStateEvent);
+	ScriptEventHandler(GetActiveWeapEvent);
+	ScriptEventHandler(SecFireHeldEvent);
+	ScriptEventHandler(GetUserInfoEvent);
+	ScriptEventHandler(GetInventoryEvent);
+	ScriptEventHandler(IsAdminEvent);
 
-	//The following functions are script events
-	void GetKillsEvent(Event * ev);
-	void GetDeathsEvent(Event * ev);
-	void GetConnStateEvent(Event * ev);
-	void GetActiveWeapEvent(Event * ev);
-	void SecFireHeldEvent(Event * ev);
-	void GetUserInfoEvent(Event * ev);
-	void GetInventoryEvent(Event * ev);
-	void IsAdminEvent(Event *ev);
-
-#ifdef MOHAA
-	void AddKillsEvent(Event* ev);
-	void AddDeathsEvent(Event* ev);
-#endif // MOHAA
+	ScriptEventHandler(AddKillsEventAA);
+	ScriptEventHandler(AddDeathsEventAA);
 
 	//The following functions are console(client command) events.
-	void PatchVersionEvent(Event * ev);
+	ScriptEventHandler(PatchVersionEvent);
 
 	//The following functions are console(admin command) events.
-	void AdminLoginEvent(Event * ev);
-	void AdminLogoutEvent(Event * ev);
+	ScriptEventHandler(AdminLoginEvent);
+	ScriptEventHandler(AdminLogoutEvent);
 
-	void AdminKickEvent(Event * ev);
-	void AdminKickReasonEvent(Event * ev);
-	void AdminClientKickEvent(Event * ev);
-	void AdminClientKickReasonEvent(Event * ev);
+	ScriptEventHandler(AdminKickEvent);
+	ScriptEventHandler(AdminKickReasonEvent);
+	ScriptEventHandler(AdminClientKickEvent);
+	ScriptEventHandler(AdminClientKickReasonEvent);
 
 
-	void AdminBanIPEvent(Event * ev);
-	void AdminBanIPReasonEvent(Event * ev);
-	void AdminClientBanEvent(Event * ev);
-	void AdminClientBanReasonEvent(Event * ev);
-	void AdminUnbanIPEvent(Event * ev);
-	void AdminListIPsEvent(Event * ev);
+	ScriptEventHandler(AdminBanIPEvent);
+	ScriptEventHandler(AdminBanIPReasonEvent);
+	ScriptEventHandler(AdminClientBanEvent);
+	ScriptEventHandler(AdminClientBanReasonEvent);
+	ScriptEventHandler(AdminUnbanIPEvent);
+	ScriptEventHandler(AdminListIPsEvent);
 
-	void AdminBanNameEvent(Event *ev);
-	void AdminUnbanNameEvent(Event * ev);
-	void AdminListNamesEvent(Event * ev);
+	ScriptEventHandler(AdminBanNameEvent);
+	ScriptEventHandler(AdminUnbanNameEvent);
+	ScriptEventHandler(AdminListNamesEvent);
 
-	void AdminProtectNameEvent(Event * ev);
-	void AdminUnprotectNameEvent(Event * ev);
-	void AdminListProtectedNamesEvent(Event * ev);
+	ScriptEventHandler(AdminProtectNameEvent);
+	ScriptEventHandler(AdminUnprotectNameEvent);
+	ScriptEventHandler(AdminListProtectedNamesEvent);
 
-	void AdminBanWordEvent(Event * ev);
-	void AdminUnbanWordEvent(Event * ev);
-	void AdminListWordsEvent(Event * ev);
-	
-	void AdminDisableChatEvent(Event *ev);
-	void AdminDisableTauntsEvent(Event *ev);
+	ScriptEventHandler(AdminBanWordEvent);
+	ScriptEventHandler(AdminUnbanWordEvent);
+	ScriptEventHandler(AdminListWordsEvent);
 
-	void AdminChangeMapEvent(Event *ev);
-	void AdminRestartEvent(Event *ev);
-	void AdminSetFragLimitEvent(Event *ev);
-	void AdminSetTimeLimitEvent(Event *ev);
-	void AdminSetGameTypeEvent(Event *ev);
-	void AdminSayEvent(Event *ev);
-	void AdminSayPrivateEvent(Event *ev);
-	void AdminStatusEvent(Event *ev);
-	void AdminListAdminsEvent(Event *ev);
+	ScriptEventHandler(AdminDisableChatEvent);
+	ScriptEventHandler(AdminDisableTauntsEvent);
+
+	ScriptEventHandler(AdminChangeMapEvent);
+	ScriptEventHandler(AdminRestartEvent);
+	ScriptEventHandler(AdminSetFragLimitEvent);
+	ScriptEventHandler(AdminSetTimeLimitEvent);
+	ScriptEventHandler(AdminSetGameTypeEvent);
+	ScriptEventHandler(AdminSayEvent);
+	ScriptEventHandler(AdminSayPrivateEvent);
+	ScriptEventHandler(AdminStatusEvent);
+	ScriptEventHandler(AdminListAdminsEvent);
+	ScriptEventHandler(AdminRCONEvent);
+
 };
 
 void __fastcall Respawn(Player *_this, void * edx, Event * ev);
-void __fastcall Killed(Player *_this, void * edx, Event * ev);
+void __fastcall Killed(Player*_this, void * edx, Event * ev);

@@ -1,0 +1,10 @@
+main:
+	wait 1
+
+    setcvar test_gettimezone_status running
+
+    setcvar test_gettimezone_result (gettimezone 0)
+
+
+    setcvar test_gettimezone_status finished
+end

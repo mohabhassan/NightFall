@@ -36,15 +36,13 @@ public:
 	~DM_Team();
 
 	static void Init();
-#ifdef MOHAA
 
 
-	void	AddKills(Player* player, int numKills);
-	void	AddDeaths(Player* player, int numDeaths);
+	void	AddKillsAA(Player* player, int numKills);
+	void	AddDeathsAA(Player* player, int numDeaths);
 
 
 	static void(__thiscall* AddKills_Orignal)(DM_Team* _this, Player* player, int numKills);
 	static void(__thiscall* AddDeaths_Orignal)(DM_Team* _this, Player* player, int numDeaths);
-#endif // MOHAA
 };
 

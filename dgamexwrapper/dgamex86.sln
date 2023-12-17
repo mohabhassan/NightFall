@@ -5,7 +5,13 @@ VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dgamex86", "dgamex86.vcxproj", "{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseHeaders", "BaseHeaders\BaseHeaders.vcxitems", "{1B2747AD-DC00-448C-9BDC-40D0242FF5CB}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		BaseHeaders\BaseHeaders.vcxitems*{1b2747ad-dc00-448c-9bdc-40d0242ff5cb}*SharedItemsImports = 9
+		BaseHeaders\BaseHeaders.vcxitems*{6c9b194a-cab0-447c-bc2b-8828c17dfbd8}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		BreakThrough|Win32 = BreakThrough|Win32
 		BreakThrough|x64 = BreakThrough|x64
@@ -15,6 +21,8 @@ Global
 		Debug|x64 = Debug|x64
 		MOHAA|Win32 = MOHAA|Win32
 		MOHAA|x64 = MOHAA|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 		SpearHead|Win32 = SpearHead|Win32
 		SpearHead|x64 = SpearHead|x64
 	EndGlobalSection
@@ -32,6 +40,10 @@ Global
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.MOHAA|Win32.ActiveCfg = MOHAA|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.MOHAA|Win32.Build.0 = MOHAA|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.MOHAA|x64.ActiveCfg = MOHAA|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Release|Win32.ActiveCfg = SpearHead|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Release|Win32.Build.0 = SpearHead|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Release|x64.ActiveCfg = SpearHead|Win32
+		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.Release|x64.Build.0 = SpearHead|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|Win32.ActiveCfg = SpearHead|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|Win32.Build.0 = SpearHead|Win32
 		{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}.SpearHead|x64.ActiveCfg = SpearHead|Win32

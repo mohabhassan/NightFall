@@ -1,7 +1,7 @@
 #include "dgamex86.h"
 enum hudDrawCMD
 {
-	CGM_FILLER = 29, //offset filler
+	//CGM_FILLER = 29, //offset filler
 	CGM_HUDDRAW_SHADER,
 	CGM_HUDDRAW_ALIGN,
 	CGM_HUDDRAW_RECT,
@@ -12,93 +12,103 @@ enum hudDrawCMD
 	CGM_HUDDRAW_FONT,
 };
 
-extern gameImport_t	gi;
+extern shared_ptr<BaseGameImport>	gi;
 
 inline void HudWriteNumber(int num)
 {
 	//OPM: reborn uses WriteShort but idk why?
-	gi.MSG_WriteByte(num);
+	gi->MSG_WriteByte(num);
+}
+
+inline int GetCGMMessageTypeForGame(int type)
+{
+	int offset;
+	if (gameInfo.IsAA())
+		offset = 26;
+	else
+		offset = 29;
+	return type + offset + 1;
 }
 
 void iHudDrawShader(int cl_num, int info, const char *name)
 {
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_SHADER);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_SHADER));
 	HudWriteNumber(info);			// c = info
-	gi.MSG_WriteString(name);		// s = name (shader_name)
-	gi.MSG_EndCGM();
+	gi->MSG_WriteString(name);		// s = name (shader_name)
+	gi->MSG_EndCGM();
 
 }
 
 void iHudDrawAlign(int cl_num, int info, int horizontalAlign, int verticalAlign)
 {
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_ALIGN);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_ALIGN));
 	HudWriteNumber(info);					// c = "info"
-	gi.MSG_WriteBits(horizontalAlign, 2);	// value = 0,1,2	bits = 2
+	gi->MSG_WriteBits(horizontalAlign, 2);	// value = 0,1,2	bits = 2
 											// 0 - left		
 											// 1 - center	 - horizontalAlign
 											// 2 - right	
 
-	gi.MSG_WriteBits(verticalAlign, 2);		// value = 0,1,2	bits = 2
+	gi->MSG_WriteBits(verticalAlign, 2);		// value = 0,1,2	bits = 2
 											// 0 - top		
 											// 1 - center	 - verticalAlign
 											// 2 - bottom	
 
-	gi.MSG_EndCGM();
+	gi->MSG_EndCGM();
 
 }
 
 void iHudDrawRect(int cl_num, int info, int x, int y, int width, int height)
 {
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_RECT);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_RECT));
 	HudWriteNumber(info);			// c = "info"
-	gi.MSG_WriteShort(x);			// c = "x"
-	gi.MSG_WriteShort(y);			// c = "y"
-	gi.MSG_WriteShort(width);		// c = "width"
-	gi.MSG_WriteShort(height);		// c = "height"
-	gi.MSG_EndCGM();
+	gi->MSG_WriteShort(x);			// c = "x"
+	gi->MSG_WriteShort(y);			// c = "y"
+	gi->MSG_WriteShort(width);		// c = "width"
+	gi->MSG_WriteShort(height);		// c = "height"
+	gi->MSG_EndCGM();
 }
 /*
 void iHudDraw3d(int cl_num, int index, vec3_t vector, int ent_num, qboolean bAlwaysShow, qboolean depth)
 {
-	gi.MSG_SetClient(cl_num);
+	gi->MSG_SetClient(cl_num);
 
-	gi.MSG_StartCGM(CGM_HUDDRAW_3D);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_3D));
 	HudWriteNumber(index);
-	gi.MSG_WriteCoord(vector[0]);
-	gi.MSG_WriteCoord(vector[1]);
-	gi.MSG_WriteCoord(vector[2]);
+	gi->MSG_WriteCoord(vector[0]);
+	gi->MSG_WriteCoord(vector[1]);
+	gi->MSG_WriteCoord(vector[2]);
 
-	gi.MSG_WriteShort(ent_num);
+	gi->MSG_WriteShort(ent_num);
 
-	gi.MSG_WriteByte(bAlwaysShow);
-	gi.MSG_WriteByte(depth);
-	gi.MSG_EndCGM();
+	gi->MSG_WriteByte(bAlwaysShow);
+	gi->MSG_WriteByte(depth);
+	gi->MSG_EndCGM();
 }
 void iHudDrawTimer(int cl_num, int index, float duration, float fade_out_time)
 {
-	gi.MSG_SetClient(cl_num);
+	gi->MSG_SetClient(cl_num);
 
-	gi.MSG_StartCGM(CGM_HUDDRAW_TIMER);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_TIMER));
 	HudWriteNumber(index);
-	gi.MSG_WriteFloat(duration);
-	gi.MSG_WriteFloat(fade_out_time);
-	gi.MSG_EndCGM();
+	gi->MSG_WriteFloat(duration);
+	gi->MSG_WriteFloat(fade_out_time);
+	gi->MSG_EndCGM();
 }
 */
 /* iHudDrawVirtualSize
  **/
 void iHudDrawVirtualSize(int cl_num, int info, int virtualScreen)
 {
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_VIRTUALSIZE);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_VIRTUALSIZE));
 	HudWriteNumber(info);					// c = info
 
-	gi.MSG_WriteBits(virtualScreen, 1);		// value = virtualScreen	bits = 1
+	gi->MSG_WriteBits(virtualScreen, 1);		// value = virtualScreen	bits = 1
 
-	gi.MSG_EndCGM();
+	gi->MSG_EndCGM();
 
 }
 
@@ -110,13 +120,13 @@ void iHudDrawColor(int cl_num, int info, float r, float g, float b)
 	temp[1] = (long int)(g * 255.0f);
 	temp[2] = (long int)(b * 255.0f);
 
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_COLOR);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_COLOR));
 	HudWriteNumber(info);			// c = info
-	gi.MSG_WriteByte(temp[0]);		// c = color[2]		
-	gi.MSG_WriteByte(temp[1]);		// c = color[1]		 - Values can be messed up. To be tested.
-	gi.MSG_WriteByte(temp[2]);		// c = color[3]		/
-	gi.MSG_EndCGM();
+	gi->MSG_WriteByte(temp[0]);		// c = color[2]		
+	gi->MSG_WriteByte(temp[1]);		// c = color[1]		 - Values can be messed up. To be tested.
+	gi->MSG_WriteByte(temp[2]);		// c = color[3]		/
+	gi->MSG_EndCGM();
 
 	// Note: Each float value is multiplied by 255.0 and converted to long using ftol function, thats why it's using WriteByte
 }
@@ -126,11 +136,11 @@ void iHudDrawAlpha(int cl_num, int info, float alpha)
 	long int temp;
 	temp = (long int)(alpha*255.0f);
 
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_ALPHA);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_ALPHA));
 	HudWriteNumber(info);			// c = info
-	gi.MSG_WriteByte(temp);		// c = alpha
-	gi.MSG_EndCGM();
+	gi->MSG_WriteByte(temp);		// c = alpha
+	gi->MSG_EndCGM();
 
 	// Note: alpha is multiplied by 255.0 and converted to long using ftol function
 
@@ -138,20 +148,20 @@ void iHudDrawAlpha(int cl_num, int info, float alpha)
 
 void iHudDrawString(int cl_num, int info, const char *string)
 {
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_STRING);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_STRING));
 	HudWriteNumber(info);		// c = info
-	gi.MSG_WriteString(string);	// s = string (to show)
-	gi.MSG_EndCGM();
+	gi->MSG_WriteString(string);	// s = string (to show)
+	gi->MSG_EndCGM();
 
 }
 
 void iHudDrawFont(int cl_num, int info, const char *fontName)
 {
-	gi.MSG_SetClient(cl_num);
-	gi.MSG_StartCGM(CGM_HUDDRAW_FONT);
+	gi->MSG_SetClient(cl_num);
+	gi->MSG_StartCGM(GetCGMMessageTypeForGame(CGM_HUDDRAW_FONT));
 	HudWriteNumber(info);			// c = info
-	gi.MSG_WriteString(fontName);	// s = fontName (to use)
-	gi.MSG_EndCGM();
+	gi->MSG_WriteString(fontName);	// s = fontName (to use)
+	gi->MSG_EndCGM();
 
 }

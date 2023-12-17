@@ -1,0 +1,10 @@
+main:
+	wait 1
+
+    setcvar test_gettime_status running
+
+    setcvar test_gettime_result (gettime 0)
+
+
+    setcvar test_gettime_status finished
+end

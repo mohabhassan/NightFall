@@ -63,9 +63,6 @@
     <ClCompile Include="src\Memory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\misc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -177,6 +174,12 @@
     <ClCompile Include="src\Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\AddressDefinitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\nf_misc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\qcommon.h">
@@ -227,9 +230,6 @@
     <ClInclude Include="src\Listener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -252,12 +252,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xtrace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\dgamex86.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameVersion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CustomCvar.h">
@@ -305,15 +299,6 @@
     <ClInclude Include="src\ClientFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\AddressManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AddressDefinitions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\OffsetDefinitions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Trigger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -324,6 +309,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Weapon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClassMemory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\AddressDefinitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

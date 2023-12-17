@@ -5,6 +5,7 @@
 
 #include <chrono>
 #include <thread>
+using namespace std;
 
 CivetServer *HTTPServer::server;
 vector<APIRoute> HTTPServer::routes;
@@ -33,7 +34,6 @@ private:
 		unsigned int requestID = HTTPServer::EnqueueRequest(string(req_info->local_uri), method, j_req_params);
 
 
-		//todo: replace polling by condition_varaible
 		QueuedResponse res;
 		HTTPServer::DequeueResponse(requestID, res);
 
@@ -201,12 +201,12 @@ void HTTPServer::Init()
 		try
 		{
 			server = new CivetServer(options);
-			gi.Printf(PATCH_NAME " api server started successfully.\n");
+			gi->Printf(PATCH_NAME " api server started successfully.\n");
 			server->addHandler("**", &handler);
 		}
 		catch (CivetException& e)
 		{
-			gi.Printf(PATCH_NAME " api server error: failed to start, could be port binding issue.\n");
+			gi->Printf(PATCH_NAME " api server error: failed to start, could be port binding issue.\n");
 		}
 	}
 }
@@ -340,7 +340,7 @@ void HTTPServer::HandleNextAPIRequest()
 				}
 				catch (const ScriptException&e)
 				{
-					gi.Printf(PATCH_NAME " HTTP Server API request error: %s\n", e.string.c_str());
+					gi->Printf(PATCH_NAME " HTTP Server API request error: %s\n", e.string.c_str());
 					throw;
 				}
 

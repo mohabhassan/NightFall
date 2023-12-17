@@ -1,0 +1,56 @@
+main:
+	wait 1
+	//total success
+    level.maths_testcases_passed = 0
+    level.maths_testcases_total = 0
+    level.maths_failed_testscases = ""
+    setcvar test_maths_status running
+    if(float(getcvar shortversion) == 1.11)
+    {
+        waitthread validate_test (sin 180) -0.801153 "sin(180)"
+        waitthread validate_test (cos 180) -0.59846 "cos(180)"
+        waitthread validate_test (tan 180) 1.33869 "tan(180)"
+        waitthread validate_test (atan 180) 1.56524 "atan(180)"
+    }
+
+    waitthread validate_test (atan2 4 5) 0.674741 "(atan2 4 5)"
+    waitthread validate_test (asin 0.5) 0.523599 "(asin 0.5)"
+    waitthread validate_test (acos 0.5) 1.0472 "(acos 0.5)"
+
+    waitthread validate_test (sinh 2) 3.62686 "(sinh 2)"
+    waitthread validate_test (cosh 2) 3.7622 "(cosh 2)"
+    waitthread validate_test (tanh 2) 0.964028 "(tanh 2)"
+	
+    waitthread validate_test (exp 2) 7.389 "(exp 2)"
+    waitthread validate_test (frexp 8)[significand] 0.5 "(frexp 8)[significand]"
+    waitthread validate_test (frexp 8)[exponent] 4 "(frexp 8)[exponent]"
+    waitthread validate_test (ldexp 0.95 4) 15.2 "(ldexp 0.95 4)"
+    waitthread validate_test (log 5.5) 1.70475 "(log 5.5)"
+    waitthread validate_test (log10 5) 0.69897 "(log10 5)"
+
+    waitthread validate_test (modf 8.123)[intpart] 8 "(modf 8.123)[intpart]"
+    waitthread validate_test (modf 8.123)[fractional] 0.123 "(modf 8.123)[fractional]"
+    waitthread validate_test (pow 5 2) 25 "(pow 5 2)"
+    waitthread validate_test (sqrt 5) 2.23607 "(sqrt 5)"
+    waitthread validate_test (ceil 5.1) 6 "(ceil 5.1)"
+    waitthread validate_test (floor 7.1) 7 "(floor 7.1)"
+    waitthread validate_test (fmod 7 2) 1 "(fmod 7 2)"
+
+    println("Maths test: passed " + level.maths_testcases_passed + " out of " + level.maths_testcases_total + " tests.")
+    setcvar test_maths_score (level.maths_testcases_passed + "/" + level.maths_testcases_total)
+    setcvar test_maths_status finished
+    setcvar test_maths_failed level.maths_failed_testscases
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("maths test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.maths_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.maths_testcases_passed++
+    }
+    level.maths_testcases_total++
+end

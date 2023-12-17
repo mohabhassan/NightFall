@@ -1,5 +1,14 @@
 
-# NightFall Client Admin Commands Documentation
+# NightFall Client Commands Documentation
+## Normal Client Commands
+### patchver
+| Name | patchver |
+|--|--|
+| Arguments | none |
+| Description |  Print current patch version. |
+| Example | `patchver` |
+---
+## Client Admin Commands
 ### ad_login
 | Name | ad_login |
 |--|--|

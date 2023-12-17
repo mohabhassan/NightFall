@@ -1,12 +1,12 @@
 #include "ClientAdmin.h"
 #include <fstream>
-#include "misc.h"
 #include "g_misc.h"
 #include "IPFilter.h"
 #include "NameFilter.h"
 #include "ChatFilter.h"
 #include <sstream>
 #include <iomanip>
+using std::ifstream, std::includes, std::stringstream;
 
 constexpr int defaultClientNum = -1;
 constexpr int defaultEntryID = -1;
@@ -41,10 +41,10 @@ void ClientAdmin::Init()
 
 void ClientAdmin::LoadAdminList()
 {
-	ifstream ifs(MAIN_PATH"/admins.ini", ifstream::in);
+	ifstream ifs(MAIN_PATH+"/admins.ini", ifstream::in);
 	if (!ifs.is_open())
 	{
-		gi.Printf(PATCH_NAME " ClientAdmin system error: could not open " MAIN_PATH "/admins.ini!\n");
+		gi->Printf((PATCH_NAME " ClientAdmin system error: could not open " + MAIN_PATH + "/admins.ini!\n").c_str());
 		return;
 	}
 
@@ -64,7 +64,7 @@ void ClientAdmin::LoadAdminList()
 		rightsPos = line.find(rightslbl);
 		if (loginPos == string::npos || pwPos == string::npos || rightsPos == string::npos)
 		{
-			gi.Printf(PATCH_NAME " ClientAdmin system error: could not parse line %d properly in  " MAIN_PATH "/admins.ini! Skipping...\n", lineNum);
+			gi->Printf((PATCH_NAME " ClientAdmin system error: could not parse line %d properly in  " + MAIN_PATH + "/admins.ini! Skipping...\n").c_str(), lineNum);
 			continue;
 		}
 		login = line.substr(loginPos + loginlbl.size(), pwPos - (loginPos + loginlbl.size()));
@@ -79,13 +79,13 @@ void ClientAdmin::LoadAdminList()
 		//validate rights number
 		if (rights.find_first_not_of("0123456789") != string::npos)
 		{
-			gi.Printf(PATCH_NAME " ClientAdmin system error: invalid rights: %s in line %d in  " MAIN_PATH "/admins.ini! Skipping...\n", rights.c_str(), lineNum);
+			gi->Printf((PATCH_NAME " ClientAdmin system error: invalid rights: %s in line %d in  " + MAIN_PATH + "/admins.ini! Skipping...\n").c_str(), rights.c_str(), lineNum);
 			continue;
 		}
 		//add our client admin entry
 		ClientAdminEntry::entries.emplace_back(login, password, atoi(rights.c_str()));
 	}
-	gi.Printf(PATCH_NAME " ClientAdmin system loaded %d admin entries successfully\n", ClientAdminEntry::entries.size());
+	gi->Printf(PATCH_NAME " ClientAdmin system loaded %d admin entries successfully\n", ClientAdminEntry::entries.size());
 
 }
 
@@ -93,123 +93,125 @@ void ClientAdmin::LoadAdminList()
 
 void ClientAdmin::PrintClientStructOffsets()
 {
+	/*
 	sizeof(client_t);//should be 1179620
 
-	gi.Printf("client_t offsetof userinfo = %d\n", offsetof(client_t, userinfo));
-	gi.Printf("client_t sizeof(userinfo) = %d\n", sizeof(client_t::userinfo));
-	gi.Printf("client_t offsetof reliableSequence = %d\n", offsetof(client_t, reliableSequence));
-	gi.Printf("client_t sizeof(reliableSequence) = %d\n", sizeof(client_t::reliableSequence));
-	gi.Printf("client_t offsetof reliableAcknowledge = %d\n", offsetof(client_t, reliableAcknowledge));
-	gi.Printf("client_t sizeof(reliableAcknowledge) = %d\n", sizeof(client_t::reliableAcknowledge));
-	gi.Printf("client_t offsetof reliableCommands = %d\n", offsetof(client_t, reliableCommands));
-	gi.Printf("client_t sizeof(reliableCommands) = %d\n", sizeof(client_t::reliableCommands));
-	gi.Printf("client_t offsetof reliableSent = %d\n", offsetof(client_t, reliableSent));
-	gi.Printf("client_t sizeof(reliableSent) = %d\n", sizeof(client_t::reliableSent));
-	gi.Printf("client_t offsetof messageAcknowledge = %d\n", offsetof(client_t, messageAcknowledge));
-	gi.Printf("client_t sizeof(messageAcknowledge) = %d\n", sizeof(client_t::messageAcknowledge));
-	gi.Printf("client_t offsetof gamestateMessageNum = %d\n", offsetof(client_t, gamestateMessageNum));
-	gi.Printf("client_t sizeof(gamestateMessageNum) = %d\n", sizeof(client_t::gamestateMessageNum));
-	gi.Printf("client_t offsetof challenge = %d\n", offsetof(client_t, challenge));
-	gi.Printf("client_t sizeof(challenge) = %d\n", sizeof(client_t::challenge));
-	gi.Printf("client_t offsetof lastUsercmd = %d\n", offsetof(client_t, lastUsercmd));
-	gi.Printf("client_t sizeof(lastUsercmd) = %d\n", sizeof(client_t::lastUsercmd));
-	gi.Printf("client_t offsetof lastEyeinfo = %d\n", offsetof(client_t, lastEyeinfo));
-	gi.Printf("client_t sizeof(lastEyeinfo) = %d\n", sizeof(client_t::lastEyeinfo));
-	gi.Printf("client_t offsetof lastMessageNum = %d\n", offsetof(client_t, lastMessageNum));
-	gi.Printf("client_t sizeof(lastMessageNum) = %d\n", sizeof(client_t::lastMessageNum));
-	gi.Printf("client_t offsetof lastClientCommand = %d\n", offsetof(client_t, lastClientCommand));
-	gi.Printf("client_t sizeof(lastClientCommand) = %d\n", sizeof(client_t::lastClientCommand));
-	gi.Printf("client_t offsetof lastClientCommandString = %d\n", offsetof(client_t, lastClientCommandString));
-	gi.Printf("client_t sizeof(lastClientCommandString) = %d\n", sizeof(client_t::lastClientCommandString));
-	gi.Printf("client_t offsetof gentity = %d\n", offsetof(client_t, gentity));
-	gi.Printf("client_t sizeof(gentity) = %d\n", sizeof(client_t::gentity));
-	gi.Printf("client_t offsetof name = %d\n", offsetof(client_t, name));
-	gi.Printf("client_t sizeof(name) = %d\n", sizeof(client_t::name));
-	gi.Printf("client_t offsetof downloadName = %d\n", offsetof(client_t, downloadName));
-	gi.Printf("client_t sizeof(downloadName) = %d\n", sizeof(client_t::downloadName));
-	gi.Printf("client_t offsetof download = %d\n", offsetof(client_t, download));
-	gi.Printf("client_t sizeof(download) = %d\n", sizeof(client_t::download));
-	gi.Printf("client_t offsetof downloadSize = %d\n", offsetof(client_t, downloadSize));
-	gi.Printf("client_t sizeof(downloadSize) = %d\n", sizeof(client_t::downloadSize));
-	gi.Printf("client_t offsetof downloadCount = %d\n", offsetof(client_t, downloadCount));
-	gi.Printf("client_t sizeof(downloadCount) = %d\n", sizeof(client_t::downloadCount));
-	gi.Printf("client_t offsetof downloadClientBlock = %d\n", offsetof(client_t, downloadClientBlock));
-	gi.Printf("client_t sizeof(downloadClientBlock) = %d\n", sizeof(client_t::downloadClientBlock));
-	gi.Printf("client_t offsetof downloadCurrentBlock = %d\n", offsetof(client_t, downloadCurrentBlock));
-	gi.Printf("client_t sizeof(downloadCurrentBlock) = %d\n", sizeof(client_t::downloadCurrentBlock));
-	gi.Printf("client_t offsetof downloadXmitBlock = %d\n", offsetof(client_t, downloadXmitBlock));
-	gi.Printf("client_t sizeof(downloadXmitBlock) = %d\n", sizeof(client_t::downloadXmitBlock));
-	gi.Printf("client_t offsetof downloadBlocks = %d\n", offsetof(client_t, downloadBlocks));
-	gi.Printf("client_t sizeof(downloadBlocks) = %d\n", sizeof(client_t::downloadBlocks));
-	gi.Printf("client_t offsetof downloadBlockSize = %d\n", offsetof(client_t, downloadBlockSize));
-	gi.Printf("client_t sizeof(downloadBlockSize) = %d\n", sizeof(client_t::downloadBlockSize));
-	gi.Printf("client_t offsetof downloadEOF = %d\n", offsetof(client_t, downloadEOF));
-	gi.Printf("client_t sizeof(downloadEOF) = %d\n", sizeof(client_t::downloadEOF));
-	gi.Printf("client_t offsetof downloadSendTime = %d\n", offsetof(client_t, downloadSendTime));
-	gi.Printf("client_t sizeof(downloadSendTime) = %d\n", sizeof(client_t::downloadSendTime));
-	gi.Printf("client_t offsetof deltaMessage = %d\n", offsetof(client_t, deltaMessage));
-	gi.Printf("client_t sizeof(deltaMessage) = %d\n", sizeof(client_t::deltaMessage));
-	gi.Printf("client_t offsetof nextReliableTime = %d\n", offsetof(client_t, nextReliableTime));
-	gi.Printf("client_t sizeof(nextReliableTime) = %d\n", sizeof(client_t::nextReliableTime));
-	gi.Printf("client_t offsetof lastPacketTime = %d\n", offsetof(client_t, lastPacketTime));
-	gi.Printf("client_t sizeof(lastPacketTime) = %d\n", sizeof(client_t::lastPacketTime));
-	gi.Printf("client_t offsetof lastConnectTime = %d\n", offsetof(client_t, lastConnectTime));
-	gi.Printf("client_t sizeof(lastConnectTime) = %d\n", sizeof(client_t::lastConnectTime));
-	gi.Printf("client_t offsetof nextSnapshotTime = %d\n", offsetof(client_t, nextSnapshotTime));
-	gi.Printf("client_t sizeof(nextSnapshotTime) = %d\n", sizeof(client_t::nextSnapshotTime));
-	gi.Printf("client_t offsetof rateDelayed = %d\n", offsetof(client_t, rateDelayed));
-	gi.Printf("client_t sizeof(rateDelayed) = %d\n", sizeof(client_t::rateDelayed));
-	gi.Printf("client_t offsetof timeoutCount = %d\n", offsetof(client_t, timeoutCount));
-	gi.Printf("client_t sizeof(timeoutCount) = %d\n", sizeof(client_t::timeoutCount));
-	gi.Printf("client_t offsetof frames = %d\n", offsetof(client_t, frames));
-	gi.Printf("client_t sizeof(frames) = %d\n", sizeof(client_t::frames));
-	gi.Printf("client_t offsetof ping = %d\n", offsetof(client_t, ping));
-	gi.Printf("client_t sizeof(ping) = %d\n", sizeof(client_t::ping));
-	gi.Printf("client_t offsetof rate = %d\n", offsetof(client_t, rate));
-	gi.Printf("client_t sizeof(rate) = %d\n", sizeof(client_t::rate));
-	gi.Printf("client_t offsetof snapshotMsec = %d\n", offsetof(client_t, snapshotMsec));
-	gi.Printf("client_t sizeof(snapshotMsec) = %d\n", sizeof(client_t::snapshotMsec));
-	gi.Printf("client_t offsetof netchan = %d\n", offsetof(client_t, netchan));
-	gi.Printf("client_t sizeof(netchan) = %d\n", sizeof(client_t::netchan));
-	gi.Printf("client_t offsetof sounds = %d\n", offsetof(client_t, sounds));
-	gi.Printf("client_t sizeof(sounds) = %d\n", sizeof(client_t::sounds));
-	gi.Printf("client_t offsetof numberOfSounds = %d\n", offsetof(client_t, numberOfSounds));
-	gi.Printf("client_t sizeof(numberOfSounds) = %d\n", sizeof(client_t::numberOfSounds));
-	gi.Printf("client_t offsetof locprint = %d\n", offsetof(client_t, locprint));
-	gi.Printf("client_t sizeof(locprint) = %d\n", sizeof(client_t::locprint));
-	gi.Printf("client_t offsetof locprintX = %d\n", offsetof(client_t, locprintX));
-	gi.Printf("client_t sizeof(locprintX) = %d\n", sizeof(client_t::locprintX));
-	gi.Printf("client_t offsetof locprintY = %d\n", offsetof(client_t, locprintY));
-	gi.Printf("client_t sizeof(locprintY) = %d\n", sizeof(client_t::locprintY));
-	gi.Printf("client_t offsetof stringToPrint = %d\n", offsetof(client_t, stringToPrint));
-	gi.Printf("client_t sizeof(stringToPrint) = %d\n", sizeof(client_t::stringToPrint));
+	gi->Printf("client_t offsetof userinfo = %d\n", offsetof(client_t, userinfo));
+	gi->Printf("client_t sizeof(userinfo) = %d\n", sizeof(client_t::userinfo));
+	gi->Printf("client_t offsetof reliableSequence = %d\n", offsetof(client_t, reliableSequence));
+	gi->Printf("client_t sizeof(reliableSequence) = %d\n", sizeof(client_t::reliableSequence));
+	gi->Printf("client_t offsetof reliableAcknowledge = %d\n", offsetof(client_t, reliableAcknowledge));
+	gi->Printf("client_t sizeof(reliableAcknowledge) = %d\n", sizeof(client_t::reliableAcknowledge));
+	gi->Printf("client_t offsetof reliableCommands = %d\n", offsetof(client_t, reliableCommands));
+	gi->Printf("client_t sizeof(reliableCommands) = %d\n", sizeof(client_t::reliableCommands));
+	gi->Printf("client_t offsetof reliableSent = %d\n", offsetof(client_t, reliableSent));
+	gi->Printf("client_t sizeof(reliableSent) = %d\n", sizeof(client_t::reliableSent));
+	gi->Printf("client_t offsetof messageAcknowledge = %d\n", offsetof(client_t, messageAcknowledge));
+	gi->Printf("client_t sizeof(messageAcknowledge) = %d\n", sizeof(client_t::messageAcknowledge));
+	gi->Printf("client_t offsetof gamestateMessageNum = %d\n", offsetof(client_t, gamestateMessageNum));
+	gi->Printf("client_t sizeof(gamestateMessageNum) = %d\n", sizeof(client_t::gamestateMessageNum));
+	gi->Printf("client_t offsetof challenge = %d\n", offsetof(client_t, challenge));
+	gi->Printf("client_t sizeof(challenge) = %d\n", sizeof(client_t::challenge));
+	gi->Printf("client_t offsetof lastUsercmd = %d\n", offsetof(client_t, lastUsercmd));
+	gi->Printf("client_t sizeof(lastUsercmd) = %d\n", sizeof(client_t::lastUsercmd));
+	gi->Printf("client_t offsetof lastEyeinfo = %d\n", offsetof(client_t, lastEyeinfo));
+	gi->Printf("client_t sizeof(lastEyeinfo) = %d\n", sizeof(client_t::lastEyeinfo));
+	gi->Printf("client_t offsetof lastMessageNum = %d\n", offsetof(client_t, lastMessageNum));
+	gi->Printf("client_t sizeof(lastMessageNum) = %d\n", sizeof(client_t::lastMessageNum));
+	gi->Printf("client_t offsetof lastClientCommand = %d\n", offsetof(client_t, lastClientCommand));
+	gi->Printf("client_t sizeof(lastClientCommand) = %d\n", sizeof(client_t::lastClientCommand));
+	gi->Printf("client_t offsetof lastClientCommandString = %d\n", offsetof(client_t, lastClientCommandString));
+	gi->Printf("client_t sizeof(lastClientCommandString) = %d\n", sizeof(client_t::lastClientCommandString));
+	gi->Printf("client_t offsetof gentity = %d\n", offsetof(client_t, gentity));
+	gi->Printf("client_t sizeof(gentity) = %d\n", sizeof(client_t::gentity));
+	gi->Printf("client_t offsetof name = %d\n", offsetof(client_t, name));
+	gi->Printf("client_t sizeof(name) = %d\n", sizeof(client_t::name));
+	gi->Printf("client_t offsetof downloadName = %d\n", offsetof(client_t, downloadName));
+	gi->Printf("client_t sizeof(downloadName) = %d\n", sizeof(client_t::downloadName));
+	gi->Printf("client_t offsetof download = %d\n", offsetof(client_t, download));
+	gi->Printf("client_t sizeof(download) = %d\n", sizeof(client_t::download));
+	gi->Printf("client_t offsetof downloadSize = %d\n", offsetof(client_t, downloadSize));
+	gi->Printf("client_t sizeof(downloadSize) = %d\n", sizeof(client_t::downloadSize));
+	gi->Printf("client_t offsetof downloadCount = %d\n", offsetof(client_t, downloadCount));
+	gi->Printf("client_t sizeof(downloadCount) = %d\n", sizeof(client_t::downloadCount));
+	gi->Printf("client_t offsetof downloadClientBlock = %d\n", offsetof(client_t, downloadClientBlock));
+	gi->Printf("client_t sizeof(downloadClientBlock) = %d\n", sizeof(client_t::downloadClientBlock));
+	gi->Printf("client_t offsetof downloadCurrentBlock = %d\n", offsetof(client_t, downloadCurrentBlock));
+	gi->Printf("client_t sizeof(downloadCurrentBlock) = %d\n", sizeof(client_t::downloadCurrentBlock));
+	gi->Printf("client_t offsetof downloadXmitBlock = %d\n", offsetof(client_t, downloadXmitBlock));
+	gi->Printf("client_t sizeof(downloadXmitBlock) = %d\n", sizeof(client_t::downloadXmitBlock));
+	gi->Printf("client_t offsetof downloadBlocks = %d\n", offsetof(client_t, downloadBlocks));
+	gi->Printf("client_t sizeof(downloadBlocks) = %d\n", sizeof(client_t::downloadBlocks));
+	gi->Printf("client_t offsetof downloadBlockSize = %d\n", offsetof(client_t, downloadBlockSize));
+	gi->Printf("client_t sizeof(downloadBlockSize) = %d\n", sizeof(client_t::downloadBlockSize));
+	gi->Printf("client_t offsetof downloadEOF = %d\n", offsetof(client_t, downloadEOF));
+	gi->Printf("client_t sizeof(downloadEOF) = %d\n", sizeof(client_t::downloadEOF));
+	gi->Printf("client_t offsetof downloadSendTime = %d\n", offsetof(client_t, downloadSendTime));
+	gi->Printf("client_t sizeof(downloadSendTime) = %d\n", sizeof(client_t::downloadSendTime));
+	gi->Printf("client_t offsetof deltaMessage = %d\n", offsetof(client_t, deltaMessage));
+	gi->Printf("client_t sizeof(deltaMessage) = %d\n", sizeof(client_t::deltaMessage));
+	gi->Printf("client_t offsetof nextReliableTime = %d\n", offsetof(client_t, nextReliableTime));
+	gi->Printf("client_t sizeof(nextReliableTime) = %d\n", sizeof(client_t::nextReliableTime));
+	gi->Printf("client_t offsetof lastPacketTime = %d\n", offsetof(client_t, lastPacketTime));
+	gi->Printf("client_t sizeof(lastPacketTime) = %d\n", sizeof(client_t::lastPacketTime));
+	gi->Printf("client_t offsetof lastConnectTime = %d\n", offsetof(client_t, lastConnectTime));
+	gi->Printf("client_t sizeof(lastConnectTime) = %d\n", sizeof(client_t::lastConnectTime));
+	gi->Printf("client_t offsetof nextSnapshotTime = %d\n", offsetof(client_t, nextSnapshotTime));
+	gi->Printf("client_t sizeof(nextSnapshotTime) = %d\n", sizeof(client_t::nextSnapshotTime));
+	gi->Printf("client_t offsetof rateDelayed = %d\n", offsetof(client_t, rateDelayed));
+	gi->Printf("client_t sizeof(rateDelayed) = %d\n", sizeof(client_t::rateDelayed));
+	gi->Printf("client_t offsetof timeoutCount = %d\n", offsetof(client_t, timeoutCount));
+	gi->Printf("client_t sizeof(timeoutCount) = %d\n", sizeof(client_t::timeoutCount));
+	gi->Printf("client_t offsetof frames = %d\n", offsetof(client_t, frames));
+	gi->Printf("client_t sizeof(frames) = %d\n", sizeof(client_t::frames));
+	gi->Printf("client_t offsetof ping = %d\n", offsetof(client_t, ping));
+	gi->Printf("client_t sizeof(ping) = %d\n", sizeof(client_t::ping));
+	gi->Printf("client_t offsetof rate = %d\n", offsetof(client_t, rate));
+	gi->Printf("client_t sizeof(rate) = %d\n", sizeof(client_t::rate));
+	gi->Printf("client_t offsetof snapshotMsec = %d\n", offsetof(client_t, snapshotMsec));
+	gi->Printf("client_t sizeof(snapshotMsec) = %d\n", sizeof(client_t::snapshotMsec));
+	gi->Printf("client_t offsetof netchan = %d\n", offsetof(client_t, netchan));
+	gi->Printf("client_t sizeof(netchan) = %d\n", sizeof(client_t::netchan));
+	gi->Printf("client_t offsetof sounds = %d\n", offsetof(client_t, sounds));
+	gi->Printf("client_t sizeof(sounds) = %d\n", sizeof(client_t::sounds));
+	gi->Printf("client_t offsetof numberOfSounds = %d\n", offsetof(client_t, numberOfSounds));
+	gi->Printf("client_t sizeof(numberOfSounds) = %d\n", sizeof(client_t::numberOfSounds));
+	gi->Printf("client_t offsetof locprint = %d\n", offsetof(client_t, locprint));
+	gi->Printf("client_t sizeof(locprint) = %d\n", sizeof(client_t::locprint));
+	gi->Printf("client_t offsetof locprintX = %d\n", offsetof(client_t, locprintX));
+	gi->Printf("client_t sizeof(locprintX) = %d\n", sizeof(client_t::locprintX));
+	gi->Printf("client_t offsetof locprintY = %d\n", offsetof(client_t, locprintY));
+	gi->Printf("client_t sizeof(locprintY) = %d\n", sizeof(client_t::locprintY));
+	gi->Printf("client_t offsetof stringToPrint = %d\n", offsetof(client_t, stringToPrint));
+	gi->Printf("client_t sizeof(stringToPrint) = %d\n", sizeof(client_t::stringToPrint));
 
-	gi.Printf("==================================\n"); gi.Printf("netChan_t offsetof sock = %d\n", offsetof(netChan_t, sock));
-	gi.Printf("netChan_t sizeof(sock) = %d\n", sizeof(netChan_t::sock));
-	gi.Printf("netChan_t offsetof dropped = %d\n", offsetof(netChan_t, dropped));
-	gi.Printf("netChan_t sizeof(dropped) = %d\n", sizeof(netChan_t::dropped));
-	gi.Printf("netChan_t offsetof remoteAddress = %d\n", offsetof(netChan_t, remoteAddress));
-	gi.Printf("netChan_t sizeof(remoteAddress) = %d\n", sizeof(netChan_t::remoteAddress));
-	gi.Printf("netChan_t offsetof qport = %d\n", offsetof(netChan_t, qport));
-	gi.Printf("netChan_t sizeof(qport) = %d\n", sizeof(netChan_t::qport));
-	gi.Printf("netChan_t offsetof incomingSequence = %d\n", offsetof(netChan_t, incomingSequence));
-	gi.Printf("netChan_t sizeof(incomingSequence) = %d\n", sizeof(netChan_t::incomingSequence));
-	gi.Printf("netChan_t offsetof outgoingSequence = %d\n", offsetof(netChan_t, outgoingSequence));
-	gi.Printf("netChan_t sizeof(outgoingSequence) = %d\n", sizeof(netChan_t::outgoingSequence));
-	gi.Printf("netChan_t offsetof fragmentSequence = %d\n", offsetof(netChan_t, fragmentSequence));
-	gi.Printf("netChan_t sizeof(fragmentSequence) = %d\n", sizeof(netChan_t::fragmentSequence));
-	gi.Printf("netChan_t offsetof fragmentLength = %d\n", offsetof(netChan_t, fragmentLength));
-	gi.Printf("netChan_t sizeof(fragmentLength) = %d\n", sizeof(netChan_t::fragmentLength));
-	gi.Printf("netChan_t offsetof fragmentBuffer = %d\n", offsetof(netChan_t, fragmentBuffer));
-	gi.Printf("netChan_t sizeof(fragmentBuffer) = %d\n", sizeof(netChan_t::fragmentBuffer));
-	gi.Printf("netChan_t offsetof unsentFragments = %d\n", offsetof(netChan_t, unsentFragments));
-	gi.Printf("netChan_t sizeof(unsentFragments) = %d\n", sizeof(netChan_t::unsentFragments));
-	gi.Printf("netChan_t offsetof unsentFragmentStart = %d\n", offsetof(netChan_t, unsentFragmentStart));
-	gi.Printf("netChan_t sizeof(unsentFragmentStart) = %d\n", sizeof(netChan_t::unsentFragmentStart));
-	gi.Printf("netChan_t offsetof unsentLength = %d\n", offsetof(netChan_t, unsentLength));
-	gi.Printf("netChan_t sizeof(unsentLength) = %d\n", sizeof(netChan_t::unsentLength));
-	gi.Printf("netChan_t offsetof unsentBuffer = %d\n", offsetof(netChan_t, unsentBuffer));
-	gi.Printf("netChan_t sizeof(unsentBuffer) = %d\n", sizeof(netChan_t::unsentBuffer));
+	gi->Printf("==================================\n"); gi->Printf("netChan_t offsetof sock = %d\n", offsetof(netChan_t, sock));
+	gi->Printf("netChan_t sizeof(sock) = %d\n", sizeof(netChan_t::sock));
+	gi->Printf("netChan_t offsetof dropped = %d\n", offsetof(netChan_t, dropped));
+	gi->Printf("netChan_t sizeof(dropped) = %d\n", sizeof(netChan_t::dropped));
+	gi->Printf("netChan_t offsetof remoteAddress = %d\n", offsetof(netChan_t, remoteAddress));
+	gi->Printf("netChan_t sizeof(remoteAddress) = %d\n", sizeof(netChan_t::remoteAddress));
+	gi->Printf("netChan_t offsetof qport = %d\n", offsetof(netChan_t, qport));
+	gi->Printf("netChan_t sizeof(qport) = %d\n", sizeof(netChan_t::qport));
+	gi->Printf("netChan_t offsetof incomingSequence = %d\n", offsetof(netChan_t, incomingSequence));
+	gi->Printf("netChan_t sizeof(incomingSequence) = %d\n", sizeof(netChan_t::incomingSequence));
+	gi->Printf("netChan_t offsetof outgoingSequence = %d\n", offsetof(netChan_t, outgoingSequence));
+	gi->Printf("netChan_t sizeof(outgoingSequence) = %d\n", sizeof(netChan_t::outgoingSequence));
+	gi->Printf("netChan_t offsetof fragmentSequence = %d\n", offsetof(netChan_t, fragmentSequence));
+	gi->Printf("netChan_t sizeof(fragmentSequence) = %d\n", sizeof(netChan_t::fragmentSequence));
+	gi->Printf("netChan_t offsetof fragmentLength = %d\n", offsetof(netChan_t, fragmentLength));
+	gi->Printf("netChan_t sizeof(fragmentLength) = %d\n", sizeof(netChan_t::fragmentLength));
+	gi->Printf("netChan_t offsetof fragmentBuffer = %d\n", offsetof(netChan_t, fragmentBuffer));
+	gi->Printf("netChan_t sizeof(fragmentBuffer) = %d\n", sizeof(netChan_t::fragmentBuffer));
+	gi->Printf("netChan_t offsetof unsentFragments = %d\n", offsetof(netChan_t, unsentFragments));
+	gi->Printf("netChan_t sizeof(unsentFragments) = %d\n", sizeof(netChan_t::unsentFragments));
+	gi->Printf("netChan_t offsetof unsentFragmentStart = %d\n", offsetof(netChan_t, unsentFragmentStart));
+	gi->Printf("netChan_t sizeof(unsentFragmentStart) = %d\n", sizeof(netChan_t::unsentFragmentStart));
+	gi->Printf("netChan_t offsetof unsentLength = %d\n", offsetof(netChan_t, unsentLength));
+	gi->Printf("netChan_t sizeof(unsentLength) = %d\n", sizeof(netChan_t::unsentLength));
+	gi->Printf("netChan_t offsetof unsentBuffer = %d\n", offsetof(netChan_t, unsentBuffer));
+	gi->Printf("netChan_t sizeof(unsentBuffer) = %d\n", sizeof(netChan_t::unsentBuffer));
+	*/
 }
 
 void ClientAdmin::Shutdown()
@@ -221,13 +223,15 @@ void ClientAdmin::HandlePreDisconnect()
 {
 	//try to logout first
 	attemptLogout();
-	//gi.DropClient()
+	//gi->DropClient()
 	//if kicked or banned, do our magic
-	client_t *cl = GetClientByClientNum(clientNum);
-	if (!cl)
+	client_t *cl_actual = GetClientByClientNum(clientNum);
+	if (!cl_actual)
 	{
 		return;
 	}
+	Client cl(cl_actual);
+
 	//NET_OutOfBandPrint()
 
 	//look for kicks
@@ -271,12 +275,13 @@ void ClientAdmin::HandlePreDisconnect()
 
 void ClientAdmin::HandlePostDisconnect()
 {
-	client_t *cl = GetClientByClientNum(clientNum);
-	if (!cl)
+	client_t *cl_actual = GetClientByClientNum(clientNum);
+	if (!cl_actual)
 	{
 		return;
 	}
 
+	Client cl(cl_actual);
 	//G_PrintToAllClients((cl->name + string("was kicked\n")).c_str());
 
 	//look for kicks
@@ -428,22 +433,14 @@ void ClientAdmin::AddBan(int bannedClientNum, bool hasReason, string reason)
 		return;
 	}
 
-	client_t *cl = GetClientByClientNum(bannedClientNum);
-	if (!cl)
+	client_t *cl_actual = GetClientByClientNum(bannedClientNum);
+	if (!cl_actual)
 	{
 		return;
 	}
+	Client cl(cl_actual);
 
-	char * ip = Info_ValueForKey(cl->userinfo, "ip");
-
-	for (size_t i = 0; ip[i] != NULL; i++)
-	{
-		if (ip[i] == ':')
-		{
-			ip[i] = NULL;
-			break;
-		}
-	}
+	string ip = GetIPFromClient(cl);
 
 	if (ip != "")
 	{
@@ -451,7 +448,7 @@ void ClientAdmin::AddBan(int bannedClientNum, bool hasReason, string reason)
 	}
 	else
 	{
-		gi.Printf(PATCH_NAME " ClientAdmin system error: could not ban ip of client num: %d, name: %s empty ip!\n", clientNum, cl->name);
+		gi->Printf(PATCH_NAME " ClientAdmin system error: could not ban ip of client num: %d, name: %s empty ip!\n", bannedClientNum, cl->name);
 	}
 
 }
@@ -615,18 +612,19 @@ string ClientAdmin::ListOnlineAdmins()
 	stringstream ss;
 	ss << "Name | ";
 	ss << "Rights";
-	ss << endl;
+	ss << "\n";
 	for (auto &e: sessions)
 	{
-		client_t * cl = GetClientByClientNum(e.getClientNum());
-		if (!cl)
+		client_t * cl_real = GetClientByClientNum(e.getClientNum());
+		if (!cl_real)
 		{
-			gi.Printf(PATCH_NAME " ClientAdmin ListOnlineAdmins error: Invalid session clientnum %d, Ignoring...\n", e.getClientNum());
+			gi->Printf(PATCH_NAME " ClientAdmin ListOnlineAdmins error: Invalid session clientnum %d, Ignoring...\n", e.getClientNum());
 			continue;
 		}
+		Client cl(cl_real);
 		ss << cl->name << " | ";
 		ss << ClientAdminEntry::entries[e.getEntryID()].getRigths();
-		ss << endl;
+		ss << "\n";
 	}
 	return ss.str();
 }

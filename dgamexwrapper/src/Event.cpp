@@ -1,4 +1,5 @@
 #include "Event.h"
+#include "AddressDefinitions.h"
 
 static eventInfo_t **lastEvent = NULL;
 int *Event::totalevents = NULL;

@@ -1,0 +1,13 @@
+main:
+	wait 1
+
+    setcvar test_conprintf_status running
+
+    waitthread test_conprintf
+
+    setcvar test_conprintf_status finished
+end
+
+test_conprintf:
+    conprintf test_conprintf_sample_string
+end

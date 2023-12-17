@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __CONTAINER_H__
 #define __CONTAINER_H__
 
-#define glbprintf( text ) gi.Printf( text )
+#define glbprintf( text ) gi->Printf( text )
 
-#define CONTAINER_Error( id, text ) gi.Error(id, text);
+#define CONTAINER_Error( id, text ) gi->Error(id, text);
 
 #define CONTAINER_DPrintf( text ) glbprintf( text )
 #define CONTAINER_WDPrintf( text ) glbprintf( text )

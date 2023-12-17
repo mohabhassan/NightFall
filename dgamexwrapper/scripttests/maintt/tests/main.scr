@@ -2,8 +2,8 @@ main:
 	//exec tests/filesystem.scr 	: total success
 	//exec tests/playermisc.scr		: total success
 	//exec tests/reborn_events.scr 	: total success
-	//exec tests/maths.scr			: total success
-	//exec tests/misc.scr				: total success
+	//exec tests/maths.scr
+	//exec tests/misc.scr
 	//exec tests/ihuddraw.scr		: total success
 	//exec tests/api.scr			: total success
 end

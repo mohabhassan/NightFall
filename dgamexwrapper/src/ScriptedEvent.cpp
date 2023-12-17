@@ -67,7 +67,7 @@ void ScriptedEvent::Shutdown()
 	}
 }
 
-//returns return value index in returnValues, should remove it manaually by calling func.
+//returns return value index in returnValues, should remove it manually by calling func.
 //returns defaultReturnValueIndex if no return value.
 void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args, ScriptVariable * returnValue)
 {
@@ -115,7 +115,7 @@ void ScriptedEvent::Trigger(std::vector<ScriptedEventArgument> args, ScriptVaria
 	}
 	catch (const ScriptException& e)
 	{
-		gi.Printf(PATCH_NAME " Scripted event error for event %s: %s\n", GetTypeStr(m_Type).c_str(), e.string.c_str());
+		gi->Printf(PATCH_NAME " Scripted event error for event %s: %s\n", GetTypeStr(m_Type).c_str(), e.string.c_str());
 	}
 }
 
@@ -157,7 +157,7 @@ bool ScriptedEvent::isRegistered()
 
 ScriptedEventArgument::ScriptedEventArgument(Entity * e)
 {
-	var.setListenerValue(e);
+	var.setListenerValue((Listener*)e);
 }
 
 ScriptedEventArgument::ScriptedEventArgument(Vector v)

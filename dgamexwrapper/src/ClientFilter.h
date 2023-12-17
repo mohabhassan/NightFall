@@ -1,7 +1,7 @@
 #pragma once
 #include <list>
 #include "CustomCvar.h"
-using namespace std;
+using std::string, std::list;
 class ClientFilter
 {
 	int client_num;

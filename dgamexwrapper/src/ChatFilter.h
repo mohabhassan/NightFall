@@ -3,7 +3,7 @@
 #include <vector>
 #include "dgamex86.h"
 #include "ScriptVariable.h"
-using namespace std;
+using std::string, std::vector;
 constexpr int defaultChatIndex = -1;
 constexpr int defaultChatClientIndex = -1;
 /* Class ChatEntry

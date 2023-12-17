@@ -14,7 +14,7 @@ It allows modders to communicate to the outside world via HTTP/JSON.
 | Description | Enables or disable API client.<br> This setting is only affected at map start.<br> It's value is effective at map start/change/restart.<br> API client can't be started or stopped in the middle of the map. <br> If you change it's value, change the map or restart the map. |
 
 
-## Client Behaviour
+## API Client Behaviour
 ### Initialization
 Once [sv_api_client](api_client.md#sv_api_client) cvar is set to one, and upon map load, API client is started. API client will have a single idle running worker thread to serve the HTTP client requests.
 
@@ -27,7 +27,7 @@ Please note that this process is not fast, since everything is synced with MOHAA
 
 Usual calls made when a request arrives are as follows:
 
- 1. Modder calls [create_api_request](scriptfuncs.md#create_api_request) via script.
+ 1. [create_api_request](scriptfuncs.md#create_api_request) is called via script.
  2. MOHAA thread **waits/syncs** to take the send request/script and pass it to API client.
  3. API client thread **waits/syncs** to get request from MOHAA thread.
  4. API client thread creates HTTP request.

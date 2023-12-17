@@ -1,5 +1,5 @@
 #include "Listener.h"
-
+#include "AddressDefinitions.h"
 
 void(__thiscall*Listener::ExecuteScript_ptr) (Listener *_this, Event*ev);
 void(__thiscall*Listener::ExecuteReturnScript_ptr) (Listener *_this, Event*ev);

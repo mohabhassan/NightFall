@@ -1,6 +1,8 @@
 #define INCL_DOSMODULEMGR
 #include "dgamex86.h"
-#include "misc.h"
+#include "AddressManager.h"
+#include "AddressDefinitions.h"
+#include "nf_misc.h"
 #include "ihuddraw.h"
 #include "detours.h"
 #include "ClassDef.h"
@@ -18,6 +20,7 @@
 #include "HTTPClient.h"
 #include "UpdateClient.h"
 #include "ClientFilter.h"
+#include "nf_misc.h"
 
 
 //#include "hooks/script.h"
@@ -35,12 +38,12 @@
 //------------------	Global Variables	------------------\\
 */
 
-typedef gameExport_t *(*pGetGameAPI_spec)( gameImport_t *import );
+typedef void *(*pGetGameAPI_spec)( void *import );
 pGetGameAPI_spec pGetGameAPI;
 
 
-typedef void (__cdecl*pG_BeginIntermission_spec)(const char *map_name, INTTYPE_e transtype, bool shouldFade);
-pG_BeginIntermission_spec G_BeginIntermission_original;
+typedef void (__cdecl*pG_BeginIntermission2_spec)();
+pG_BeginIntermission2_spec G_BeginIntermission2_original;
 
 typedef void *(*pMemoryMalloc_spec)(int size);
 pMemoryMalloc_spec pMemoryMalloc;
@@ -48,10 +51,11 @@ pMemoryMalloc_spec pMemoryMalloc;
 typedef void (*pMemoryFree_spec)(void *);
 pMemoryFree_spec pMemoryFree;
 
+GameInfo gameInfo;
 
-gameImport_t	gi;
-gameExport_t	*globals;
-gameExport_t	globals_backup;
+shared_ptr<BaseGameImport>	gi;
+shared_ptr<BaseGameExport> globals;
+shared_ptr<BaseGameExport>	globals_backup;
 
 clientdata_t clients[32];
 // GLOBALS NEEDED FOR NO-RECOIL DETECTION
@@ -74,7 +78,7 @@ Called per each frame, 20 times a second.
 */
 void G_RunFrame(int svsTime, int frameTime)
 {
-	globals_backup.RunFrame(svsTime, frameTime);
+	globals_backup->RunFrame()(svsTime, frameTime);
 
 	//Server stuff
 	//first: handle new requests
@@ -96,25 +100,26 @@ to be placed into the level.  This will happen every level load,
 and on transition between teams, but doesn't happen on respawns
 ============
 */
-void G_ClientBegin( gentity_t *ent, userCmd_t *cmd )
+void G_ClientBegin(GEntity &gent, userCmd_t *cmd )
 {
+
 	//sizeof(playerState_t);//676
 	//sizeof(entityState_t);
 	//sizeof(gentity_t);
 	//sizeof(int);		  //4
 						  //1350
 	//sizeof(client_persistant_t);//1588
-	//gi.centerprintf(ent, "Welcome %s, have fun!", ent->client->pers.netname); //not working ?
-	gi.centerprintf(ent, "Welcome %s, have fun!", ent->client->pers.netname);
-	//gi.Printf("Player Name: %s : %d\n", ent->client->pers.netname, ent->client->ps.clientNum);
+	//gi->centerprintf(ent, "Welcome %s, have fun!", ent->client->pers.netname); //not working ?
+	gi->centerprintf(gent, "Welcome %s, have fun!", GClient(gent->client)->pers.netname);
+	//gi->Printf("Player Name: %s : %d\n", ent->client->pers.netname, ent->client->ps.clientNum);
 
-	globals_backup.ClientBegin( ent, cmd );
+	globals_backup->ClientBegin()(gent, cmd );
 
 	ScriptedEvent sev(SEV_CONNECTED);
 
 	if (sev.isRegistered())
 	{
-		sev.Trigger({ (Entity*)ent->entity });
+		sev.Trigger({ gent->entity });
 	}
 }
 
@@ -142,20 +147,23 @@ restarts.
 char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 {
 	char* reason = NULL;
-	client_t* cl = GetClientByClientNum(clientNum);
-	if (!cl)
+	client_t * cl_actual = GetClientByClientNum(clientNum);
+	if (!cl_actual)
 	{
-		gi.Printf(PATCH_NAME " connect error: NULL client %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
+		gi->Printf(PATCH_NAME " connect error: NULL client %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 		reason = NULL;
 	}
 	else
 	{
-
+		//you can't use gclient_t here,
+		//for userinfo: gi->GetUserInfo
+		char userinfo[MAX_INFOSTRING];
+		gi->GetUserinfo(clientNum, userinfo, MAX_INFOSTRING);
 		//IP related checks
-		char* ip = Info_ValueForKey(cl->userinfo, "ip");
+		char* ip = Info_ValueForKey(userinfo, "ip");
 		if (ip == "")
 		{
-			gi.Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
+			gi->Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 			reason = NULL;
 		}
 		else
@@ -178,11 +186,11 @@ char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 		//name related checks:
 		if (reason == NULL)
 		{
-			char* name = Info_ValueForKey(cl->userinfo, "name");
-			char* namepass = Info_ValueForKey(cl->userinfo, "cl_namepass");
+			char* name = Info_ValueForKey(userinfo, "name");
+			char* namepass = Info_ValueForKey(userinfo, "cl_namepass");
 			if (name == "")
 			{
-				gi.Printf(PATCH_NAME " connect error: empty client name %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
+				gi->Printf(PATCH_NAME " connect error: empty client name %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 				reason = NULL;
 			}
 			else
@@ -206,14 +214,14 @@ char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 		//_fps skin bug check:
 		if (reason == NULL)
 		{
-			if (CheckFPSSkin(cl->userinfo))
+			if (CheckFPSSkin(userinfo))
 			{
 				reason = "Your skins are invalid.\nPlease go to multiplayer options and change them.\n";
 			}
 			else
 			{
 				ClientFilter filter;
-				filter.ClientConnected(clientNum, gi.Milliseconds());
+				filter.ClientConnected(clientNum, gi->Milliseconds());
 			}
 		}
 
@@ -231,14 +239,27 @@ char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 		return reason;
 	}
 }
-#ifdef MOHAA
+
+char* G_ClientConnect(int clientNum, qboolean firstTime, int a3)
+{
+	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
+	if (reason == NULL)
+	{
+		return globals_backup->ClientConnect()(clientNum, firstTime, a3);
+	}
+	else
+	{
+		return reason;
+	}
+}
 
 char* G_ClientConnect(int clientNum, qboolean firstTime)
 {
 	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
 	if (reason == NULL)
 	{
-		return globals_backup.ClientConnect(clientNum, firstTime);
+		auto actual_ClientConnect = (char* (*)(int, qboolean)) ((void*)globals_backup->ClientConnect());
+		return actual_ClientConnect(clientNum, firstTime);
 	}
 	else
 	{
@@ -246,51 +267,35 @@ char* G_ClientConnect(int clientNum, qboolean firstTime)
 	}
 }
 
-#else
-char* G_ClientConnect(int clientNum, qboolean firstTime, int a3)
+void G_ClientDisconnect(GEntity &ent)
 {
-	char* reason = G_ClientConnect_Internal(clientNum, firstTime);
-	if (reason == NULL)
+	if (!ent.isValid() || !ent->client->isValid() || ent->entity == NULL)
 	{
-		return globals_backup.ClientConnect(clientNum, firstTime, a3);
+		globals_backup->ClientDisconnect()(ent);
+		return;
 	}
-	else
+
+	ScriptedEvent sev(SEV_DISCONNECTED);
+
+	if (sev.isRegistered())
 	{
-		return reason;
+		sev.Trigger({ (Entity*)ent->entity });
 	}
-}
-#endif // MOHAA
+	int clientNum = GClient(ent->client)->ps.clientNum;
 
+	ClientAdmin admin(clientNum);
+	admin.HandlePreDisconnect();
+	globals_backup->ClientDisconnect()(ent);
+	admin.HandlePostDisconnect();
 
-void G_ClientDisconnect(gentity_t *ent)
-{
-	if (ent != NULL && ent->client != NULL)
 	{
-		ScriptedEvent sev(SEV_DISCONNECTED);
-
-		if (sev.isRegistered())
-		{
-			sev.Trigger({ (Entity*)ent->entity });
-		}
-		
-		ClientAdmin admin(ent->client->ps.clientNum);
-		admin.HandlePreDisconnect();
-		globals_backup.ClientDisconnect(ent);
-		admin.HandlePostDisconnect();
-
-		{
-			ChatFilter filter;
-			filter.ClientDisconnected(ent->client->ps.clientNum);
-		}
-
-		{
-			ClientFilter filter;
-			filter.ClientDisconnected(ent->client->ps.clientNum);
-		}
+		ChatFilter filter;
+		filter.ClientDisconnected(clientNum);
 	}
-	else
+
 	{
-		globals_backup.ClientDisconnect(ent);
+		ClientFilter filter;
+		filter.ClientDisconnected(clientNum);
 	}
 }
 /*
@@ -304,29 +309,29 @@ If "g_synchronousClients 1" is set, this will be called exactly
 once for each server frame, which makes for smooth demo recording.
 ==============
 */
-void G_ClientThink( gentity_t *ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
+void G_ClientThink(GEntity &ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
 {
 	ClientFilter filter;
-	if (filter.CheckPingKick(ent->client->ps.clientNum, ent->client->ps.ping, ent))
+	if (filter.CheckPingKick(GClient(ent->client)->ps.clientNum, GClient(ent->client)->ps.ping, ent))
 	{
 		ClientAdmin admin(internalClientNum);
-		admin.AddKick(ent->client->ps.clientNum, true, "too high ping");
-		gi.DropClient(ent->client->ps.clientNum, "has been kicked for too high ping");
+		admin.AddKick(GClient(ent->client)->ps.clientNum, true, "too high ping");
+		gi->DropClient(GClient(ent->client)->ps.clientNum, "has been kicked for too high ping");
 	}
 
-	globals_backup.ClientThink( ent, ucmd, eyeInfo);
+	globals_backup->ClientThink()( ent, ucmd, eyeInfo);
 	
 }
 
 
 
-void  G_ClientCommand ( gentity_t *ent ){
-	//gi.Argv(0) dmmessage Gi.Argv(1) 0 gi,Argv(2) blah gi.Args() 0 blah test
-	//gi.Printf("\ngi.Argv(0) %s Gi.Argv(1) %s gi,Argv(2) %s gi.Args() %s\n", gi.Argv(0) ,gi.Argv(1) ,gi.Argv(2) ,gi.Args());
-	char *cmd = gi.Argv(0);
+void  G_ClientCommand (GEntity &ent ){
+	//gi->Argv(0) dmmessage Gi.Argv(1) 0 gi,Argv(2) blah gi->Args() 0 blah test
+	//gi->Printf("\ngi.Argv(0) %s Gi.Argv(1) %s gi,Argv(2) %s gi->Args() %s\n", gi->Argv(0) ,gi->Argv(1) ,gi->Argv(2) ,gi->Args());
+	char *cmd = gi->Argv(0);
 	if (!strcmp(cmd, "keyp"))
 	{
-		char *idStr = gi.Argv(1);
+		char *idStr = gi->Argv(1);
 		if (idStr)
 		{
 			long int id = strtol(idStr, NULL, 0);
@@ -345,14 +350,14 @@ void  G_ClientCommand ( gentity_t *ent ){
 	}
 	else if (!strcmp(cmd, "scmd"))
 	{
-		int numArgs = gi.Argc();
-		str cmdStr = gi.Argv(1);
+		int numArgs = gi->Argc();
+		str cmdStr = gi->Argv(1);
 		if (cmdStr)
 		{
 			str argsStr = "";
 			for (size_t i = 2; i < numArgs; i++)
 			{
-				argsStr += gi.Argv(i);
+				argsStr += gi->Argv(i);
 				argsStr += " ";
 			}
 			argsStr -= 1;//remove last space
@@ -367,7 +372,7 @@ void  G_ClientCommand ( gentity_t *ent ){
 	}
 	else if (!strcmp(cmd, "dmmessage"))
 	{
-			int numArgs = gi.Argc();
+			int numArgs = gi->Argc();
 			if (numArgs >= 3)
 			{
 				vector<string> args;
@@ -383,30 +388,30 @@ void  G_ClientCommand ( gentity_t *ent ){
 				//sayprivate & sayone: clientnum is actualy clientnum (it's a bit fuzzy when using sv_privateclients)
 				for (size_t i = 2; i < numArgs; i++)
 				{
-					args.push_back(gi.Argv(i));
+					args.push_back(gi->Argv(i));
 				}
 				
 				bool shouldKick;
 				string reason;
 				ChatFilter filter;
-				if (!filter.CanSend(args, ent->client->ps.clientNum, shouldKick, reason))
+				if (!filter.CanSend(args, GClient(ent->client)->ps.clientNum, shouldKick, reason))
 				{
 					if (shouldKick)
 					{
 						ClientAdmin admin(internalClientNum);
-						admin.AddKick(ent->client->ps.clientNum, true, reason.c_str());
-						gi.DropClient(ent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+						admin.AddKick(GClient(ent->client)->ps.clientNum, true, reason.c_str());
+						gi->DropClient(GClient(ent->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
 					}
 					else
 					{
-						gi.SendServerCommand(ent->client->ps.clientNum, "hudprint \"%s\n\"", reason.c_str());
+						gi->SendServerCommand(GClient(ent->client)->ps.clientNum, "hudprint \"%s\n\"", reason.c_str());
 					}
 					return;
 				}
 
 				try
 				{
-					int target = stoi(gi.Argv(1));
+					int target = std::stoi(gi->Argv(1));
 					if (!filter.CheckScriptCallback(args, ent, target))
 					{
 						return;
@@ -414,19 +419,19 @@ void  G_ClientCommand ( gentity_t *ent ){
 				}
 				catch (const std::exception&)
 				{
-					gi.Printf(PATCH_NAME " dmmessage error: invalid chat target %s or invalid scritp return value ! Ignoring...\n", gi.Argv(1));
+					gi->Printf(PATCH_NAME " dmmessage error: invalid chat target %s or invalid script return value ! Ignoring...\n", gi->Argv(1));
 				}
 			}
 	}
-	globals_backup.ClientCommand(ent);
+	globals_backup->ClientCommand()(ent);
 }
 
-void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
+void G_ClientUserinfoChanged(GEntity &gent, char *userInfo)
 {
 	char * name = Info_ValueForKey(userInfo, "name");
 	if (name == "")
 	{
-		gi.Printf(PATCH_NAME " userinfo error: empty client name on G_ClientUserinfoChanged! Ignoring...\n");
+		gi->Printf(PATCH_NAME " userinfo error: empty client name on G_ClientUserinfoChanged! Ignoring...\n");
 	}
 	else
 	{
@@ -436,59 +441,59 @@ void G_ClientUserinfoChanged(gentity_t *gent, char *userInfo)
 		{
 			ClientAdmin admin(internalClientNum);
 			string reason = "disallowed name or disallowed word in name.";
-			admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
-			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+			admin.AddKick(GClient(gent->client)->ps.clientNum, true, reason.c_str());
+			gi->DropClient(GClient(gent->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
 			return;
 		}
 		else if(!filter.CanConnectProtected(name, namepass))//check for protected name filter
 		{
 			ClientAdmin admin(internalClientNum);
 			string reason = "using protected name w/o permission.";
-			admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
-			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+			admin.AddKick(GClient(gent->client)->ps.clientNum, true, reason.c_str());
+			gi->DropClient(GClient(gent->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
 			return;
 		}
 		//let this be for MOHAA only, for now
 		//fps check is done in Daven's pk3
-#ifdef MOHAA
-		else if (CheckFPSSkin(userInfo))
+		else if (gameInfo.IsAA())
 		{
-			ClientAdmin admin(internalClientNum);
-			string reason = "invalid/crash _fps skin";
-			admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
-			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
-			return;
+			if (CheckFPSSkin(userInfo))
+			{
+				ClientAdmin admin(internalClientNum);
+				string reason = "invalid/crash _fps skin";
+				admin.AddKick(GClient(gent->client)->ps.clientNum, true, reason.c_str());
+				gi->DropClient(GClient(gent->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
+				return;
+			}
+			else if (CheckCommentSlashesInName(name))
+			{
+				ClientAdmin admin(internalClientNum);
+				string reason = "disallowed comment slashes in the name";
+				admin.AddKick(GClient(gent->client)->ps.clientNum, true, reason.c_str());
+				gi->DropClient(GClient(gent->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
+				return;
+			}
 		}
-		else if (CheckCommentSlashesInName(name))
-		{
-			ClientAdmin admin(internalClientNum);
-			string reason = "disallowed comment slashes in the name";
-			admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
-			gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
-			return;
-		}
-#endif
 
 	}
 
-	globals_backup.ClientUserinfoChanged(gent,userInfo);
+	globals_backup->ClientUserinfoChanged()(gent,userInfo);
 }
 
-void __cdecl G_BeginIntermission(const char *map_name, INTTYPE_e transtype, bool shouldFade)
+void __cdecl G_BeginIntermission2()
 {
-
 	ScriptedEvent sev(SEV_INTERMISSION);
 
 	if (sev.isRegistered())
 	{
 		sev.Trigger({ INTERM_SCREEN });
 	}
-	G_BeginIntermission_original(map_name, transtype, shouldFade);
+	G_BeginIntermission2_original();
 }
 
 void __cdecl G_CleanUp(qboolean samemap)
 {
-	globals_backup.Cleanup(samemap);
+	globals_backup->Cleanup()(samemap);
 }
 
 void initScriptHooks()
@@ -496,18 +501,19 @@ void initScriptHooks()
 
 	AddressManager::Init((unsigned int) hmod);
 
-	G_BeginIntermission_original = reinterpret_cast<pG_BeginIntermission_spec>((int)BEGININTERMISSION_ADDR);
+	G_BeginIntermission2_original = reinterpret_cast<pG_BeginIntermission2_spec>((int)BEGININTERMISSION2_ADDR);
 	SV_Commands_Init();
+	//return;
 	Event::Init();
 	ClassDef::Init();
 	Listener::Init();
 	DirectorClass::Init();
-	Sentient::Init();
+	SentientNF::Init();
 	ScriptVariable::Init();
 
-	Entity::Init();
+	EntityNF::Init();
 	DM_Team::Init();
-	Player::Init();
+	PlayerNF::Init();
 	ScriptThread::Init();
 	HTTPServer::Init();
 	HTTPClient::Init();
@@ -520,7 +526,7 @@ void initScriptHooks()
 
 	ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourAttach(&(PVOID&)(G_BeginIntermission_original), (PVOID)(&G_BeginIntermission));
+	ret = DetourAttach(&(PVOID&)(G_BeginIntermission2_original), (PVOID)(&G_BeginIntermission2));
 	ret = DetourTransactionCommit();
 
 
@@ -530,8 +536,8 @@ void shutdownScriptHooks()
 {
 	SV_Commands_Shutdown();
 
-	Entity::Shutdown();
-	Player::Shutdown();
+	EntityNF::Shutdown();
+	PlayerNF::Shutdown();
 	ScriptThread::Shutdown();
 	ScriptedEvent::Shutdown();
 	
@@ -545,7 +551,7 @@ void shutdownScriptHooks()
 
 	ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourDetach(&(PVOID&)(G_BeginIntermission_original), (PVOID)(&G_BeginIntermission));
+	ret = DetourDetach(&(PVOID&)(G_BeginIntermission2_original), (PVOID)(&G_BeginIntermission2));
 	ret = DetourTransactionCommit();
 
 	AddressManager::Shutdown();
@@ -557,6 +563,7 @@ void initConsoleCommands()
 	ClientAdmin::Init();
 	IPFilter::Init();
 	NameFilter::Init();
+	ChatFilter::Init();
 	SV_Misc_Init();
 }
 
@@ -565,11 +572,18 @@ void shutdownConsoleCommands()
 	ClientAdmin::Shutdown();
 	IPFilter::Shutdown();
 	NameFilter::Shutdown();
+	ChatFilter::Shutdown();
 }
 
 void startCrashReporter()
 {
-	gi.Printf(PATCH_NAME ": starting crash reporter \n");
+	gi->Printf(PATCH_NAME ": starting crash reporter \n");
+	if (IsDebuggerPresent())
+	{
+		gi->Printf("crash reporter already running\n");
+		return;
+	}
+
 	CustomCvar sv_crashrpt_poll_delay("sv_crashrpt_poll_delay", "5", CVAR_ARCHIVE);//in seconds
 	CustomCvar sv_crashrpt_hang_wait("sv_crashrpt_hang_wait", "30", CVAR_ARCHIVE);//in seconds
 
@@ -584,7 +598,7 @@ void startCrashReporter()
 		TRUE,
 		DUPLICATE_SAME_ACCESS))
 	{
-		gi.Printf("Start crash reporter error 1: %u\n", GetLastError());
+		gi->Printf("Start crash reporter error 1: %u\n", GetLastError());
 		return;
 	}
 
@@ -611,11 +625,11 @@ void startCrashReporter()
 		&pi)           // Pointer to PROCESS_INFORMATION structure
 		)
 	{
-		gi.Printf("Start crash reporter error 2: %u\n", GetLastError());
+		gi->Printf("Start crash reporter error 2: %u\n", GetLastError());
 	}
 	else
 	{
-		gi.Printf("Start crash reporter success\n", GetLastError());
+		gi->Printf("Start crash reporter success\n", GetLastError());
 	}
 }
 
@@ -629,7 +643,7 @@ only happens when a new game is begun
 */
 void G_InitGame( int startTime, int randomSeed )
 {
-	gi.Printf("==== " PATCH_NAME " Wrapper InitGame ==== \n");
+	gi->Printf("==== " PATCH_NAME " Wrapper InitGame ==== \n");
 
 	#ifndef _WIN32
 	initsighandlers();  // init our custom signal handlers  (linux only)
@@ -640,43 +654,45 @@ void G_InitGame( int startTime, int randomSeed )
 	initConsoleCommands();
 
 	startCrashReporter();
-	globals_backup.Init( startTime, randomSeed );
-	//gi.Printf("Class count: %d", classcount);
-	gi.Printf(PATCH_NAME " Wrapper inited \n");
+	globals_backup->Init()( startTime, randomSeed );
+	//gi->Printf("Class count: %d", classcount);
+	gi->Printf(PATCH_NAME " Wrapper inited \n");
 	
 }
 
 /*
 ============
-G_Precache
+G_SetMap
 
-Calls precache scripts
+Sets current map, input is mapname
 ================
 */
-void G_Precache()
+void G_SetMap(char* mapName)
 {
+	globals_backup->SetMap()(mapName);
+
 	//keep reborn.scr mohaa only for now, might make it for all games later.
-#ifdef MOHAA
-	CustomCvar sv_rebornloader("sv_rebornloader", "reborn/reborn_loader.scr", CVAR_ARCHIVE);
-	char* scriptLbl = sv_rebornloader.GetStringValue();
-	if (scriptLbl != NULL && strlen(scriptLbl) > 0)
+	if (gameInfo.IsAA())
 	{
-		Event ev;
-		ScriptVariable script;
-		script.setStringValue(scriptLbl);
-		ev.AddValue(script);
-		try
+		CustomCvar sv_rebornloader("sv_rebornloader", "reborn/reborn_loader.scr", CVAR_ARCHIVE);
+		char* scriptLbl = sv_rebornloader.GetStringValue();
+		if (scriptLbl != NULL && strlen(scriptLbl) > 0)
 		{
-			Director->ExecuteScript(&ev);
-		}
-		catch (ScriptException&e)
-		{
-			gi.Printf(PATCH_NAME " Precache Error: Couldn't load reborn loader script, error message: %s\n", e.string.c_str());
+			Event ev;
+			ScriptVariable script;
+			script.setStringValue(scriptLbl);
+			ev.AddValue(script);
+			try
+			{
+				Director->ExecuteScript(&ev);
+			}
+			catch (ScriptException&e)
+			{
+				gi->Printf(PATCH_NAME " Precache Error: Couldn't load reborn loader script, error message: %s\n", e.string.c_str());
+			}
 		}
 	}
-#endif // MOHAA
 
-	globals_backup.Precache();
 }
 
 qboolean G_ConsoleCommand()
@@ -687,7 +703,7 @@ qboolean G_ConsoleCommand()
 	}
 	else
 	{
-		return globals_backup.ConsoleCommand();
+		return globals_backup->ConsoleCommand()();
 	}
 }
 
@@ -698,7 +714,7 @@ Needed to unload fgamededmohaa.so on mapchange!
 void	G_Shutdown (void)
 {
 
-	gi.Printf("==== " PATCH_NAME " Wrapper Shutdown ==== \n");
+	gi->Printf("==== " PATCH_NAME " Wrapper Shutdown ==== \n");
 	
 	shutdownScriptHooks();
 	shutdownConsoleCommands();
@@ -710,7 +726,7 @@ void	G_Shutdown (void)
 		uc.CheckForUpdate();
 	}
 
-	globals_backup.Shutdown();
+	globals_backup->Shutdown()();
 
 	#ifndef _WIN32
 		// linux
@@ -723,127 +739,154 @@ void	G_Shutdown (void)
 	#endif	
 }
 
-gameExport_t* __cdecl GetGameAPI( gameImport_t *import )
+//input: gameImport_T* , output: gameExport_t*
+void* __cdecl GetGameAPI( void *import_actual )
 {
 	/****** Linux: Load fgamededmohaa.so ******/
 	#ifndef _WIN32
 
-		dlerror();
+	dlerror();
+	
+	hmod = dlopen( "./fgamededmohaa.so", RTLD_LAZY|RTLD_LOCAL );
+	if( !hmod ) 
+	{
+		printf( "dlopen failed. Reason: \"%s\"\n", dlerror() );
+	}
 
-		hmod = dlopen( "./fgamededmohaa.so", RTLD_LAZY|RTLD_LOCAL );
-		if( !hmod ) 
-		{
-			printf( "dlopen failed. Reason: \"%s\"\n", dlerror() );
-		}
+	pGetGameAPI = ( pGetGameAPI_spec ) dlsym( hmod, "GetGameAPI" );
 
-		pGetGameAPI = ( pGetGameAPI_spec ) dlsym( hmod, "GetGameAPI" );
-
-		if( !pGetGameAPI )	
-			printf( "dlsym failed. reason: \"%s\"\n", dlerror() );
+	if( !pGetGameAPI )	
+		printf( "dlsym failed. reason: \"%s\"\n", dlerror() );
 
 	#endif
-	bool nullRet = false;
+
+	{
+		gameImportAA_t* tmp_import = (gameImportAA_t*)import_actual;
+		//get version info based on calling exe's hashes.
+		char szExeFileName[MAX_PATH];
+		GetModuleFileNameA(NULL, szExeFileName, MAX_PATH);
+
+		namespace fs = std::filesystem;
+		fs::path p = szExeFileName;
+
+		char md5csum[MD5_STR_SIZE];
+		if (!md5File(szExeFileName, md5csum))
+		{
+			tmp_import->Printf("NightFall GetGameAPI ERROR: could not calculate md5 checksum for exe: %s", szExeFileName);
+			return NULL;
+		}
+		if (!gameInfo.InitFromMD5(string(md5csum)))
+		{
+			tmp_import->Printf("NightFall GetGameAPI ERROR: no exe match found for md5: %s", md5csum);
+			return NULL;
+		}
+	}
+
+	shared_ptr<BaseGameImport> import = GameImportFactory::GetGameImport(import_actual);
+
 	if (!hmod)
 	{
-		import->Printf(PATCH_NAME " Fatal error: could not load " DGAMEX86_PATH " properly. Exiting...\n");
-		nullRet = true;
+		import->Printf((PATCH_NAME " Fatal error: could not load " + DGAMEX86_PATH + " properly. Exiting...\n").c_str());
+		return NULL;
 	}
 	if (!systemHMOD)
 	{
-		import->Printf(PATCH_NAME " Fatal error: could not load " SYSTEM86_NAME " properly. Exiting...\n");
-		nullRet = true;
+		import->Printf((PATCH_NAME " Fatal error: could not load " + SYSTEM86_NAME + " properly. Exiting...\n").c_str());
+		return NULL;
 	}
 
 	if (!pGetGameAPI && hmod)
 	{
 		import->Printf(PATCH_NAME " Fatal error: could not find GetGameAPI. Exiting...\n");
-		nullRet = true;
-	}
-
-	if (nullRet)
-	{
 		return NULL;
 	}
 
-	gi = *import;
+	gi = import;
 //	import->Argv					= argv;
-	globals							= pGetGameAPI( import );
-	globals_backup					= *globals;
+	void *export_actual = pGetGameAPI(import_actual);
+	globals							= GameExportFactory::GetGameExport(export_actual);
+	globals_backup					= GameExportFactory::GetGameExportBackup(export_actual);
 
 	/*if (!systemHMOD)
 	{
-		gi.Error(ERR_DROP, PATCH_NAME ": Failed to load memory management routines!");
+		gi->Error(ERR_DROP, PATCH_NAME ": Failed to load memory management routines!");
 		return NULL;
 	}*/
 	/*Game Exports*/
 /*
 	globals->AllowPaused			= G_AllowPaused;	
 */
-#ifdef CLIENT
-#ifdef MOHBT
-	globals->apiVersion = 15;
-#endif // MOHBT
+	if (gameInfo.IsClient() && gameInfo.IsBT())
+	{
+		globals->apiVersion = 15;
+	}
+	/*
+	globals->SetArchiveFloat(G_ArchiveFloat);
+	globals->SetArchiveInteger(G_ArchiveInteger);
+	globals->SetArchivePersistant(G_ArchivePersistant);
+	globals->SetArchiveString(G_ArchiveString);
+	globals->SetArchiveSvsTime(G_ArchiveSvsTime);
+	globals->SetBotBegin(G_BotBegin);
+	globals->SetBotThink(G_BotThink);
+	*/
+	globals->SetCleanup(G_CleanUp);
+	globals->SetClientBegin([](gentity_t* ent, userCmd_t* cmd) {return G_ClientBegin(GEntity(ent), cmd); });
 
 
-#endif // CLIENT
-/*
-	globals->ArchiveFloat			= G_ArchiveFloat;
-	globals->ArchiveInteger			= G_ArchiveInteger;
-	globals->ArchivePersistant		= G_ArchivePersistant;
-	globals->ArchiveString			= G_ArchiveString;
-	globals->ArchiveSvsTime			= G_ArchiveSvsTime;
-	globals->BotBegin				= G_BotBegin;
-	globals->BotThink				= G_BotThink;
-*/
-	globals->Cleanup				= G_CleanUp;
-	globals->ClientBegin			= G_ClientBegin;
+	globals->SetClientCommand([](gentity_t* ent) {return G_ClientCommand(GEntity(ent)); });
+	if (gameInfo.GetExpansion() == gameInfo.AA)
+	{
+		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime); }); //todo: handle for AA/SH/BT
+	}
+	else
+	{
+		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime, a3); }); //todo: handle for AA/SH/BT
+	}
 
-	
-	globals->ClientCommand			= G_ClientCommand;
-	globals->ClientConnect			= G_ClientConnect;
+	globals->SetClientDisconnect([](gentity_t* ent) {return G_ClientDisconnect(GEntity(ent)); });
+	globals->SetClientThink([](gentity_t* ent, userCmd_t* cmd, userEyes_t* eyeInfo) {return G_ClientThink(GEntity(ent), cmd, eyeInfo); });
 
-	globals->ClientDisconnect		= G_ClientDisconnect;
-	globals->ClientThink			= G_ClientThink;
+	globals->SetClientUserinfoChanged([](gentity_t* ent, char* userInfo) {return G_ClientUserinfoChanged(GEntity(ent), userInfo); });
+	globals->SetConsoleCommand(G_ConsoleCommand);
 
-	globals->ClientUserinfoChanged	= G_ClientUserinfoChanged;
-	globals->ConsoleCommand			= G_ConsoleCommand;
-	
-/*	globals->DebugCircle			= G_DebugCircle;
-	globals->errorMessage			= G_errorMessage;
-	globals->gentities				= G_gentities;
-	globals->gentitySize			= G_gentitySize;
-*/
-	globals->Init					= G_InitGame;
-/*
-	globals->LevelArchiveValid		= G_LevelArchiveValid;
-	globals->maxEntities			= G_maxEntities;
-	globals->numEntities			= G_numEntities;
-*/
-	globals->Precache				= G_Precache;
-/*
-	globals->PrepFrame				= G_PrepFrame;
-	globals->profStruct				= G_profStruct;
-	globals->ReadLevel				= G_ReadLevel;
-	globals->RegisterSounds			= G_RegisterSounds;
-	globals->Restart				= G_Restart;
-*/
-	globals->RunFrame				= G_RunFrame;
+	/*	
+	globals->SetDebugCircle(G_DebugCircle);
+	globals->SeterrorMessage(G_errorMessage);
+	globals->Setgentities(G_gentities);
+	globals->SetgentitySize(G_gentitySize);
+	*/
+	globals->SetInit(G_InitGame);
+	/*
+	globals->SetLevelArchiveValid(G_LevelArchiveValid);
+	globals->SetmaxEntities(G_maxEntities);
+	globals->SetnumEntities(G_numEntities);
+	globals->SetPrecache(G_Precache);
+	globals->SetPrepFrame(G_PrepFrame);
+	globals->SetprofStruct(G_profStruct);
+	globals->SetReadLevel(G_ReadLevel);
+	globals->SetRegisterSounds(G_RegisterSounds);
+	globals->SetRestart(G_Restart);
+	*/
+	globals->SetRunFrame(G_RunFrame);
 
-/*	globals->ServerSpawned			= G_ServerSpawned;
-	globals->SetFrameNumber			= G_SetFrameNumber;
-	globals->SetMap					= G_SetMap;
-	globals->SetTime				= G_SetTime;
-*/
-	globals->Shutdown				= G_Shutdown;
-/*
-	globals->SoundCallback			= G_SoundCallback;
-	globals->SpawnEntities			= G_SpawnEntities;
-	globals->TIKI_Orientation		= G_TIKI_Orientation;
-	globals->WriteLevel				= G_WriteLevel;
-*/
+	/*	
+	globals->SetServerSpawned(G_ServerSpawned);
+	globals->SetFrameNumber(G_SetFrameNumber);
+	*/
+	globals->SetSetMap(G_SetMap);
+	/*
+	globals->SetSetTime(G_SetTime);
+	*/
+	globals->SetShutdown(G_Shutdown);
+	/*
+	globals->SetSoundCallback(G_SoundCallback);
+	globals->SetSpawnEntities(G_SpawnEntities);
+	globals->SetTIKI_Orientation(G_TIKI_Orientation);
+	globals->SetWriteLevel(G_WriteLevel);
+	*/
 	//TODO: supress DavenExtra for BT.
-	sizeof(Player);
-	return globals;
+	//sizeof(Player);
+	return globals->GetRealGameExport();
 }
 
 #ifdef _WIN32
@@ -916,21 +959,21 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 		}
 		*/
 
-		hmod = LoadLibrary(DGAMEX86_PATH);
+
+
+		hmod = LoadLibraryA(DGAMEX86_PATH.c_str());
 
 		if(hmod)
 		{
 			pGetGameAPI = (pGetGameAPI_spec)GetProcAddress(hmod, "GetGameAPI");
 		}
 		
-		systemHMOD = GetModuleHandleA(SYSTEM86_NAME);
+		systemHMOD = GetModuleHandleA(SYSTEM86_NAME.c_str());
 		if (systemHMOD)
 		{
 			pMemoryMalloc = (pMemoryMalloc_spec)GetProcAddress(systemHMOD, "MemoryMalloc");
 			pMemoryFree = (pMemoryFree_spec)GetProcAddress(systemHMOD, "MemoryFree");
 		}
-		
-		//initscriptfuncs();
 
 		return TRUE; 
 	}

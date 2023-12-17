@@ -19,6 +19,8 @@ mutex HTTPClient::requests_mutex;//mutex for requests
 list<QueuedClientResponse> HTTPClient::responses;
 mutex HTTPClient::responses_mutex;//mutex for responses
 
+using namespace std;
+
 extern DirectorClass *Director;
 void HTTPClient::HandleRequests()
 {
@@ -121,7 +123,7 @@ void HTTPClient::CreateRequest(QueuedClientRequest & req)
 	catch (const std::exception&e)
 	{
 		respStr = e.what();
-		//gi.Printf(PATCH_NAME " api client exception occured: %s\n", e.what());
+		//gi->Printf(PATCH_NAME " api client exception occured: %s\n", e.what());
 		EnqueueResponse(req, respStr, httpCode);
 	}
 }
@@ -162,8 +164,8 @@ void HTTPClient::Init()
 	//}
 	//catch (const std::exception& e)
 	//{
-	//	gi.Printf("HTTPClient::Init error: %s\n", e.what());
-	//	gi.cvar_set2("sv_api_client", "1", true);
+	//	gi->Printf("HTTPClient::Init error: %s\n", e.what());
+	//	gi->cvar_set2("sv_api_client", "1", true);
 	//}
 }
 
@@ -201,7 +203,7 @@ void HTTPClient::CreateAPIRequest(string url, string method, ScriptVariable & sc
 	}
 	//auto stop = chrono::high_resolution_clock::now();
 	//auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
-	//gi.Printf("!!!!!!!!!!!! time = %lld\n", duration.count());
+	//gi->Printf("!!!!!!!!!!!! time = %lld\n", duration.count());
 }
 
 void HTTPClient::HandleNextAPIResponse()
@@ -220,7 +222,7 @@ void HTTPClient::HandleNextAPIResponse()
 		}
 		catch (const ScriptException&e)
 		{
-			gi.Printf(PATCH_NAME " HTTP Client API response error: %s\n", e.string.c_str());
+			gi->Printf(PATCH_NAME " HTTP Client API response error: %s\n", e.string.c_str());
 		}
 	}
 }

@@ -4,7 +4,7 @@
 
 #define	BUTTON_ATTACK2		2	// +/-attacksecondary
 
-void Player::MiscInit()
+void PlayerNF::MiscInit()
 {
 	cerSet.AddEventResponse(new Event(
 		"getkills",
@@ -14,7 +14,7 @@ void Player::MiscInit()
 		"gets kills number of player",
 		EV_RETURN
 	),
-		&Player::GetKillsEvent);
+		&PlayerNF::PreGetKillsEvent);
 	cerSet.AddEventResponse(new Event(
 		"getdeaths",
 		EV_DEFAULT,
@@ -23,7 +23,7 @@ void Player::MiscInit()
 		"gets deaths number of player",
 		EV_RETURN
 	),
-		&Player::GetDeathsEvent);
+		&PlayerNF::PreGetDeathsEvent);
 	cerSet.AddEventResponse(new Event(
 		"getconnstate",
 		EV_DEFAULT,
@@ -32,7 +32,7 @@ void Player::MiscInit()
 		"Gets state of player's connection.",
 		EV_RETURN
 	),
-		&Player::GetConnStateEvent);
+		&PlayerNF::PreGetConnStateEvent);
 	cerSet.AddEventResponse(new Event(
 		"getactiveweap",
 		EV_DEFAULT,
@@ -41,7 +41,7 @@ void Player::MiscInit()
 		"Gets currently active weapon from player's hand of given index.",
 		EV_RETURN
 	),
-		&Player::GetActiveWeapEvent);
+		&PlayerNF::PreGetActiveWeapEvent);
 	cerSet.AddEventResponse(new Event(
 		"secfireheld",
 		EV_DEFAULT,
@@ -50,7 +50,7 @@ void Player::MiscInit()
 		"Returns 1 if player is holding secondary fire button.",
 		EV_GETTER
 	),
-		&Player::SecFireHeldEvent);
+		&PlayerNF::PreSecFireHeldEvent);
 	cerSet.AddEventResponse(new Event(
 		"userinfo",
 		EV_DEFAULT,
@@ -59,7 +59,7 @@ void Player::MiscInit()
 		"Returns player's userinfo.",
 		EV_GETTER
 	),
-		&Player::GetUserInfoEvent);
+		&PlayerNF::PreGetUserInfoEvent);
 	cerSet.AddEventResponse(new Event(
 		"inventory",
 		EV_DEFAULT,
@@ -68,7 +68,7 @@ void Player::MiscInit()
 		"Returns player's inventory.",
 		EV_GETTER
 	),
-		&Player::GetInventoryEvent);
+		&PlayerNF::PreGetInventoryEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"isadmin",
@@ -78,61 +78,74 @@ void Player::MiscInit()
 		"Check if player is logged in as admin",
 		EV_RETURN
 	),
-		&Player::IsAdminEvent);
-#ifdef MOHAA
+		&PlayerNF::PreIsAdminEvent);
+	if (gameInfo.IsAA())
+	{
+		cerSet.AddEventResponse(new Event(
+			"addkills",
+			EV_DEFAULT,
+			"i",
+			"numkills",
+			"Adds number of kills to player. (Can be also negative)"
+		),
+			&PlayerNF::PreAddKillsEventAA);
 
-	cerSet.AddEventResponse(new Event(
-		"addkills",
-		EV_DEFAULT,
-		"i",
-		"numkills",
-		"Adds number of kills to player. (Can be also negative)"
-	),
-		&Player::AddKillsEvent);
-
-	cerSet.AddEventResponse(new Event(
-		"adddeaths",
-		EV_DEFAULT,
-		"i",
-		"numDeaths",
-		"Adds number of deaths to player. (Can be also negative)"
-	),
-		&Player::AddDeathsEvent);
-#endif // MOHAA
+		cerSet.AddEventResponse(new Event(
+			"adddeaths",
+			EV_DEFAULT,
+			"i",
+			"numDeaths",
+			"Adds number of deaths to player. (Can be also negative)"
+		),
+			&PlayerNF::PreAddDeathsEventAA);
+	}
 
 }
 
-void Player::GetKillsEvent(Event *ev)
+void PlayerNF::GetKillsEvent(Event *ev)
 {
 	ev->AddInteger(num_kills);
 }
 
-void Player::GetDeathsEvent(Event *ev)
+void PlayerNF::GetDeathsEvent(Event *ev)
 {
 	ev->AddInteger(num_deaths);
 }
 
-void Player::GetConnStateEvent(Event *ev)
+void PlayerNF::GetConnStateEvent(Event *ev)
 {
-	ev->AddInteger(client->pers.connectionState);
+	client_t* cl = GetClientByClientNum(client->ps.clientNum);
+	if(!cl)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Invalid player for getconnstate!\n");
+		return;
+	}
+	
+	ev->AddInteger(Client(cl)->state);
 }
 
-void Player::GetActiveWeapEvent(Event *ev)
+void PlayerNF::GetActiveWeapEvent(Event *ev)
 {
-	ev->AddListener(GetActiveWeapon((weaponhand_t)ev->GetInteger(1)));
+	weaponhand_t hand = (weaponhand_t)ev->GetInteger(1);
+	if (hand >= WEAPON_ERROR)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong hand number for getactiveweap: %d, maximum is: %d\n", int(hand), int(WEAPON_ERROR-1));
+		return;
+	}
+	ev->AddListener((Listener*)GetActiveWeapon((weaponhand_t)ev->GetInteger(1)));
 }
 
-void Player::SecFireHeldEvent(Event *ev)
+void PlayerNF::SecFireHeldEvent(Event *ev)
 {
 	ev->AddInteger((bool)(buttons & BUTTON_ATTACK2));
 }
 
-void Player::GetUserInfoEvent(Event *ev)
+void PlayerNF::GetUserInfoEvent(Event *ev)
 {
 	ev->AddString(client->pers.userinfo);
 }
 
-void Player::GetInventoryEvent(Event *ev)
+void PlayerNF::GetInventoryEvent(Event *ev)
 {
 	Entity *ent = NULL;
 	ScriptVariable arr;
@@ -153,7 +166,7 @@ void Player::GetInventoryEvent(Event *ev)
 	ev->AddValue(arr);
 }
 
-void Player::IsAdminEvent(Event * ev)
+void PlayerNF::IsAdminEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -168,16 +181,15 @@ void Player::IsAdminEvent(Event * ev)
 }
 
 
-#ifdef MOHAA
-
-void Player::AddKillsEvent(Event* ev)
+void PlayerNF::AddKillsEventAA(Event* ev)
 {
-	current_team->AddKills(this, ev->GetInteger(1));
+	if (current_team)
+		current_team->AddKillsAA((Player*)realPlayer, ev->GetInteger(1));
+	
 }
 
-void Player::AddDeathsEvent(Event* ev)
+void PlayerNF::AddDeathsEventAA(Event* ev)
 {
-	current_team->AddDeaths(this, ev->GetInteger(1));
+	if (current_team)
+		current_team->AddDeathsAA((Player*)realPlayer, ev->GetInteger(1));
 }
-
-#endif // MOHAA

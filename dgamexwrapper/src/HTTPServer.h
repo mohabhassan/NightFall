@@ -12,10 +12,10 @@
 #include <mutex>
 #include <atomic>
 #include <vector>
-#include <string.h>
+#include <string>
 #include <utility>
 
-using namespace std;
+using std::string, std::list, std::mutex, std::atomic, std::condition_variable, std::vector;
 constexpr int defaultRouteIndex = -1;
 
 class APIRoute

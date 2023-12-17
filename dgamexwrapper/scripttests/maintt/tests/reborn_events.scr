@@ -16,10 +16,10 @@ main:
 	}
 end
 
-damage local.target local.inflictor local.damage local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.entity:
+damage local.attacker local.inflictor local.damage local.position local.direction local.normal local.knockback local.damageflags local.meansofdeath local.location local.entity:
 
 	iprintln ("==========DAMAGED==========")
-	iprintln ("Target: " + local.target)
+	iprintln ("Attacker: " + local.attacker)
 	iprintln ("Inflictor: " + local.inflictor)
 	iprintln ("Damage: " + local.damage)
 	iprintln ("Position: " + local.position)

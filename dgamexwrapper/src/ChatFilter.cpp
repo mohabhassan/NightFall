@@ -6,6 +6,7 @@
 vector<ChatEntry> ChatFilter::ChatEntries;
 
 vector<ChatFilterClientEntry> ChatFilter::ChatClientEntries;
+using std::to_string, std::ifstream, std::ofstream;
 
 /* 
  * ChatEntry::ChatEntry
@@ -253,20 +254,18 @@ bool ChatFilter::RemoveWord(string word_str)
 bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &shouldKick, string & rejectReason)
 {
 
-	//sayteam test1 test2 test3 test4 test5 sdfgfsg
-	//args are:
-	//clientnum part1 part2 part3 part4 ...
+	//say test1 test2 test3 test4 test5 sdfgfsg
+	//chat_args are:
+	//part1 part2 part3 part4 ...
 	//example:
-	//1 test1 test2 test3 test4 ...
+	//test1 test2 test3 test4 ...
 	//
-	//test1 is arg 2
-	//sayteam is -1
-	//normal say is 0
-	//sayprivate & sayone: clientnum is actualy clientnum (it's a bit fuzzy when using sv_privateclients)
+	//test1 is arg 0
+	//for taunts it's always 1 arg eg. "*11" or "*22"
 	//important checks first.
-	bool isTaunt = chat_args[1].size() == 3 && chat_args[1][0] == '*' && chat_args[1][1] >= '1' && chat_args[1][1] <= '9' && chat_args[1][2] >= '1' && chat_args[1][2] <= '9';
+	bool isTaunt = chat_args.size() == 1 && chat_args[0].size() == 3 && chat_args[0][0] == '*' && chat_args[0][1] >= '1' && chat_args[0][1] <= '9' && chat_args[0][2] >= '1' && chat_args[0][2] <= '9';
 	shouldKick = false;
-
+	
 	CustomCvar sv_disablechat("sv_disablechat", "0", CVAR_ARCHIVE);
 	if (sv_disablechat.GetIntValue() == 1)
 	{
@@ -278,7 +277,7 @@ bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &s
 		size_t clientIndex = FindChatClient(clientNum);
 		if (clientIndex == defaultChatClientIndex)
 		{
-			gi.Printf(PATCH_NAME " ChatFilter CanSend error 1: client num %d not found, Ignoring...\n", clientNum);
+			gi->Printf(PATCH_NAME " ChatFilter CanSend error 1: client num %d not found, Ignoring...\n", clientNum);
 		}
 		else
 		{
@@ -303,7 +302,7 @@ bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &s
 			size_t clientIndex = FindChatClient(clientNum);
 			if (clientIndex == defaultChatClientIndex)
 			{
-				gi.Printf(PATCH_NAME " ChatFilter CanSend error 2: client num %d not found, Ignoring...\n", clientNum);
+				gi->Printf(PATCH_NAME " ChatFilter CanSend error 2: client num %d not found, Ignoring...\n", clientNum);
 			}
 			else
 			{
@@ -317,7 +316,6 @@ bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &s
 	}
 	else
 	{
-
 		CustomCvar sv_filterchat("sv_filterchat", "1", CVAR_ARCHIVE);
 		if (sv_filterchat.GetIntValue())
 		{
@@ -344,7 +342,7 @@ bool ChatFilter::CanSend(const vector<string>& chat_args, int clientNum, bool &s
 				size_t clientIndex = FindChatClient(clientNum);
 				if (clientIndex == defaultChatClientIndex)
 				{
-					gi.Printf(PATCH_NAME " ChatFilter CanSend error 3: client num %d not found, Ignoring...\n", clientNum);
+					gi->Printf(PATCH_NAME " ChatFilter CanSend error 3: client num %d not found, Ignoring...\n", clientNum);
 				}
 				else
 				{
@@ -386,14 +384,14 @@ bool ChatFilter::CheckScriptCallback(vector<string>& chat_args, gentity_t * ent,
 	if (sev.isRegistered())
 	{
 		ScriptVariable var;
-		sev.Trigger({ (Entity*)ent->entity, target, chat_args}, &var);
+		sev.Trigger({ GEntity(ent)->entity, target, chat_args}, &var);
 		if (var.GetType() != VARIABLE_POINTER)
 		{
 			return var.intValue();
 		}
 		else
 		{
-			gi.Printf(PATCH_NAME " ChatFilter Script Callback error: dmmessage handler script is taking too long to repsond, allowing mesage.\n");
+			gi->Printf(PATCH_NAME " ChatFilter Script Callback error: dmmessage handler script is taking too long to repsond, allowing mesage.\n");
 			return true;
 		}
 	}
@@ -425,7 +423,7 @@ string ChatFilter::GetWordsInPage(int page_num)
 		return "Chat Filter List Empty";
 	}
 
-	if (startIndex > ChatEntries.size() - 1 || startIndex < 1)
+	if (startIndex > ChatEntries.size() - 1 || startIndex < 0)
 	{
 		return "Page Empty";
 	}
@@ -467,7 +465,7 @@ void ChatFilter::ClientDisconnected(int clientNum)
 	size_t index = FindChatClient(clientNum);
 	if (index == defaultChatClientIndex)
 	{
-		gi.Printf(PATCH_NAME " ChatFilter ClientDisconnected error: client num not found %d, Ignoring...\n", clientNum);
+		gi->Printf(PATCH_NAME " ChatFilter ClientDisconnected error: client num not found %d, Ignoring...\n", clientNum);
 	}
 	else
 	{
@@ -530,10 +528,10 @@ bool ChatFilter::ToggleDisableTaunt(int clientNum, bool & tauntsAllowed)
  * */
 void ChatFilter::Init()
 {
-	ifstream ifs(MAIN_PATH "/chatfilter.cfg", ifstream::in);
+	ifstream ifs(MAIN_PATH + "/chatfilter.cfg", ifstream::in);
 	if (!ifs.is_open())
 	{
-		gi.Printf(PATCH_NAME " ChatFilter error: could not open " MAIN_PATH "/chatfilter.cfg for reading!\n");
+		gi->Printf((PATCH_NAME " ChatFilter error: could not open " + MAIN_PATH + "/chatfilter.cfg for reading!\n").c_str());
 		return;
 	}
 
@@ -550,14 +548,14 @@ void ChatFilter::Init()
 		//validate name str
 		if (line.empty())
 		{
-			gi.Printf(PATCH_NAME " ChatFilter error: empty word: %s in line %d in " MAIN_PATH "/chatfilter.cfg! Skipping...\n", line.c_str(), lineNum);
+			gi->Printf((PATCH_NAME " ChatFilter error: empty word: %s in line %d in " + MAIN_PATH + "/chatfilter.cfg! Skipping...\n").c_str(), line.c_str(), lineNum);
 			continue;
 		}
 
 		//add our name filter entry
 		filter.AddWord(line);
 	}
-	gi.Printf(PATCH_NAME " ChatFilter loaded %d chat filter entries successfully\n", ChatEntries.size());
+	gi->Printf(PATCH_NAME " ChatFilter loaded %d chat filter entries successfully\n", ChatEntries.size());
 }
 
 /*
@@ -567,12 +565,12 @@ void ChatFilter::Init()
  * */
 void ChatFilter::Shutdown()
 {
-	ofstream ofs(MAIN_PATH "/chatfilter.cfg", ofstream::out | ofstream::trunc);
+	ofstream ofs(MAIN_PATH + "/chatfilter.cfg", ofstream::out | ofstream::trunc);
 	if (!ofs.is_open())
 	{
 		char errStr[128] = { 0 };
 		strerror_s(errStr, errno);
-		gi.Printf(PATCH_NAME " ChatFilter error: could not open " MAIN_PATH "/chatfilter.cfg for writing : %s!\n", errStr);
+		gi->Printf((PATCH_NAME " ChatFilter error: could not open " + MAIN_PATH + "/chatfilter.cfg for writing : %s!\n").c_str(), errStr);
 		return;
 	}
 
@@ -580,9 +578,9 @@ void ChatFilter::Shutdown()
 	for (i = 0; i < ChatEntries.size(); i++)
 	{
 		const ChatEntry &e = ChatEntries[i];
-		ofs << e.GetString() << endl;
+		ofs << e.GetString() << "\n";
 
 	}
 
-	gi.Printf(PATCH_NAME " ChatFilter: saved %d chat entries in " MAIN_PATH "/chatfilter.cfg\n", i);
+	gi->Printf((PATCH_NAME " ChatFilter: saved %d chat entries in " + MAIN_PATH + "/chatfilter.cfg\n").c_str(), i);
 }

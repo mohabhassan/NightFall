@@ -1,0 +1,40 @@
+main:
+	wait 1
+
+    level.playerisadmin_testcases_passed = 0
+    level.playerisadmin_testcases_total = 0
+    level.playerisadmin_failed_testscases = ""
+
+    setcvar test_playerisadmin_status running
+
+    while(!$player) waitframe;
+
+    while(getcvar test_playerisadmin_botstatus != admin) waitframe;
+    waitthread validate_test ($player isadmin) 1 "($player isadmin)"
+    println "isadmin:"
+    local.isadmin = $player isadmin
+    println local.isadmin
+    while(getcvar test_playerisadmin_botstatus != noadmin) waitframe;
+    waitthread validate_test ($player isadmin)  0 "($player isadmin)"
+    println "isadmin:"
+    local.isadmin = $player isadmin
+    println local.isadmin
+    
+    
+    setcvar test_playerisadmin_score (level.playerisadmin_testcases_passed + "/" + level.playerisadmin_testcases_total)
+    setcvar test_playerisadmin_failed level.playerisadmin_failed_testscases
+    setcvar test_playerisadmin_status finished
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("playerisadmin test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.playerisadmin_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.playerisadmin_testcases_passed++
+    }
+    level.playerisadmin_testcases_total++
+end

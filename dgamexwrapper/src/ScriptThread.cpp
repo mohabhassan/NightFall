@@ -43,7 +43,7 @@ void ScriptThread::Test(Event*ev)
 	str & strTat4 = sv4.stringValue();
 
 	gentity_t *gent = G_GetEntityByClient(0);
-	gi.centerprintf(gent, "ScriptThread Test success");
+	gi->centerprintf(gent, "ScriptThread Test success");
 }
 
 
@@ -68,7 +68,7 @@ void ScriptThread::Init()
 
 	int rscount = cerSet.size() + 1;
 	size_t sz = sizeof(ResponseDef<ScriptThread>) * rscount;
-	//Responses = reinterpret_cast<ResponseDef<ScriptThread>*>(gi.Malloc(sz));
+	//Responses = reinterpret_cast<ResponseDef<ScriptThread>*>(gi->Malloc(sz));
 	Responses = new ResponseDef<ScriptThread>[rscount];
 	memset(Responses, 0, sz);
 
@@ -90,7 +90,7 @@ void ScriptThread::Shutdown()
 			delete ev;
 		}
 	}
-	//gi.Free(Responses);
+	//gi->Free(Responses);
 	delete[] Responses;
 
 	cerSet.Clear();

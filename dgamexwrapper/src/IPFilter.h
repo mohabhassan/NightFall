@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include "dgamex86.h"
-using namespace std;
+using std::string, std::vector;
 constexpr int defaultIPIndex = -1;
 
 /* Class IPEntry

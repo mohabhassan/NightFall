@@ -1,4 +1,8 @@
 #include "sv_misc.h"
+#include "Winsock2.h"
+#include "AddressDefinitions.h"
+
+using std::to_string;
 
 client_t **svs_clients;
 int *svs_numclients;
@@ -15,7 +19,11 @@ client_t * GetClientByClientNum(int clientNum)
 	}
 	else
 	{
-		return &(*svs_clients)[clientNum];
+		if (gameInfo.IsAA())
+			return (client_t*)&((clientAA_t*)*svs_clients)[clientNum];
+		else
+			return (client_t*)&((clientDSH_t*)*svs_clients)[clientNum];
+
 	}
 }
 
@@ -27,6 +35,34 @@ void __cdecl NET_OutOfBandPrint(netSrc_t sock, netAdr_t adr, const char * format
 	vsnprintf(string, sizeof(string), format, argptr);
 	va_end(argptr);
 	NET_OutOfBandPrint_Real(sock, adr, string);
+}
+
+string GetIPFromClient(client_t* cl_actual)
+{
+	if (!cl_actual)
+		return "";
+	Client cl(cl_actual);
+	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
+		return "127.0.0.1";
+	else if (cl->netchan.remoteAddress.type == NA_IP)
+		return string(to_string(cl->netchan.remoteAddress.ip[0]) + "." + to_string(cl->netchan.remoteAddress.ip[1]) + "." + to_string(cl->netchan.remoteAddress.ip[2]) + "." + to_string(cl->netchan.remoteAddress.ip[3]));
+	else
+		return "";
+}
+
+string GetPortFromClient(client_t* cl_actual)
+{
+	if (!cl_actual)
+		return "";
+	Client cl(cl_actual);
+	return to_string(ntohs(cl->netchan.remoteAddress.port));
+}
+
+string GetIPPortFromClient(client_t* cl)
+{
+	if (!cl)
+		return "";
+	return GetIPFromClient(cl) + ":" + GetPortFromClient(cl);
 }
 
 void SV_Misc_Init()

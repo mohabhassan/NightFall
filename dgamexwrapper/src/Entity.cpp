@@ -2,9 +2,11 @@
 #include "ScriptedEvent.h"
 #include "detours.h"
 #include "Event.h"
-void(__thiscall *Entity::Damage_Orignal)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location);
+#include "AddressDefinitions.h"
 
+void(__thiscall *EntityNF::Damage_Orignal)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location);
 
+/*
 Entity::Entity()
 {
 	sizeof(Entity);
@@ -14,34 +16,35 @@ Entity::Entity()
 Entity::~Entity()
 {
 }
-/* Entity::Init()
+*/
+/* EntityNF::Init()
  * Initialize Entity related hooks.
  **/
-void Entity::Init()
+void EntityNF::Init()
 {
 	//hook damage event for Scripted Event usage.
 	Damage_Orignal = reinterpret_cast<void(__thiscall *)(Entity * _this, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)>((int)DAMAGE_ADDR);
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourAttach(&(PVOID&)(Entity::Damage_Orignal), (PVOID)(&Damage));
+	ret = DetourAttach(&(PVOID&)(EntityNF::Damage_Orignal), (PVOID)(&Damage));
 	ret = DetourTransactionCommit();
 }
 
 /* Entity::Init()
  * Shudown Entity related hooks.
  **/
-void Entity::Shutdown()
+void EntityNF::Shutdown()
 {
 	//remove our hooks.
 	LONG ret = DetourTransactionBegin();
 	ret = DetourUpdateThread(GetCurrentThread());
-	ret = DetourDetach(&(PVOID&)(Entity::Damage_Orignal), (PVOID)(&Damage));
+	ret = DetourDetach(&(PVOID&)(EntityNF::Damage_Orignal), (PVOID)(&Damage));
 	ret = DetourTransactionCommit();
 }
 
-qboolean Entity::checkEntity()
+qboolean EntityNF::checkEntity()
 {
-	return entnum > 0 && entnum < globals->num_entities && (Entity *)globals->gentities[entnum].entity == this;
+	return entnum > 0 && entnum < globals->num_entities && globals->GetGEntity(entnum).entity == (Entity*)this;
 }
 //
 //void Entity_Damage_hook(void *pThis, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
@@ -66,8 +69,9 @@ qboolean MOD_matches(int incoming_damage, int damage_type)
  * Hooked for ScriptedEvent usage.
  **/
 //TODO: make better hook by hooking the event itself.
-void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity *pInflictorEntity, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
+void __fastcall Damage(Entity * __this, void* edx, Entity * pInfEnt, Entity* pAttEnt, float damage, float vectPositionx, float vectPositiony, float vectPositionz, float vectDirectionx, float vectDirectiony, float vectDirectionz, float vectNormalx, float vectNormaly, float vectNormalz, int knockback, int damageflags, int meansofdeath, int location)
 {
+	EntityNF _this(__this), pInflictorEntity(pInfEnt), pAttackerEntity(pAttEnt);
 	if (MOD_matches(meansofdeath, _this->damage_type))
 	{
 		ScriptedEvent sev(SEV_DAMAGE);
@@ -75,8 +79,8 @@ void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity 
 		{
 			//Entity target, Entity inflictor, Float damage, Vector position, Vector direction, Vector normal, Integer knockback, Integer damageflags, Integer meansofdeath, Integer location, Entity entity
 			sev.Trigger({
-				pTargetEntity,
-				pInflictorEntity,
+				pAttEnt,
+				pInfEnt,
 				damage,
 				Vector(vectPositionx,	vectPositiony,	vectPositionz),
 				Vector(vectDirectionx,	vectDirectiony, vectDirectionz),
@@ -85,12 +89,12 @@ void __fastcall Damage(Entity * _this, void* edx, Entity *pTargetEntity, Entity 
 				damageflags,
 				meansofdeath,
 				location,
-				_this
+				__this
 				});
 		}
 	}
-	_this->Damage_Orignal(_this, pTargetEntity,
-		pInflictorEntity,
+	_this->Damage_Orignal(_this, pInflictorEntity,
+		pAttackerEntity,
 		damage, 
 		vectPositionx, vectPositiony, vectPositionz,
 		vectDirectionx, vectDirectiony, vectDirectionz,

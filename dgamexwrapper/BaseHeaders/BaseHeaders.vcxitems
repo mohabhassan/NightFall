@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{1b2747ad-dc00-448c-9bdc-40d0242ff5cb}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)AddressManager.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)dgamex86.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)GameVersion.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)nf_misc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)OffsetDefinitions.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)qcommon.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)str.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)vector.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Version.h" />
+  </ItemGroup>
+</Project>

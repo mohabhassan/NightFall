@@ -60,15 +60,18 @@ ClientFilter& ClientFilter::GetClient(int cnum)
 }
 
 //true: kick player
-bool ClientFilter::CheckPingKick(int cnum, int ping, gentity_t * ent)
+bool ClientFilter::CheckPingKick(int cnum, int ping, gentity_t * ent_real)
 {
+	if (!ent_real) return false;
+	GEntity ent(ent_real);
+
 	CustomCvar sv_kickping("sv_kickping", "500", CVAR_ARCHIVE);
 
 	//kick ping check
 	if (sv_kickping.GetIntValue() > 0)
 	{
 		ClientFilter& cli = ClientFilter::GetClient(cnum);
-		int currTime = gi.Milliseconds();
+		int currTime = gi->Milliseconds();
 		if (currTime > cli.GetLastPingCheckTime() + pingCheckInterval)
 		{
 			int exceededCount = cli.GetPingExceededCOunt();
@@ -88,8 +91,9 @@ bool ClientFilter::CheckPingKick(int cnum, int ping, gentity_t * ent)
 				}
 				else if (exceededCount == pingKickLimit - 1)
 				{
-					gi.Printf("%s will be kicked for high ping (> %i ms)\n", ent->client->pers.netname, sv_kickping.GetIntValue());
-					gi.centerprintf(ent, "You will be kicked for high ping (> %i ms) shortly.\n", sv_kickping.GetIntValue());
+					if(ent->client->isValid())
+						gi->Printf("%s will be kicked for high ping (> %i ms)\n", GClient(ent->client)->pers.netname, sv_kickping.GetIntValue());
+					gi->centerprintf(ent, "You will be kicked for high ping (> %i ms) shortly.\n", sv_kickping.GetIntValue());
 				}
 			}
 			//if he's lower, decrease/reset the count

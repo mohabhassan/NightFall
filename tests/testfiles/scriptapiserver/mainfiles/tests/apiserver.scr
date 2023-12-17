@@ -1,0 +1,75 @@
+main:
+	wait 1
+	//total success
+    level.apiserver_testcases_passed = 0
+    level.apiserver_testcases_total = 0
+    level.apiserver_failed_testscases = ""
+    setcvar test_apiserver_status running
+    level.apiserver_testcount = 0
+
+    local.ret = register_api_route "/" "get" tests/apiserver.scr::get_handler
+    waitthread validate_test local.ret 0 "(register_api_route get test)"
+    local.ret = register_api_route "/posttest" "post" tests/apiserver.scr::post_handler
+    waitthread validate_test local.ret 0 "(register_api_route post test)"
+
+    while(level.apiserver_testcount < 2) wait 1;
+
+    println("API Server test: passed " + level.apiserver_testcases_passed + " out of " + level.apiserver_testcases_total + " tests.")
+    setcvar test_apiserver_score (level.apiserver_testcases_passed + "/" + level.apiserver_testcases_total)
+    setcvar test_apiserver_status finished
+    setcvar test_apiserver_failed level.apiserver_failed_testscases
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("API Server test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.apiserver_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.apiserver_testcases_passed++
+    }
+    level.apiserver_testcases_total++
+end
+
+get_handler local.query_strings:
+    local.ret = unregister_api_route "/" "get"
+    waitthread validate_test local.ret 0 "(unregister_api_route get test)"
+	println "query_strings======="
+	for( local.i = int 0 ; local.i < local.query_strings.size ; local.i++ )
+	{
+		println local.query_strings[local.i][key] " : " local.query_strings[local.i][value];
+	}
+	println "=======query_strings"
+    waitthread validate_test local.query_strings[0][key] key1 "(get handler query key1)"
+    waitthread validate_test local.query_strings[1][key] key2 "(get handler query key2)"
+    waitthread validate_test local.query_strings[0][value] value1 "(get handler query value1)"
+    waitthread validate_test local.query_strings[1][value] value2 "(get handler query value2)"
+	local.arr[2] = wewewewewew;
+	local.arr[1] = etaseg;
+	local.arr[0] = sdgfdsg;
+	println local.arr[0]
+	println local.arr[2]
+	println local.arr[1]
+    level.apiserver_testcount++;
+end local.arr
+
+post_handler local.parsed_body:
+    local.ret = unregister_api_route "/posttest" "post"
+    waitthread validate_test local.ret 0 "(unregister_api_route post test)"
+	println "parsed_body======="
+	println "is null:" (local.parsed_body == NULL)
+	println (json_stringify(local.parsed_body))
+	println "=======parsed_body"
+    waitthread validate_test local.parsed_body.size 2 "(post handler query key1)"
+    waitthread validate_test local.parsed_body[key1] value1 "(post handler query key1)"
+    waitthread validate_test local.parsed_body[key2] value2 "(post handler query key2)"
+	local.arr[2] = wewewewewew;
+	local.arr[1] = etaseg;
+	local.arr[0] = sdgfdsg;
+	println local.arr[0]
+	println local.arr[2]
+	println local.arr[1]
+    level.apiserver_testcount++;
+end local.arr
