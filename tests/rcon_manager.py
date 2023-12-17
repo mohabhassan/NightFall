@@ -10,12 +10,15 @@ class RCONManager():
     #rcon_recv_header = b'\xff\xff\xff\xff\01print\n'
     def __init__(self, port):
         self.sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-        self.sock.settimeout(10)
+        self.sock.settimeout(20)
         self.rcon_port = port
+        self.send_delay = 0
 
     #sends command and returns the response
     def send_command(self, cmd: bytes):
+        if self.send_delay > 0:time.sleep(self.send_delay)
         self.sock.sendto(self.rcon_send_header + cmd, (self.rcon_ip, int(self.rcon_port)))
+        print('RconManager: send_command cmd:' + str(cmd))
         #print('sent:', self.rcon_send_header + cmd)
         try:
             data, _ = self.sock.recvfrom(65507)
@@ -73,3 +76,6 @@ class RCONManager():
         self.wait_for_command(b'status')
         time.sleep(10) # to ensure map is loaded
         return True
+    
+    def set_send_delay(self, delay):
+        self.send_delay = delay

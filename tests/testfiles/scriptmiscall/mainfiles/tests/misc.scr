@@ -29,22 +29,34 @@ main:
     waitthread test_json_parse
     waitthread test_json_stringify
 
+    println "waiting for player...."
     while(!$player) waitframe;
+    println "player connected!...."
+    wait 5
     local.s = string(getentity 1)
+    println "post string(getentity 1)"
+    println $player[0]
     waitthread validate_test local.s "player" "(getentity 1)"
 
+    println "getentity test done"
+
     waitthread validate_test (netname $player) "mohpc_test0" "(netname $player)"
+    println "netname test done"
     local.ip = getip $player
     local.ipresult = regex_parse "127\\.0\\.0\\.1:\\d+" local.ip 0
     waitthread validate_test local.ipresult[success] 1 ("local.ipresult[success]:" + local.ip)
+    println "getip test done"
     local.ping = getping $player
     println("player ping:" + local.ping)
     local.pingresult = local.ping != -1
     waitthread validate_test local.pingresult 1 ("local.pingresult")
+    println "ping test done"
 
     waitthread validate_test (getclientnum $player) 1 "(getclientnum $player)"
+    println "getclientnum test done"
 
     waitthread test_traced
+    println "traced test done"
 
 
     setcvar test_misc_score (level.misc_testcases_passed + "/" + level.misc_testcases_total)
@@ -63,6 +75,9 @@ validate_test local.actual local.expected local.test:
         level.misc_testcases_passed++
     }
     level.misc_testcases_total++
+    
+    setcvar test_misc_score (level.misc_testcases_passed + "/" + level.misc_testcases_total)
+    setcvar test_misc_failed level.misc_failed_testscases
 end
 
 test_stuffsrv:

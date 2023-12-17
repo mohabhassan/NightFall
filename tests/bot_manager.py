@@ -110,9 +110,9 @@ class BotManager():
         while self.bot_process is not None:
                 line = self.out_readline()
                 if not line:
-                    print('BotManager: wait_for_output: error!')
+                    print('BotManager: wait_for_output: error! empty line')
                     return False
-                
+                print('BotManager: wait_for_output: line:', line.decode())
                 if line.find(bstr) != -1:
                     return True
         return False

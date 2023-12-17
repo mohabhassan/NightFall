@@ -6,8 +6,10 @@ import time
 @pytest.mark.stop_game_load_files()
 class TestScriptFileSystem():
     @pytest.fixture(autouse=True)
-    def reload_map(self, rcon_manager):
-        rcon_manager.reload_map()
+    def reload_map(self, rcon_manager, request):
+        test_items = request.session.items
+        test_index = next((i for i, item in enumerate(test_items) if item.nodeid == request.node.nodeid), None)
+        #if test_index > 0: rcon_manager.reload_map()
 
     def test_scriptfilesystem(self, game_manager, file_manager, rcon_manager):
         res = ''
@@ -23,4 +25,3 @@ class TestScriptFileSystem():
         failed = failed.replace('\n','\\n')
         assert passed == total, f'Score is {score}, failed tests are: {failed}'
 
-    #todo: test traced

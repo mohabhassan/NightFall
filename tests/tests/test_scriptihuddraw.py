@@ -6,8 +6,10 @@ import time
 @pytest.mark.stop_game_load_files()
 class TestScriptIHudDraw():
     @pytest.fixture(autouse=True)
-    def reload_map(self, rcon_manager):
-        rcon_manager.reload_map()
+    def reload_map(self, rcon_manager, request):
+        test_items = request.session.items
+        test_index = next((i for i, item in enumerate(test_items) if item.nodeid == request.node.nodeid), None)
+        #if test_index > 0: rcon_manager.reload_map()
 
     """Sample test"""
     #invoked by PyTest
@@ -53,5 +55,6 @@ class TestScriptIHudDraw():
             b'huddraw_shader : 36 "textures/common/caulk"',
             b'huddraw_virtualsize : 36 1'
         ]
-        for x in bot_output:
+        for i, x in enumerate(bot_output):
+            print('waiting for ihuddraw', i, 'output:', x.decode())
             assert bot_manager.wait_for_output(x)

@@ -63,6 +63,7 @@ def game_manager(game, gamever, gamepath, mode, port):
 @pytest.fixture()
 def file_manager(pytestconfig, request, game_manager):
     if request.node.get_closest_marker('stop_game_load_files'):
+        print('stopping game/loading test files...')
         game_manager.stop_game()
     default_testfiles = request.node.get_closest_marker('default_testfiles').args[0] if request.node.get_closest_marker('default_testfiles') else None
     file_man = FileManager(game_manager.game_path, game_manager.main_path, pytestconfig.invocation_params.dir / 'testfiles', request.node.name.split('_', maxsplit=1)[-1], default_testfiles)
@@ -97,8 +98,27 @@ def start_game(file_manager, game_manager, rcon_manager):
     if not game_manager.start_game():
         pytest.fail('Failed to start game')
     
-    rcon_manager.wait_for_command(b'status')
+    if game_manager.game_shortname() == 'aa':
+        #AA has some anti flood mechanism
+        rcon_manager.set_send_delay(0.5) # 500msec
 
+    rcon_manager.wait_for_command(b'status')
+'''
+@pytest.fixture()
+def reload_map(rcon_manager, request):
+    
+    if not request.node.get_closest_marker('reload_map'):
+        return
+    
+    #game will start again.
+    if any([ m.name == 'stop_game_load_files' for m in request.node.own_markers]):
+        return
+    # don't reload map for the first test
+    test_items = request.session.items
+    test_index = next((i for i, item in enumerate(test_items) if item.nodeid == request.node.nodeid), None)
+    if test_index > 0:
+        rcon_manager.reload_map()
+'''
 @pytest.fixture()
 def bot_manager(request, start_game, bot_manager_init):
     
