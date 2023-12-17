@@ -5503,10 +5503,12 @@ public:
 	}
 };
 
+
+#ifndef REBORNSECURITYFIXES_EXPORTS
 extern	shared_ptr<BaseGameImport> gi;
 extern	shared_ptr<BaseGameExport> globals;
 extern	shared_ptr<BaseGameExport>	globals_backup;
-
+#endif
 
 enum INTTYPE_e { TRANS_BSP, TRANS_LEVEL, TRANS_MISSION, TRANS_MISSION_FAILED };
 
