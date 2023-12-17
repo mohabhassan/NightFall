@@ -1,9 +1,11 @@
 #include "IPFilter.h"
 #include <sstream>
 #include <fstream>
-#include "misc.h"
+#include "nf_misc.h"
 #include "CustomCvar.h"
 #include "sv_misc.h"
+
+using namespace std;
 
 vector<IPEntry> IPFilter::IPEntries;
 
@@ -245,17 +247,18 @@ bool IPFilter::CanConnectMaxConnections(int clientNum)
 {
 	CustomCvar sv_maxconnperip("sv_maxconnperip", "3", CVAR_ARCHIVE);
 	int numConnections = 0;
-	client_t* cl = GetClientByClientNum(clientNum);
-	if (sv_maxconnperip.GetIntValue() <= 0)
+	client_t* cl_real = GetClientByClientNum(clientNum);
+	if (sv_maxconnperip.GetIntValue() <= 0 || !cl_real)
 	{
 		return true;
 	}
 
 	for (size_t i = 0; i < *svs_numclients; i++)
 	{
-		client_t *icl = GetClientByClientNum(i);
-		if (!icl || icl->state == CS_FREE)
+		client_t *icl_real = GetClientByClientNum(i);
+		if (!icl_real || Client(icl_real)->state == CS_FREE)
 			continue;
+		Client cl(cl_real), icl(icl_real);
 		if (cl->netchan.remoteAddress.ip[0] == icl->netchan.remoteAddress.ip[0]
 			&& cl->netchan.remoteAddress.ip[1] == icl->netchan.remoteAddress.ip[1]
 			&& cl->netchan.remoteAddress.ip[2] == icl->netchan.remoteAddress.ip[2]
@@ -319,10 +322,10 @@ string IPFilter::GetIPsInPage(int page_num)
 void IPFilter::Init()
 {
 
-	ifstream ifs(MAIN_PATH "/ipfilter.cfg", ifstream::in);
+	ifstream ifs(MAIN_PATH + "/ipfilter.cfg", ifstream::in);
 	if (!ifs.is_open())
 	{
-		gi.Printf(PATCH_NAME " IPFilter error: could not open " MAIN_PATH "/ipfilter.cfg for reading!\n");
+		gi->Printf(PATCH_NAME " IPFilter error: could not open " + MAIN_PATH + "/ipfilter.cfg for reading!\n");
 		return;
 	}
 
@@ -338,14 +341,14 @@ void IPFilter::Init()
 		//validate ip str
 		if (!validateIP(line.c_str()))
 		{
-			gi.Printf(PATCH_NAME " IPFilter error: invalid ip: %s in line %d in " MAIN_PATH "/ipfilter.cfg! Skipping...\n", line.c_str(), lineNum);
+			gi->Printf(PATCH_NAME " IPFilter error: invalid ip: %s in line %d in " + MAIN_PATH + "/ipfilter.cfg! Skipping...\n", line.c_str(), lineNum);
 			continue;
 		}
 
 		//add our ip filter entry
 		IPEntries.emplace_back(line);
 	}
-	gi.Printf(PATCH_NAME " IPFilter loaded %d ip filter entries successfully\n", IPEntries.size());
+	gi->Printf(PATCH_NAME " IPFilter loaded %d ip filter entries successfully\n", IPEntries.size());
 
 }
 
@@ -357,12 +360,12 @@ void IPFilter::Init()
 void IPFilter::Shutdown()
 {
 
-	ofstream ofs(MAIN_PATH "/ipfilter.cfg", ofstream::out | ofstream::trunc);
+	ofstream ofs(MAIN_PATH + "/ipfilter.cfg", ofstream::out | ofstream::trunc);
 	if (!ofs.is_open())
 	{
 		char errStr[128] = { 0 };
 		strerror_s(errStr, errno);
-		gi.Printf(PATCH_NAME " IPFilter error: could not open " MAIN_PATH "/ipfilter.cfg for writing : %s!\n", errStr);
+		gi->Printf(PATCH_NAME " IPFilter error: could not open " + MAIN_PATH + "/ipfilter.cfg for writing : %s!\n", errStr);
 		return;
 	}
 
@@ -374,6 +377,6 @@ void IPFilter::Shutdown()
 
 	}
 
-	gi.Printf(PATCH_NAME " IPFilter: saved %d ip entries in " MAIN_PATH "/ipfilter.cfg\n", i);
+	gi->Printf(PATCH_NAME " IPFilter: saved %d ip entries in " + MAIN_PATH + "/ipfilter.cfg\n", i);
 }
 

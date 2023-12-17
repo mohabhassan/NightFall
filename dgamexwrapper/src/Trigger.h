@@ -1,14 +1,14 @@
 #pragma once
 #include "Animate.h"
 
-#ifdef MOHAA
+#ifdef MOHAA_TMP
 class ScriptThreadLabel
 {
     void* m_Script;//FIXME: GameScript*
     const_str m_Label;
 };
 
-class Trigger :	public Animate
+class Trigger :	public sdgfsgAnimate // todo: universalize handle this
 {
 protected:
     float wait; /* bitsize 32, bitpos 7200 */

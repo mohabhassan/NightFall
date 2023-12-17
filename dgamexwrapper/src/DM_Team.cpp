@@ -1,14 +1,12 @@
 #include "DM_Team.h"
 //#define INTERMISSIONTIME_ADDR 
 //constexpr int leve_intermissiontime = reinterpret_cast<int>(1);
-#include "GameVersion.h"
+#include "AddressDefinitions.h"
 
-#ifdef MOHAA
 
 void(__thiscall* DM_Team::AddKills_Orignal)(DM_Team* _this, Player* player, int numKills);
 void(__thiscall* DM_Team::AddDeaths_Orignal)(DM_Team* _this, Player* player, int numDeaths);
 
-#endif // MOHAA
 DM_Team::DM_Team()
 {
 	sizeof(Listener);
@@ -21,24 +19,23 @@ DM_Team::~DM_Team()
 
 void DM_Team::Init()
 {
-#ifdef MOHAA
-
-	AddKills_Orignal = reinterpret_cast<void(__thiscall*)(DM_Team * _this, Player * player, int numKills)>((int)DMTEAM_ADDKILLS_ADDR);
-	AddDeaths_Orignal = reinterpret_cast<void(__thiscall*)(DM_Team * _this, Player * player, int numDeaths)>((int)DMTEAM_ADDDEATHS_ADDR);
-
-#endif // MOHAA
+	if (gameInfo.IsAA())
+	{
+		AddKills_Orignal = reinterpret_cast<void(__thiscall*)(DM_Team * _this, Player * player, int numKills)>((int)DMTEAM_ADDKILLS_ADDR);
+		AddDeaths_Orignal = reinterpret_cast<void(__thiscall*)(DM_Team * _this, Player * player, int numDeaths)>((int)DMTEAM_ADDDEATHS_ADDR);
+	}
 }
 
-#ifdef MOHAA
-
-void DM_Team::AddKills(Player* player, int numKills)
+void DM_Team::AddKillsAA(Player* player, int numKills)
 {
+	if (!gameInfo.IsAA())
+		return;
 	AddKills_Orignal(this, player, numKills);
 }
 
-void DM_Team::AddDeaths(Player* player, int numDeaths)
+void DM_Team::AddDeathsAA(Player* player, int numDeaths)
 {
+	if (!gameInfo.IsAA())
+		return;
 	AddDeaths_Orignal(this, player, numDeaths);
 }
-
-#endif // MOHAA

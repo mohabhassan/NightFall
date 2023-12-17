@@ -2,13 +2,13 @@
 #include "Player.h"
 #include "ClientAdmin.h"
 #include "g_misc.h"
-#include "misc.h"
+#include "nf_misc.h"
 #include <string>
 #include <sstream>
 #include <iomanip>
 
 using namespace std;
-void Player::AdminCommandsInit()
+void PlayerNF::AdminCommandsInit()
 {
 	/////////////////////////////////
 	// login/logout
@@ -19,7 +19,7 @@ void Player::AdminCommandsInit()
 		"login password",
 		"admin login with login and password"
 	),
-		&Player::AdminLoginEvent);
+		&PlayerNF::PreAdminLoginEvent);
 	cerSet.AddEventResponse(new Event(
 		"ad_logout",
 		EV_CONSOLE,
@@ -27,7 +27,7 @@ void Player::AdminCommandsInit()
 		NULL,
 		"admin logout"
 	),
-		&Player::AdminLogoutEvent);
+		&PlayerNF::PreAdminLogoutEvent);
 	// login/logout
 	/////////////////////////////////
 
@@ -40,7 +40,7 @@ void Player::AdminCommandsInit()
 		"name",
 		"kick player name"
 	),
-		&Player::AdminKickEvent);
+		&PlayerNF::PreAdminKickEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_kickr",
@@ -49,7 +49,7 @@ void Player::AdminCommandsInit()
 		"name reason",
 		"kick player name with reason"
 	),
-		&Player::AdminKickReasonEvent);
+		&PlayerNF::PreAdminKickReasonEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_clientkick",
@@ -58,7 +58,7 @@ void Player::AdminCommandsInit()
 		"name",
 		"kick player name"
 	),
-		&Player::AdminClientKickEvent);
+		&PlayerNF::PreAdminClientKickEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_clientkickr",
@@ -67,7 +67,7 @@ void Player::AdminCommandsInit()
 		"name reason",
 		"kick player name with reason"
 	),
-		&Player::AdminClientKickReasonEvent);
+		&PlayerNF::PreAdminClientKickReasonEvent);
 
 	// kick
 	/////////////////////////////////
@@ -81,7 +81,7 @@ void Player::AdminCommandsInit()
 		"clientnum",
 		"ban player with clientnum"
 	),
-		&Player::AdminClientBanEvent);
+		&PlayerNF::PreAdminClientBanEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_banidr",
@@ -90,7 +90,7 @@ void Player::AdminCommandsInit()
 		"clientnum reason",
 		"ban player with clientnum for reason"
 	),
-		&Player::AdminClientBanReasonEvent);
+		&PlayerNF::PreAdminClientBanReasonEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_banip",
@@ -99,7 +99,7 @@ void Player::AdminCommandsInit()
 		"ip",
 		"ban ip"
 	),
-		&Player::AdminBanIPEvent);
+		&PlayerNF::PreAdminBanIPEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_banipr",
@@ -108,7 +108,7 @@ void Player::AdminCommandsInit()
 		"ip",
 		"ban ip with reason"
 	),
-		&Player::AdminBanIPReasonEvent);
+		&PlayerNF::PreAdminBanIPReasonEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_unbanip",
@@ -117,7 +117,7 @@ void Player::AdminCommandsInit()
 		"ip",
 		"remove ip from ban list"
 	),
-		&Player::AdminUnbanIPEvent);
+		&PlayerNF::PreAdminUnbanIPEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_listips",
@@ -126,7 +126,7 @@ void Player::AdminCommandsInit()
 		"page_num",
 		"list ips in page_num"
 	),
-		&Player::AdminListIPsEvent);
+		&PlayerNF::PreAdminListIPsEvent);
 
 	// ban
 	/////////////////////////////////
@@ -141,7 +141,7 @@ void Player::AdminCommandsInit()
 		"name any",
 		"ban specific name"
 	),
-		&Player::AdminBanNameEvent);
+		&PlayerNF::PreAdminBanNameEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_unbanname",
@@ -150,7 +150,7 @@ void Player::AdminCommandsInit()
 		"name",
 		"unban specific name"
 	),
-		&Player::AdminUnbanNameEvent);
+		&PlayerNF::PreAdminUnbanNameEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_listnames",
@@ -159,7 +159,7 @@ void Player::AdminCommandsInit()
 		"page_num",
 		"list names in page_num"
 	),
-		&Player::AdminListNamesEvent);
+		&PlayerNF::PreAdminListNamesEvent);
 	// name ban
 	/////////////////////////////////
 
@@ -173,7 +173,7 @@ void Player::AdminCommandsInit()
 		"name password",
 		"protect specific name with password"
 	),
-		&Player::AdminProtectNameEvent);
+		&PlayerNF::PreAdminProtectNameEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_unprotname",
@@ -182,7 +182,7 @@ void Player::AdminCommandsInit()
 		"name",
 		"unprotect specific name"
 	),
-		&Player::AdminUnprotectNameEvent);
+		&PlayerNF::PreAdminUnprotectNameEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_listprotnames",
@@ -191,7 +191,7 @@ void Player::AdminCommandsInit()
 		"page_num",
 		"list protected names in page_num"
 	),
-		&Player::AdminListProtectedNamesEvent);
+		&PlayerNF::PreAdminListProtectedNamesEvent);
 	// protected name
 	/////////////////////////////////
 
@@ -205,7 +205,7 @@ void Player::AdminCommandsInit()
 		"word",
 		"ban word from chat"
 	),
-		&Player::AdminBanWordEvent);
+		&PlayerNF::PreAdminBanWordEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_chatfilterremove",
@@ -214,7 +214,7 @@ void Player::AdminCommandsInit()
 		"word",
 		"unban specific word from chat"
 	),
-		&Player::AdminUnbanWordEvent);
+		&PlayerNF::PreAdminUnbanWordEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_listchatfilter",
@@ -223,7 +223,7 @@ void Player::AdminCommandsInit()
 		"page_num",
 		"list banned chat words in page_num"
 	),
-		&Player::AdminListWordsEvent);
+		&PlayerNF::PreAdminListWordsEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_dischat",
@@ -232,7 +232,7 @@ void Player::AdminCommandsInit()
 		"client_num",
 		"toggle allow chat for client_num"
 	),
-		&Player::AdminDisableChatEvent);
+		&PlayerNF::PreAdminDisableChatEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_distaunt",
@@ -241,7 +241,7 @@ void Player::AdminCommandsInit()
 		"client_num",
 		"toggle allow taunts for client_num"
 	),
-		&Player::AdminDisableTauntsEvent);
+		&PlayerNF::PreAdminDisableTauntsEvent);
 	// chat ban
 	/////////////////////////////////
 
@@ -255,7 +255,7 @@ void Player::AdminCommandsInit()
 		"mapname",
 		"change map to mapname"
 	),
-		&Player::AdminChangeMapEvent);
+		&PlayerNF::PreAdminChangeMapEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -265,7 +265,7 @@ void Player::AdminCommandsInit()
 		NULL,
 		"restart map"
 	),
-		&Player::AdminRestartEvent);
+		&PlayerNF::PreAdminRestartEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -275,7 +275,7 @@ void Player::AdminCommandsInit()
 		"fraglimit",
 		"set fraglimit"
 	),
-		&Player::AdminSetFragLimitEvent);
+		&PlayerNF::PreAdminSetFragLimitEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -285,7 +285,7 @@ void Player::AdminCommandsInit()
 		"timelimit",
 		"set timelimit"
 	),
-		&Player::AdminSetTimeLimitEvent);
+		&PlayerNF::PreAdminSetTimeLimitEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -295,7 +295,7 @@ void Player::AdminCommandsInit()
 		"gametype",
 		"set gametype"
 	),
-		&Player::AdminSetGameTypeEvent);
+		&PlayerNF::PreAdminSetGameTypeEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -305,7 +305,7 @@ void Player::AdminCommandsInit()
 		"message",
 		"say message as console"
 	),
-		&Player::AdminSayEvent);
+		&PlayerNF::PreAdminSayEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -315,7 +315,7 @@ void Player::AdminCommandsInit()
 		"client_num message",
 		"say private message to client_num as console"
 	),
-		&Player::AdminSayPrivateEvent);
+		&PlayerNF::PreAdminSayPrivateEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -325,7 +325,7 @@ void Player::AdminCommandsInit()
 		NULL,
 		"print player status"
 	),
-		&Player::AdminStatusEvent);
+		&PlayerNF::PreAdminStatusEvent);
 
 
 	cerSet.AddEventResponse(new Event(
@@ -335,7 +335,7 @@ void Player::AdminCommandsInit()
 		NULL,
 		"list loggedin admins"
 	),
-		&Player::AdminListAdminsEvent);
+		&PlayerNF::PreAdminListAdminsEvent);
 
 	cerSet.AddEventResponse(new Event(
 		"ad_rcon",
@@ -344,19 +344,19 @@ void Player::AdminCommandsInit()
 		"command",
 		"execute command in console"
 	),
-		&Player::AdminRCONEvent);
+		&PlayerNF::PreAdminRCONEvent);
 
 	// misc
 	/////////////////////////////////
 }
 
 
-void Player::AdminLoginEvent(Event * ev)
+void PlayerNF::AdminLoginEvent(Event * ev)
 {
 
 	if (ev->NumArgs() != 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_login <login> <password>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_login <login> <password>\n\"");
 		return;
 	}
 
@@ -367,18 +367,18 @@ void Player::AdminLoginEvent(Event * ev)
 
 	if (!admin.attemptLogin(login.c_str(), password.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid login or password\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Invalid login or password\n\"");
 		return;
 	}
 
-	gi.SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have been authed as admin \n\"");
+	gi->SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have been authed as admin \n\"");
 
 
-	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged IN as admin using login \"%s\" and password \"%s\"\n", GetIPPortFromClient(GetClientByClientNum(client->ps.clientNum)).c_str(), client->pers.netname, client->ps.clientNum, login.c_str(), password.c_str());
+	gi->Printf(PATCH_NAME " INFO: %s (%s) (%d) logged IN as admin using login \"%s\" and password \"%s\"\n", GetIPPortFromClient(GetClientByClientNum(client->ps.clientNum)).c_str(), client->pers.netname, client->ps.clientNum, login.c_str(), password.c_str());
 
 }
 
-void Player::AdminLogoutEvent(Event * ev)
+void PlayerNF::AdminLogoutEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 	if (!admin.attemptLogout())
@@ -386,12 +386,12 @@ void Player::AdminLogoutEvent(Event * ev)
 		return;
 	}
 
-	gi.SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have logged out as admin \n\"");
-	gi.Printf(PATCH_NAME " INFO: %s (%s) (%d) logged OUT as admin\n", GetIPPortFromClient(GetClientByClientNum(client->ps.clientNum)).c_str(), client->pers.netname, client->ps.clientNum);
+	gi->SendServerCommand(client->ps.clientNum, "hudprint \"Admin System> You have logged out as admin \n\"");
+	gi->Printf(PATCH_NAME " INFO: %s (%s) (%d) logged OUT as admin\n", GetIPPortFromClient(GetClientByClientNum(client->ps.clientNum)).c_str(), client->pers.netname, client->ps.clientNum);
 
 }
 
-void Player::AdminKickEvent(Event * ev)
+void PlayerNF::AdminKickEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -402,24 +402,25 @@ void Player::AdminKickEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_kick <name>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_kick <name>\n\"");
 		return;
 	}
 
 	gentity_t *gent = G_GetEntityByClientName(ev->GetString(1).c_str());
 	if (gent)
 	{
-		admin.AddKick(gent->client->ps.clientNum);
-		gi.DropClient(gent->client->ps.clientNum, "was kicked");
+		GEntity ge(gent);
+		admin.AddKick(GClient(ge->client)->ps.clientNum);
+		gi->DropClient(GClient(ge->client)->ps.clientNum, "was kicked");
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client name not in server\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client name not in server\n\"");
 		return;
 	}
 }
 
-void Player::AdminKickReasonEvent(Event * ev)
+void PlayerNF::AdminKickReasonEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -430,7 +431,7 @@ void Player::AdminKickReasonEvent(Event * ev)
 
 	if (ev->NumArgs() != 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_kickr <name> <reason>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_kickr <name> <reason>\n\"");
 		return;
 	}
 
@@ -438,17 +439,18 @@ void Player::AdminKickReasonEvent(Event * ev)
 	str reason = ev->GetString(2);
 	if (gent)
 	{
-		admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
-		gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+		GEntity ge(gent);
+		admin.AddKick(GClient(ge->client)->ps.clientNum, true, reason.c_str());
+		gi->DropClient(GClient(ge->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client name not in server\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client name not in server\n\"");
 		return;
 	}
 }
 
-void Player::AdminClientKickEvent(Event * ev)
+void PlayerNF::AdminClientKickEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -459,24 +461,25 @@ void Player::AdminClientKickEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_clientkick <number>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_clientkick <number>\n\"");
 		return;
 	}
 
 	gentity_t *gent = G_GetEntityByClient(ev->GetInteger(1));
 	if (gent)
 	{
-		admin.AddKick(gent->client->ps.clientNum);
-		gi.DropClient(gent->client->ps.clientNum, "was kicked");
+		GEntity ge(gent);
+		admin.AddKick(GClient(ge->client)->ps.clientNum);
+		gi->DropClient(GClient(ge->client)->ps.clientNum, "was kicked");
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
 		return;
 	}
 }
 
-void Player::AdminClientKickReasonEvent(Event * ev)
+void PlayerNF::AdminClientKickReasonEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -487,7 +490,7 @@ void Player::AdminClientKickReasonEvent(Event * ev)
 
 	if (ev->NumArgs() != 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_clientkickr <number> <reason>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_clientkickr <number> <reason>\n\"");
 		return;
 	}
 
@@ -495,17 +498,18 @@ void Player::AdminClientKickReasonEvent(Event * ev)
 	str reason = ev->GetString(2);
 	if (gent)
 	{
-		admin.AddKick(gent->client->ps.clientNum, true, reason.c_str());
-		gi.DropClient(gent->client->ps.clientNum, ("has been kicked for " + reason).c_str());
+		GEntity ge(gent);
+		admin.AddKick(GClient(ge->client)->ps.clientNum, true, reason.c_str());
+		gi->DropClient(GClient(ge->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
 		return;
 	}
 }
 
-void Player::AdminBanIPEvent(Event * ev)
+void PlayerNF::AdminBanIPEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -515,32 +519,32 @@ void Player::AdminBanIPEvent(Event * ev)
 	}
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banip <ip>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banip <ip>\n\"");
 		return;
 	}
 	str ip = ev->GetString(1);//TODO: kick all matching ips
 
 	if (!validateIP(ip.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid IP format!\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Invalid IP format!\n\"");
 		return;
 	}
 
 	if (admin.AddIPBan(ip.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"IP %s banned successfully.\n\"", ip.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"IP %s banned successfully.\n\"", ip.c_str());
 		return;
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"IP %s already banned.\n\"", ip.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"IP %s already banned.\n\"", ip.c_str());
 		return;
 	}
 
 }
 
 //This is weird, reason str is not used, ever.
-void Player::AdminBanIPReasonEvent(Event * ev)
+void PlayerNF::AdminBanIPReasonEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -550,30 +554,30 @@ void Player::AdminBanIPReasonEvent(Event * ev)
 	}
 	if (ev->NumArgs() != 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banipr <ip> <reason>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banipr <ip> <reason>\n\"");
 		return;
 	}
 	str ip = ev->GetString(1);
 	str reason = ev->GetString(2);//TODO: kick all matching ips with reason
 	if (!validateIP(ip.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid IP format!\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Invalid IP format!\n\"");
 		return;
 	}
 
 	if (admin.AddIPBan(ip.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"IP %s banned successfully.\n\"", ip.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"IP %s banned successfully.\n\"", ip.c_str());
 		return;
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"IP %s already banned.\n\"", ip.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"IP %s already banned.\n\"", ip.c_str());
 		return;
 	}
 }
 
-void Player::AdminClientBanEvent(Event * ev)
+void PlayerNF::AdminClientBanEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -584,24 +588,25 @@ void Player::AdminClientBanEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banid <number>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banid <number>\n\"");
 		return;
 	}
 
 	gentity_t *gent = G_GetEntityByClient(ev->GetInteger(1));
 	if (gent)
 	{
-		admin.AddBan(gent->client->ps.clientNum);
-		gi.DropClient(gent->client->ps.clientNum, "was banned");
+		GEntity ge(gent);
+		admin.AddBan(GClient(ge->client)->ps.clientNum);
+		gi->DropClient(GClient(ge->client)->ps.clientNum, "was banned");
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
 		return;
 	}
 }
 
-void Player::AdminClientBanReasonEvent(Event * ev)
+void PlayerNF::AdminClientBanReasonEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -612,7 +617,7 @@ void Player::AdminClientBanReasonEvent(Event * ev)
 
 	if (ev->NumArgs() != 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banidr <number> <reason>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banidr <number> <reason>\n\"");
 		return;
 	}
 
@@ -620,17 +625,18 @@ void Player::AdminClientBanReasonEvent(Event * ev)
 	str reason = ev->GetString(2);
 	if (gent)
 	{
-		admin.AddBan(gent->client->ps.clientNum, true, reason.c_str());
-		gi.DropClient(gent->client->ps.clientNum, ("has been banned for " + reason).c_str());
+		GEntity ge(gent);
+		admin.AddBan(GClient(ge->client)->ps.clientNum, true, reason.c_str());
+		gi->DropClient(GClient(ge->client)->ps.clientNum, ("has been banned for " + reason).c_str());
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client num not in server\n\"");
 		return;
 	}
 }
 
-void Player::AdminUnbanIPEvent(Event * ev)
+void PlayerNF::AdminUnbanIPEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -641,21 +647,21 @@ void Player::AdminUnbanIPEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_unbanip <ip>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_unbanip <ip>\n\"");
 		return;
 	}
 	str ip = ev->GetString(1);
 	if (admin.RemoveIPBan(ip.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"IP removed from ban filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"IP removed from ban filter.\n\"");
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"IP does not exist in ban filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"IP does not exist in ban filter.\n\"");
 	}
 }
 
-void Player::AdminListIPsEvent(Event * ev)
+void PlayerNF::AdminListIPsEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -666,23 +672,22 @@ void Player::AdminListIPsEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listips <page>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listips <page>\n\"");
 		return;
 	}
 
 	int page_num = ev->GetInteger(1);
 	if (page_num < 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
 		return;
 	}
 
 	string iplist_str = admin.ListIPPage(page_num);
-	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", iplist_str.c_str());
-
+	G_PrintToClient(client->ps.clientNum, iplist_str.c_str());
 }
 
-void Player::AdminBanNameEvent(Event * ev)
+void PlayerNF::AdminBanNameEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -692,13 +697,13 @@ void Player::AdminBanNameEvent(Event * ev)
 	}
 	if (ev->NumArgs() < 1 || ev->NumArgs() > 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banname <name> [any=0]\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_banname <name> [any=0]\n\"");
 		return;
 	}
 	str name = ev->GetString(1);
 	if (name == "")
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Empty name!\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Empty name!\n\"");
 		return;
 	}
 
@@ -713,17 +718,17 @@ void Player::AdminBanNameEvent(Event * ev)
 
 	if (admin.AddNameBan(name.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name %s banned successfully.\n\"", name.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name %s banned successfully.\n\"", name.c_str());
 		return;
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name %s already banned.\n\"", name.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name %s already banned.\n\"", name.c_str());
 		return;
 	}
 }
 
-void Player::AdminUnbanNameEvent(Event * ev)
+void PlayerNF::AdminUnbanNameEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -734,21 +739,21 @@ void Player::AdminUnbanNameEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_unbanname <name>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_unbanname <name>\n\"");
 		return;
 	}
 	str name = ev->GetString(1);
 	if (admin.RemoveNameBan(name.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name removed from ban filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name removed from ban filter.\n\"");
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name does not exist in ban filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name does not exist in ban filter.\n\"");
 	}
 }
 
-void Player::AdminListNamesEvent(Event * ev)
+void PlayerNF::AdminListNamesEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -759,21 +764,21 @@ void Player::AdminListNamesEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listnames <page>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listnames <page>\n\"");
 		return;
 	}
 
 	int page_num = ev->GetInteger(1);
 	if (page_num < 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
 		return;
 	}
 	string namelist_str = admin.ListNamePage(page_num);
-	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", namelist_str.c_str());
+	G_PrintToClient(client->ps.clientNum, namelist_str.c_str());
 }
 
-void Player::AdminProtectNameEvent(Event * ev)
+void PlayerNF::AdminProtectNameEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -783,7 +788,7 @@ void Player::AdminProtectNameEvent(Event * ev)
 	}
 	if (ev->NumArgs() != 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_protname <name> <password>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_protname <name> <password>\n\"");
 		return;
 	}
 	str name = ev->GetString(1);
@@ -791,29 +796,29 @@ void Player::AdminProtectNameEvent(Event * ev)
 
 	if (name == "")
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Empty name!\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Empty name!\n\"");
 		return;
 	}
 
 	if (password == "")
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Empty password!\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Empty password!\n\"");
 		return;
 	}
 
 	if (admin.AddProtectedName(name.c_str(), password.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name %s protected successfully.\n\"", name.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name %s protected successfully.\n\"", name.c_str());
 		return;
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name %s already protected.\n\"", name.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name %s already protected.\n\"", name.c_str());
 		return;
 	}
 }
 
-void Player::AdminUnprotectNameEvent(Event * ev)
+void PlayerNF::AdminUnprotectNameEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -824,21 +829,21 @@ void Player::AdminUnprotectNameEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_unprotname <name>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_unprotname <name>\n\"");
 		return;
 	}
 	str name = ev->GetString(1);
 	if (admin.RemoveProtectedName(name.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name removed from protected filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name removed from protected filter.\n\"");
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Name does not exist in protected filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Name does not exist in protected filter.\n\"");
 	}
 }
 
-void Player::AdminListProtectedNamesEvent(Event * ev)
+void PlayerNF::AdminListProtectedNamesEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -849,21 +854,21 @@ void Player::AdminListProtectedNamesEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listprotnames <page>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listprotnames <page>\n\"");
 		return;
 	}
 
 	int page_num = ev->GetInteger(1);
 	if (page_num < 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
 		return;
 	}
 	string namelist_str = admin.ListProtectedNamePage(page_num);
 	G_PrintToClient(client->ps.clientNum, namelist_str.c_str());
 }
 
-void Player::AdminBanWordEvent(Event * ev)
+void PlayerNF::AdminBanWordEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -873,30 +878,30 @@ void Player::AdminBanWordEvent(Event * ev)
 	}
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_chatfilteradd <word>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_chatfilteradd <word>\n\"");
 		return;
 	}
 
 	str word = ev->GetString(1);
 	if (word == "")
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Empty word!\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Empty word!\n\"");
 		return;
 	}
 
 	if (admin.AddChatBan(word.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Word %s banned from chat successfully.\n\"", word.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"Word %s banned from chat successfully.\n\"", word.c_str());
 		return;
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Word %s already banned from chat.\n\"", word.c_str());
+		gi->SendServerCommand(client->ps.clientNum, "print \"Word %s already banned from chat.\n\"", word.c_str());
 		return;
 	}
 }
 
-void Player::AdminUnbanWordEvent(Event * ev)
+void PlayerNF::AdminUnbanWordEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -907,21 +912,21 @@ void Player::AdminUnbanWordEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_chatfilterremove <word>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_chatfilterremove <word>\n\"");
 		return;
 	}
 	str word = ev->GetString(1);
 	if (admin.RemoveChatBan(word.c_str()))
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Word removed from chat filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Word removed from chat filter.\n\"");
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Word does not exist in chat filter.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Word does not exist in chat filter.\n\"");
 	}
 }
 
-void Player::AdminListWordsEvent(Event * ev)
+void PlayerNF::AdminListWordsEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -932,21 +937,21 @@ void Player::AdminListWordsEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listchatfilter <page>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_listchatfilter <page>\n\"");
 		return;
 	}
 
 	int page_num = ev->GetInteger(1);
 	if (page_num < 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Invalid page number.\n\"");
 		return;
 	}
 	string wordlist_str = admin.ListChatPage(page_num);
-	gi.SendServerCommand(client->ps.clientNum, "print \"%s\n\"", wordlist_str.c_str());
+	G_PrintToClient(client->ps.clientNum, wordlist_str.c_str());
 }
 
-void Player::AdminDisableChatEvent(Event * ev)
+void PlayerNF::AdminDisableChatEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -957,7 +962,7 @@ void Player::AdminDisableChatEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_dischat <client_num>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_dischat <client_num>\n\"");
 		return;
 	}
 
@@ -966,15 +971,15 @@ void Player::AdminDisableChatEvent(Event * ev)
 	bool bSuccess = admin.DisableChat(client_num, chatAllowed);
 	if (bSuccess)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"%s chat for client %d\n\"", (chatAllowed ? "Enabled" : "Disabled"), client_num);
+		gi->SendServerCommand(client->ps.clientNum, "print \"%s chat for client %d\n\"", (chatAllowed ? "Enabled" : "Disabled"), client_num);
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client num %d not in server.\n\"", client_num);
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client num %d not in server.\n\"", client_num);
 	}
 }
 
-void Player::AdminDisableTauntsEvent(Event * ev)
+void PlayerNF::AdminDisableTauntsEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -985,7 +990,7 @@ void Player::AdminDisableTauntsEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_distaunt <client_num>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_distaunt <client_num>\n\"");
 		return;
 	}
 
@@ -994,15 +999,15 @@ void Player::AdminDisableTauntsEvent(Event * ev)
 	bool bSuccess = admin.DisableTaunts(client_num, tauntsAllowed);
 	if (bSuccess)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"%s taunts for client %d\n\"", (tauntsAllowed ? "Enabled" : "Disabled"), client_num);
+		gi->SendServerCommand(client->ps.clientNum, "print \"%s taunts for client %d\n\"", (tauntsAllowed ? "Enabled" : "Disabled"), client_num);
 	}
 	else
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client num %d not in server.\n\"", client_num);
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client num %d not in server.\n\"", client_num);
 	}
 }
 
-void Player::AdminChangeMapEvent(Event * ev)
+void PlayerNF::AdminChangeMapEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1013,16 +1018,16 @@ void Player::AdminChangeMapEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_map <mapname>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_map <mapname>\n\"");
 		return;
 	}
 
 	str mapname = ev->GetString(1);
 
-	gi.SendConsoleCommand(("map " + mapname + "\n").c_str());
+	gi->SendConsoleCommand(("map " + mapname + "\n").c_str());
 }
 
-void Player::AdminRestartEvent(Event * ev)
+void PlayerNF::AdminRestartEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1030,10 +1035,10 @@ void Player::AdminRestartEvent(Event * ev)
 	{
 		return;
 	}
-	gi.SendConsoleCommand("restart\n");
+	gi->SendConsoleCommand("restart\n");
 }
 
-void Player::AdminSetFragLimitEvent(Event * ev)
+void PlayerNF::AdminSetFragLimitEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1044,16 +1049,16 @@ void Player::AdminSetFragLimitEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_fraglimit <fraglimit>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_fraglimit <fraglimit>\n\"");
 		return;
 	}
 
 	int fraglimit = ev->GetInteger(1);
 
-	gi.SendConsoleCommand(("fraglimit " + to_string(fraglimit) + "\n").c_str());
+	gi->SendConsoleCommand(("fraglimit " + to_string(fraglimit) + "\n").c_str());
 }
 
-void Player::AdminSetTimeLimitEvent(Event * ev)
+void PlayerNF::AdminSetTimeLimitEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1064,16 +1069,16 @@ void Player::AdminSetTimeLimitEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_timelimit <timelimit>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_timelimit <timelimit>\n\"");
 		return;
 	}
 
 	int timelimit = ev->GetInteger(1);
 
-	gi.SendConsoleCommand(("timelimit " + to_string(timelimit) + "\n").c_str());
+	gi->SendConsoleCommand(("timelimit " + to_string(timelimit) + "\n").c_str());
 }
 
-void Player::AdminSetGameTypeEvent(Event * ev)
+void PlayerNF::AdminSetGameTypeEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1084,16 +1089,16 @@ void Player::AdminSetGameTypeEvent(Event * ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_gametype <gametype>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_gametype <gametype>\n\"");
 		return;
 	}
 
 	int gametype = ev->GetInteger(1);
 
-	gi.SendConsoleCommand(("g_gametype " + to_string(gametype) + "\n").c_str());
+	gi->SendConsoleCommand(("g_gametype " + to_string(gametype) + "\n").c_str());
 }
 
-void Player::AdminSayEvent(Event * ev)
+void PlayerNF::AdminSayEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1104,7 +1109,7 @@ void Player::AdminSayEvent(Event * ev)
 
 	if (ev->NumArgs() < 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_say <message>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_say <message>\n\"");
 		return;
 	}
 	str msgStr;
@@ -1116,10 +1121,10 @@ void Player::AdminSayEvent(Event * ev)
 
 	msgStr -= 1;//remove last space
 
-	gi.SendConsoleCommand(("say " + msgStr + "\n").c_str());
+	gi->SendConsoleCommand(("say " + msgStr + "\n").c_str());
 }
 
-void Player::AdminSayPrivateEvent(Event * ev)
+void PlayerNF::AdminSayPrivateEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1130,15 +1135,15 @@ void Player::AdminSayPrivateEvent(Event * ev)
 
 	if (ev->NumArgs() < 2)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_sayp <client_num> <message>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_sayp <client_num> <message>\n\"");
 		return;
 	}
 
 	int client_num = ev->GetInteger(1);
 	client_t* cl = GetClientByClientNum(client_num);
-	if (cl == NULL || cl->state == CS_FREE)
+	if (cl == NULL || Client(cl)->state == CS_FREE)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"Client num not in server.\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"Client num not in server.\n\"");
 		return;
 	}
 
@@ -1155,7 +1160,7 @@ void Player::AdminSayPrivateEvent(Event * ev)
 }
 
 extern int *svs_numclients;
-void Player::AdminStatusEvent(Event * ev)
+void PlayerNF::AdminStatusEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1172,14 +1177,15 @@ void Player::AdminStatusEvent(Event * ev)
 	ss << "Rate";
 	ss << endl;
 
-	client_t * cl;
+	client_t * cl_real;
 	for (size_t i = 0; i < *svs_numclients; i++)
 	{
-		cl = GetClientByClientNum(i);
-		if (!cl || cl->state == CS_FREE)
+		cl_real = GetClientByClientNum(i);
+		if (!cl_real || Client(cl_real)->state == CS_FREE)
 		{
 			continue;
 		}
+		Client cl(cl_real);
 		ss << i << " | ";
 		ss << cl->ping << " | ";
 		ss << cl->name << " | ";
@@ -1189,11 +1195,11 @@ void Player::AdminStatusEvent(Event * ev)
 		ss << endl;
 	}
 	ss << "=========================================================" << endl;
-	gi.SendServerCommand(client->ps.clientNum, "print \"%s\"\n", ss.str().c_str());
+	gi->SendServerCommand(client->ps.clientNum, "print \"%s\"\n", ss.str().c_str());
 
 }
 
-void Player::AdminListAdminsEvent(Event * ev)
+void PlayerNF::AdminListAdminsEvent(Event * ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1202,11 +1208,10 @@ void Player::AdminListAdminsEvent(Event * ev)
 		return;
 	}
 
-	gi.SendServerCommand(client->ps.clientNum, "print \"%s\"\n", admin.ListOnlineAdmins().c_str());
-
+	G_PrintToClient(client->ps.clientNum, admin.ListOnlineAdmins().c_str());
 }
 
-void Player::AdminRCONEvent(Event* ev)
+void PlayerNF::AdminRCONEvent(Event* ev)
 {
 	ClientAdmin admin(client->ps.clientNum);
 
@@ -1217,7 +1222,7 @@ void Player::AdminRCONEvent(Event* ev)
 
 	if (ev->NumArgs() < 1)
 	{
-		gi.SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_rcon <command>\n\"");
+		gi->SendServerCommand(client->ps.clientNum, "print \"USAGE: ad_rcon <command>\n\"");
 		return;
 	}
 	str cmdStr;
@@ -1228,7 +1233,8 @@ void Player::AdminRCONEvent(Event* ev)
 	}
 
 	cmdStr -= 1;//remove last space
+	cmdStr += "\n";
 
-	gi.SendConsoleCommand(cmdStr.c_str());
-	gi.SendServerCommand(client->ps.clientNum, "print \"Executed RCON command.\n\"");
+	gi->SendConsoleCommand(cmdStr.c_str());
+	gi->SendServerCommand(client->ps.clientNum, "print \"Executed RCON command.\n\"");
 }

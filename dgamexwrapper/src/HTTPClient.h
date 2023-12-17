@@ -5,7 +5,7 @@
 #include <thread>
 #include <atomic>
 #include "ScriptVariable.h"
-using namespace std;
+using std::string, std::list, std::mutex, std::atomic, std::condition_variable;
 
 enum CAPIReturnType
 {

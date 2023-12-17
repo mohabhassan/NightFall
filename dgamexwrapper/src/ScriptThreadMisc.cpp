@@ -1,7 +1,6 @@
 #include <wolfssl/wolfcrypt/md5.h>
 #include "ScriptThread.h"
 #include "g_misc.h"
-#include "misc.h"
 #include <SQLiteCpp/Database.h>
 #include "CustomCvar.h"
 #include <regex>
@@ -235,12 +234,11 @@ void ScriptThread::MiscInit()
 
 void ScriptThread::PlayerNetNameEvent(Event * ev)
 {
-	Entity *ent = NULL;
 	str netname("");
 
-	ent = (Entity*)ev->GetEntity(1);
+	EntityNF ent(ev->GetEntity(1));
 
-	if (ent != NULL && ent->client != NULL)
+	if (ent->isValid() && ent->client.isValid())
 	{
 		netname = ent->client->pers.netname;
 	}
@@ -252,7 +250,7 @@ void ScriptThread::StuffSrvEvent(Event*ev)
 {
 	if (ev->NumArgs() < 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for stuffsrv!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for stuffsrv!\n");
 		return;
 	}
 
@@ -264,8 +262,9 @@ void ScriptThread::StuffSrvEvent(Event*ev)
 	}
 
 	cmdStr -= 1;//remove last space
+	cmdStr += "\n";
 
-	gi.SendConsoleCommand(cmdStr.c_str());
+	gi->SendConsoleCommand(cmdStr.c_str());
 }
 
 
@@ -273,11 +272,11 @@ void ScriptThread::ConprintfEvent(Event *ev)
 {
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for conprintf!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for conprintf!\n");
 	}
 	else
 	{
-		gi.Printf(ev->GetString(1));
+		gi->Printf(ev->GetString(1));
 	}
 }
 
@@ -286,11 +285,11 @@ void ScriptThread::PlayerGetIpEvent(Event * ev)
 	//using namespace std;
 
 	str ip = "";
-	Entity *ent = NULL;
 
-	ent = (Entity*)ev->GetEntity(1);
 
-	if (ent != NULL && ent->client != NULL)
+	EntityNF ent(ev->GetEntity(1));
+
+	if (ent->isValid() && ent->client.isValid())
 	{
 		client_t* cl = GetClientByClientNum(ent->client->ps.clientNum);
 		ip = (GetIPPortFromClient(cl)).c_str();
@@ -310,12 +309,11 @@ void ScriptThread::PlayerGetIpEvent(Event * ev)
 
 void ScriptThread::PlayerGetPingEvent(Event * ev)
 {
-	Entity *ent = NULL;
 	int ping = -1;
 
-	ent = (Entity*)ev->GetEntity(1);
+	EntityNF ent(ev->GetEntity(1));
 
-	if (ent != NULL && ent->client != NULL)
+	if (ent->isValid() && ent->client.isValid())
 	{
 		ping = ent->client->ps.ping;
 	}
@@ -326,12 +324,12 @@ void ScriptThread::PlayerGetPingEvent(Event * ev)
 
 void ScriptThread::PlayerGetClientNumEvent(Event * ev)
 {
-	Entity *ent = NULL;
 	int clientnum = -1;
 
-	ent = (Entity*)ev->GetEntity(1);
 
-	if (ent != NULL && ent->client != NULL)
+	EntityNF ent(ev->GetEntity(1));
+
+	if (ent->isValid() && ent->client.isValid())
 	{
 		clientnum = ent->client->ps.clientNum;
 	}
@@ -349,14 +347,14 @@ void ScriptThread::GetEntityEvent(Event *ev)
 
 	if (entnum < 0 || entnum > globals->max_entities)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Entity number %d out of scope!\n", entnum);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Entity number %d out of scope!\n", entnum);
 	}
 	else
 	{
 		ent = G_GetEntity(entnum);
 		if (!ent)
 		{
-			gi.Printf(PATCH_NAME " SCRIPT ERROR: Entity not found!\n");
+			gi->Printf(PATCH_NAME " SCRIPT ERROR: Entity not found!\n");
 		}
 		else
 		{
@@ -380,7 +378,7 @@ void ScriptThread::GetTimeEvent(Event *ev)
 
 	if (strftime(buff, 1024, "%H:%M:%S", timeinfo) == NULL)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: gettime: failed to create time string!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: gettime: failed to create time string!\n");
 	}
 	else
 	{
@@ -399,7 +397,7 @@ void ScriptThread::GetTimeZoneEvent(Event *ev)
 
 		char errStr[128] = { 0 };
 		strerror_s(errStr, err);
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: gettimezone failed to get time zone: %s!\n", errStr);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: gettimezone failed to get time zone: %s!\n", errStr);
 		return;
 	}
 
@@ -428,7 +426,7 @@ void ScriptThread::GetDateFormattedEvent(Event *ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for getdate!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for getdate!\n");
 		return;
 	}
 
@@ -456,7 +454,7 @@ void ScriptThread::Md5Event(Event *ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for md5string!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for md5string!\n");
 		return;
 	}
 	text = ev->GetString(1);
@@ -485,14 +483,14 @@ void ScriptThread::Md5fileEvent(Event *ev)
 
 	if (ev->NumArgs() != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for md5file!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for md5file!\n");
 		return;
 	}
 	filename = ev->GetString(1);
 	err = fopen_s(&fp, filename.c_str(), "rb");
 	if (err != 0)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't open file: %s error code: %i !\n", filename.c_str(), err);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't open file: %s error code: %i !\n", filename.c_str(), err);
 		return;
 	}
 
@@ -506,7 +504,7 @@ void ScriptThread::Md5fileEvent(Event *ev)
 	}
 	catch (std::bad_alloc &e)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't load file: %s error: %s !\n", filename.c_str(), e.what());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't load file: %s error: %s !\n", filename.c_str(), e.what());
 		return;
 	}
 
@@ -519,7 +517,7 @@ void ScriptThread::Md5fileEvent(Event *ev)
 	{
 		delete[] buff;
 		fclose(fp); 
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't load file: %s error2: %i !\n", filename.c_str(), bytesread);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: md5file: couldn't load file: %s error2: %i !\n", filename.c_str(), bytesread);
 		return;
 	}
 
@@ -543,7 +541,7 @@ void ScriptThread::TypeofEvent(Event *ev)
 	int numargs = ev->NumArgs();
 	if (numargs != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for typeof!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for typeof!\n");
 		return;
 	}
 	ScriptVariable& var = ev->GetValue(1);
@@ -567,7 +565,7 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 
 	if (numArgs < 2 || numArgs > 6)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for traced!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for traced!\n");
 		return;
 	}
 
@@ -590,7 +588,7 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 		mask = ev->GetInteger(6);
 	}
 
-	gi.Trace(&trace, vecStart, vecMins, vecMaxs, vecEnd, pass_entity, mask, 0, 0);
+	gi->Trace(&trace, vecStart, vecMins, vecMaxs, vecEnd, pass_entity, mask, 0, 0);
 
 	index.setStringValue("allSolid");
 	value.setIntValue(trace.allsolid);
@@ -634,7 +632,7 @@ void ScriptThread::TraceDetailsEvent(Event *ev)
 	// Have to use G_GetEntity instead otherwise it won't work
 	if (entity != NULL) {
 		index.setStringValue("entity");
-		value.setListenerValue(entity);
+		value.setListenerValue((Listener*)entity);
 		resultArray.setArrayAtRef(index, value);
 	}
 
@@ -651,7 +649,7 @@ void ScriptThread::SetPropertyEvent(Event * ev)
 
 	if (numArgs != 2)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for setproperty!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for setproperty!\n");
 		return;
 	}
 
@@ -659,7 +657,7 @@ void ScriptThread::SetPropertyEvent(Event * ev)
 
 	if (key == NULL)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL key - setproperty!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: NULL key - setproperty!\n");
 		ev->AddInteger(-1);
 		return;
 	}
@@ -668,14 +666,14 @@ void ScriptThread::SetPropertyEvent(Event * ev)
 
 	if (value == NULL)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL value - setproperty!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: NULL value - setproperty!\n");
 		ev->AddInteger(-2);
 		return;
 	}
 
 	try
 	{
-		CustomCvar sv_store("sv_store", MAIN_PATH"/store.bin", CVAR_ARCHIVE);
+		CustomCvar sv_store("sv_store", MAIN_PATH + "/store.bin", CVAR_ARCHIVE);
 		const char *createIfNotExists = "CREATE TABLE IF NOT EXISTS localStorage (key TEXT PRIMARY KEY, value TEXT)";
 
 
@@ -692,7 +690,7 @@ void ScriptThread::SetPropertyEvent(Event * ev)
 	}
 	catch (const std::exception& e)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Error in setproperty! : %s\n", e.what());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Error in setproperty! : %s\n", e.what());
 		ev->AddInteger(-3);
 		return;
 	}
@@ -705,7 +703,7 @@ void ScriptThread::GetPropertyEvent(Event * ev)
 	numArgs = ev->NumArgs();
 	if (numArgs != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for getproperty!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for getproperty!\n");
 		return;
 	}
 
@@ -714,7 +712,7 @@ void ScriptThread::GetPropertyEvent(Event * ev)
 
 	if (key == NULL)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: NULL key - getproperty!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: NULL key - getproperty!\n");
 		ev->AddInteger(-1);
 		return;
 	}
@@ -722,7 +720,7 @@ void ScriptThread::GetPropertyEvent(Event * ev)
 
 	try
 	{
-		CustomCvar sv_store("sv_store", MAIN_PATH"/store.bin", CVAR_ARCHIVE);
+		CustomCvar sv_store("sv_store", MAIN_PATH+"/store.bin", CVAR_ARCHIVE);
 		SQLite::Database    db(sv_store.GetStringValue(), SQLite::OPEN_READONLY);
 		SQLite::Statement query(db, "SELECT value FROM localStorage WHERE key=?");
 
@@ -740,7 +738,7 @@ void ScriptThread::GetPropertyEvent(Event * ev)
 	}
 	catch (const std::exception& e)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Error in getproperty! : %s\n", e.what());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Error in getproperty! : %s\n", e.what());
 		ev->AddInteger(-3);
 		return;
 	}
@@ -751,13 +749,13 @@ void ScriptThread::CastConstArrayEvent(Event * ev)
 	int numArgs = ev->NumArgs();
 	if (numArgs != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for constarray!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for constarray!\n");
 		return;
 	}
 	ScriptVariable &arr = ev->GetValue(1);
 	if (arr.GetType() != VARIABLE_ARRAY)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Invalid argument type for constarray, must be an array. Given %s instead!\n", arr.GetTypeName());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Invalid argument type for constarray, must be an array. Given %s instead!\n", arr.GetTypeName());
 		return;
 	}
 	ScriptVariable ret;
@@ -767,17 +765,18 @@ void ScriptThread::CastConstArrayEvent(Event * ev)
 	}
 	else
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: constarray: array passed cannot be converted to const array!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: constarray: array passed cannot be converted to const array!\n");
 		ev->AddNil();
 	}
 }
 
 void ScriptThread::RegexParseEvent(Event * ev)
 {
+	using std::regex, std::smatch;
 	int numArgs = ev->NumArgs();
 	if (numArgs != 3)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for regex_parse!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for regex_parse!\n");
 		return;
 	}
 	
@@ -788,7 +787,7 @@ void ScriptThread::RegexParseEvent(Event * ev)
 	}
 	catch (const std::regex_error& e)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Invalid regex pattern for regex_parse: %s!\n", e.what());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Invalid regex pattern for regex_parse: %s!\n", e.what());
 		return;
 	}
 
@@ -829,7 +828,7 @@ void ScriptThread::JsonParseEvent(Event * ev)
 	int numArgs = ev->NumArgs();
 	if (numArgs != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for json_parse!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for json_parse!\n");
 		return;
 	}
 	
@@ -841,11 +840,11 @@ void ScriptThread::JsonParseEvent(Event * ev)
 	}
 	catch (json::parse_error& e)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: json_parse failed!\n");
-		gi.Printf("info:\n");
-		gi.Printf("\tmessage: %s\n", e.what());
-		gi.Printf("\texception id: %d\n", e.id);
-		gi.Printf("\tbyte position of error: %zu\n", e.byte);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: json_parse failed!\n");
+		gi->Printf("info:\n");
+		gi->Printf("\tmessage: %s\n", e.what());
+		gi->Printf("\texception id: %d\n", e.id);
+		gi->Printf("\tbyte position of error: %zu\n", e.byte);
 		ev->AddNil();
 		return;
 	}
@@ -859,7 +858,7 @@ void ScriptThread::JsonStringifyEvent(Event * ev)
 	int numArgs = ev->NumArgs();
 	if (numArgs != 1)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for json_stringify!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for json_stringify!\n");
 		return;
 	}
 	ScriptVariable var = ev->GetValue(1);

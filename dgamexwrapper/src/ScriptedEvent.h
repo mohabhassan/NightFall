@@ -4,7 +4,7 @@
 #include "Entity.h"
 #include "ScriptVariable.h"
 constexpr int defaultReturnValueIndex = -1;
-using namespace std;
+using std::string, std::vector;
 enum ScriptedEventType
 {
 	SEV_UNK = -1,

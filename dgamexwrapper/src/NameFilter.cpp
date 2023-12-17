@@ -1,6 +1,7 @@
 #include "NameFilter.h"
 #include <fstream>
 
+using namespace std;
 
 vector<NameEntry> NameFilter::NameEntries;
 
@@ -441,10 +442,10 @@ string NameFilter::GetProtectedNamesInPage(int page_num)
 void NameFilter::InitNameFilter()
 {
 
-	ifstream ifs(MAIN_PATH "/namefilter.cfg", ifstream::in);
+	ifstream ifs(MAIN_PATH + "/namefilter.cfg", ifstream::in);
 	if (!ifs.is_open())
 	{
-		gi.Printf(PATCH_NAME " NameFilter error: could not open " MAIN_PATH "/namefilter.cfg for reading!\n");
+		gi->Printf(PATCH_NAME " NameFilter error: could not open " + MAIN_PATH + "/namefilter.cfg for reading!\n");
 		return;
 	}
 
@@ -461,14 +462,14 @@ void NameFilter::InitNameFilter()
 		//validate name str
 		if (line.empty())
 		{
-			gi.Printf(PATCH_NAME " NameFilter error: empty name: %s in line %d in " MAIN_PATH "/namefilter.cfg! Skipping...\n", line.c_str(), lineNum);
+			gi->Printf(PATCH_NAME " NameFilter error: empty name: %s in line %d in " + MAIN_PATH + "/namefilter.cfg! Skipping...\n", line.c_str(), lineNum);
 			continue;
 		}
 
 		//add our name filter entry
 		filter.AddName(line);
 	}
-	gi.Printf(PATCH_NAME " NameFilter loaded %d name filter entries successfully\n", NameEntries.size());
+	gi->Printf(PATCH_NAME " NameFilter loaded %d name filter entries successfully\n", NameEntries.size());
 
 	ifs.close();
 	///////////////////////////////////////////////////////////////////////
@@ -478,10 +479,10 @@ void NameFilter::InitNameFilter()
 
 void NameFilter::InitProtectedNameFilter()
 {
-	ifstream ifs(MAIN_PATH "/protectednamefilter.cfg", ifstream::in);
+	ifstream ifs(MAIN_PATH + "/protectednamefilter.cfg", ifstream::in);
 	if (!ifs.is_open())
 	{
-		gi.Printf(PATCH_NAME " Protected NameFilter error: could not open " MAIN_PATH "/protectednamefilter.cfg for reading!\n");
+		gi->Printf(PATCH_NAME " Protected NameFilter error: could not open " + MAIN_PATH + "/protectednamefilter.cfg for reading!\n");
 		return;
 	}
 
@@ -504,7 +505,7 @@ void NameFilter::InitProtectedNameFilter()
 		//validate name str
 		if (namePos == string::npos || pwPos == string::npos)
 		{
-			gi.Printf(PATCH_NAME " Protected NameFilter error: could not parse line %d properly in  " MAIN_PATH "/protectednamefilter.cfg! Skipping...\n", lineNum);
+			gi->Printf(PATCH_NAME " Protected NameFilter error: could not parse line %d properly in  " + MAIN_PATH + "/protectednamefilter.cfg! Skipping...\n", lineNum);
 			continue;
 		}
 
@@ -518,18 +519,18 @@ void NameFilter::InitProtectedNameFilter()
 		//add our name filter entry
 		filter.AddProtectedName(name, password);
 	}
-	gi.Printf(PATCH_NAME " Protected NameFilter loaded %d name filter entries successfully\n", ProtectedNameEntries.size());
+	gi->Printf(PATCH_NAME " Protected NameFilter loaded %d name filter entries successfully\n", ProtectedNameEntries.size());
 
 }
 
 void NameFilter::ShutdownNameFilter()
 {
-	ofstream ofs(MAIN_PATH "/namefilter.cfg", ofstream::out | ofstream::trunc);
+	ofstream ofs(MAIN_PATH + "/namefilter.cfg", ofstream::out | ofstream::trunc);
 	if (!ofs.is_open())
 	{
 		char errStr[128] = { 0 };
 		strerror_s(errStr, errno);
-		gi.Printf(PATCH_NAME " NameFilter error: could not open " MAIN_PATH "/namefilter.cfg for writing : %s!\n", errStr);
+		gi->Printf(PATCH_NAME " NameFilter error: could not open " + MAIN_PATH + "/namefilter.cfg for writing : %s!\n", errStr);
 		return;
 	}
 
@@ -541,19 +542,19 @@ void NameFilter::ShutdownNameFilter()
 
 	}
 
-	gi.Printf(PATCH_NAME " NameFilter: saved %d name entries in " MAIN_PATH "/namefilter.cfg\n", i);
+	gi->Printf(PATCH_NAME " NameFilter: saved %d name entries in " + MAIN_PATH + "/namefilter.cfg\n", i);
 
 	ofs.close();
 }
 
 void NameFilter::ShutdownProtectedNameFilter()
 {
-	ofstream ofs(MAIN_PATH "/protectednamefilter.cfg", ofstream::out | ofstream::trunc);
+	ofstream ofs(MAIN_PATH + "/protectednamefilter.cfg", ofstream::out | ofstream::trunc);
 	if (!ofs.is_open())
 	{
 		char errStr[128] = { 0 };
 		strerror_s(errStr, errno);
-		gi.Printf(PATCH_NAME " Protected NameFilter error: could not open " MAIN_PATH "/protectednamefilter.cfg for writing : %s!\n", errStr);
+		gi->Printf(PATCH_NAME " Protected NameFilter error: could not open " + MAIN_PATH + "/protectednamefilter.cfg for writing : %s!\n", errStr);
 		return;
 	}
 	int i;
@@ -564,7 +565,7 @@ void NameFilter::ShutdownProtectedNameFilter()
 
 	}
 
-	gi.Printf(PATCH_NAME " Protected NameFilter: saved %d name entries in " MAIN_PATH "/protectednamefilter.cfg\n", i);
+	gi->Printf(PATCH_NAME " Protected NameFilter: saved %d name entries in " + MAIN_PATH + "/protectednamefilter.cfg\n", i);
 }
 
 /*

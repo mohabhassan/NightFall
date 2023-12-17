@@ -3,12 +3,14 @@
 #include "ClassDef.h"
 #include <vector>
 #include <functional>
-using namespace std;
+using std::function, std::vector;
 template <class Type>
 class CustomEventResponseSet
 {
-	vector<Event*> cEvents;//Custom Events
+public:
 	using responseFuncPtr = function<void(Type*, Event*)>;
+private:
+	vector<Event*> cEvents;//Custom Events
 	vector<responseFuncPtr> cResponseFuncs;//Custom Response FUncs
 public:
 	void AddEventResponse(Event *ev, responseFuncPtr response)

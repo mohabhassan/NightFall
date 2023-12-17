@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "ScriptThread.h"
 #include <string>
-
+#include "AddressDefinitions.h"
 
 void(__thiscall *ClassDef::BuildResponseList_Orignal)(ClassDef*_this);
 using addNewKeyEntryPtr = Entry_eventdeflist *(__thiscall *)(con_map_eventdeflist *_this, void*r, unsigned int loc);
@@ -36,6 +36,8 @@ EventDef* getInfo(ResponseDef<Class>* r)
 
 void ClassDef::BuildExtendedResponseList(ResponseDef<Class> exResponses[], int eventCount)
 {
+	//return this->BuildResponseList_Orignal(this);
+
 	ClassDef		*_this = this;
 	ClassDef		*superC;
 	ResponseDef<Class> *r;
@@ -130,7 +132,7 @@ void ClassDef::BuildExtendedResponseList(ResponseDef<Class> exResponses[], int e
 
 	if (responseLookup)
 	{
-		gi.Free(responseLookup);
+		gi->Free(responseLookup);
 
 		responseLookup = NULL;
 	}
@@ -138,7 +140,7 @@ void ClassDef::BuildExtendedResponseList(ResponseDef<Class> exResponses[], int e
 	num = Event::NumEventCommands()+1;//size will be total event count, because it WAS faster to look for an event via eventnum
 									//nowadays there's not much overhead in performance, TODO: change size to appropriate.
 	//num += eventCount; // add up our extra event count : not needed, Event::LoadEvents() takes care of it.
-	responseLookup = (ResponseDef< Class > **)gi.Malloc(sizeof(ResponseDef< Class > *) * num);
+	responseLookup = (ResponseDef< Class > **)gi->Malloc(sizeof(ResponseDef< Class > *) * num);
 	memset(responseLookup, 0, sizeof(ResponseDef< Class > *) * num);
 
 	set = new qboolean[num];
@@ -222,7 +224,7 @@ void __fastcall BuildResponseListHook(ClassDef*_this, void * edx)
 {
 	if (!strcmp(_this->classname, "Player"))
 	{
-		_this->BuildExtendedResponseList(reinterpret_cast<ResponseDef<Class>*>(Player::Responses), Player::cerSet.size());
+		_this->BuildExtendedResponseList(reinterpret_cast<ResponseDef<Class>*>(PlayerNF::Responses), PlayerNF::cerSet.size());
 	}
 	else if (!strcmp(_this->classname, "ScriptThread"))
 	{

@@ -12,7 +12,7 @@
 //        throw std::bad_alloc{};
 //
 //    s += sizeof(int);
-//    p = (int*)gi.Malloc(s);
+//    p = (int*)gi->Malloc(s);
 //    if (!p)
 //        throw std::bad_alloc{};
 //    *p = s;
@@ -28,7 +28,7 @@
 //        throw std::bad_alloc{};
 //
 //    s += sizeof(int);
-//    p = (int*)gi.Malloc(s);
+//    p = (int*)gi->Malloc(s);
 //    if (!p)
 //        throw std::bad_alloc{};
 //    *p = s;
@@ -39,26 +39,26 @@
 //{
 //    int* p;
 //    p = ((int*)ptr) - 1;
-//    gi.Free(p);
+//    gi->Free(p);
 //}
 //
 //void operator delete(void* ptr, std::size_t size) noexcept
 //{
 //    int* p;
 //    p = ((int*)ptr) - 1;
-//    gi.Free(p);
+//    gi->Free(p);
 //}
 //
 //void operator delete[](void* ptr) noexcept
 //{
 //    int* p;
 //    p = ((int*)ptr) - 1;
-//    gi.Free(p);
+//    gi->Free(p);
 //}
 //
 //void operator delete[](void* ptr, std::size_t size) noexcept
 //{
 //    int* p;
 //    p = ((int*)ptr) - 1;
-//    gi.Free(p);
+//    gi->Free(p);
 //}

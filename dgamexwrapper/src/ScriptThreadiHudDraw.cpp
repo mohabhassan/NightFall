@@ -91,7 +91,7 @@ void ScriptThread::iHudDrawAlignEvent(Event *ev)
 
 	if (argnum != 4)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_align!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_align!\n");
 		return;
 	}
 
@@ -102,12 +102,12 @@ void ScriptThread::iHudDrawAlignEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid index %d\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid index %d\n", index);
 		return;
 	}
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid player!\n");
 		return;
 	}
 	h_alignstr.tolower();
@@ -127,7 +127,7 @@ void ScriptThread::iHudDrawAlignEvent(Event *ev)
 		h_align = 2;
 		break;
 	default:
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid h_align value: %s\n", h_alignstr.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid h_align value: %s\n", h_alignstr.c_str());
 		return;
 		break;
 	}
@@ -146,12 +146,12 @@ void ScriptThread::iHudDrawAlignEvent(Event *ev)
 		v_align = 2;
 		break;
 	default:
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid v_align value\n", v_alignstr.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_align: invalid v_align value\n", v_alignstr.c_str());
 		return;
 		break;
 	}
 
-	iHudDrawAlign(player->client->ps.clientNum, index, h_align, v_align);
+	iHudDrawAlign(EntityNF(player)->client->ps.clientNum, index, h_align, v_align);
 }
 
 void ScriptThread::iHudDrawAlphaEvent(Event *ev)
@@ -163,7 +163,7 @@ void ScriptThread::iHudDrawAlphaEvent(Event *ev)
 
 	if (argnum != 3)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_alpha!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_alpha!\n");
 		return;
 	}
 
@@ -171,7 +171,7 @@ void ScriptThread::iHudDrawAlphaEvent(Event *ev)
 
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_alpha: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_alpha: invalid player!\n");
 		return;
 	}
 
@@ -179,13 +179,13 @@ void ScriptThread::iHudDrawAlphaEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_alpha: invalid index %d!\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_alpha: invalid index %d!\n", index);
 		return;
 	}
 	
 	alpha = std::clamp(ev->GetFloat(3), 0.0f, 1.0f);
 
-	iHudDrawAlpha(player->client->ps.clientNum, index, alpha);
+	iHudDrawAlpha(EntityNF(player)->client->ps.clientNum, index, alpha);
 }
 
 
@@ -198,7 +198,7 @@ void ScriptThread::iHudDrawColorEvent(Event *ev)
 
 	if (argnum != 5)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_color!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_color!\n");
 		return;
 	}
 
@@ -206,7 +206,7 @@ void ScriptThread::iHudDrawColorEvent(Event *ev)
 
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_color: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_color: invalid player!\n");
 		return;
 	}
 
@@ -214,7 +214,7 @@ void ScriptThread::iHudDrawColorEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_color: invalid index %d!\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_color: invalid index %d!\n", index);
 		return;
 	}
 
@@ -224,7 +224,7 @@ void ScriptThread::iHudDrawColorEvent(Event *ev)
 
 	blue = std::clamp(ev->GetFloat(5), 0.0f, 1.0f);
 
-	iHudDrawColor(player->client->ps.clientNum, index, red, green, blue);
+	iHudDrawColor(EntityNF(player)->client->ps.clientNum, index, red, green, blue);
 }
 
 
@@ -237,7 +237,7 @@ void ScriptThread::iHudDrawFontEvent(Event *ev)
 
 	if (argnum != 3)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_font!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_font!\n");
 		return;
 	}
 
@@ -245,7 +245,7 @@ void ScriptThread::iHudDrawFontEvent(Event *ev)
 
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_font: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_font: invalid player!\n");
 		return;
 	}
 
@@ -253,13 +253,13 @@ void ScriptThread::iHudDrawFontEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_font: invalid index %d!\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_font: invalid index %d!\n", index);
 		return;
 	}
 
 	font = ev->GetString(3);
 
-	iHudDrawFont(player->client->ps.clientNum, index, font);
+	iHudDrawFont(EntityNF(player)->client->ps.clientNum, index, font);
 }
 
 void ScriptThread::iHudDrawRectEvent(Event *ev)
@@ -271,7 +271,7 @@ void ScriptThread::iHudDrawRectEvent(Event *ev)
 
 	if (argnum != 6)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_rect!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_rect!\n");
 		return;
 	}
 
@@ -279,7 +279,7 @@ void ScriptThread::iHudDrawRectEvent(Event *ev)
 
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_rect: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_rect: invalid player!\n");
 		return;
 	}
 
@@ -287,7 +287,7 @@ void ScriptThread::iHudDrawRectEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_rect: invalid index %d!\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_rect: invalid index %d!\n", index);
 		return;
 	}
 
@@ -297,7 +297,7 @@ void ScriptThread::iHudDrawRectEvent(Event *ev)
 	h = ev->GetInteger(6);
 
 
-	iHudDrawRect(player->client->ps.clientNum, index, x, y, w, h);
+	iHudDrawRect(EntityNF(player)->client->ps.clientNum, index, x, y, w, h);
 }
 
 
@@ -311,7 +311,7 @@ void ScriptThread::iHudDrawShaderEvent(Event *ev)
 
 	if (argnum != 3)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_shader!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_shader!\n");
 		return;
 	}
 
@@ -319,7 +319,7 @@ void ScriptThread::iHudDrawShaderEvent(Event *ev)
 
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_shader: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_shader: invalid player!\n");
 		return;
 	}
 
@@ -327,13 +327,13 @@ void ScriptThread::iHudDrawShaderEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_shader: invalid index %d!\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_shader: invalid index %d!\n", index);
 		return;
 	}
 
 	shader = ev->GetString(3);
 
-	iHudDrawShader(player->client->ps.clientNum, index, shader);
+	iHudDrawShader(EntityNF(player)->client->ps.clientNum, index, shader);
 }
 
 
@@ -346,7 +346,7 @@ void ScriptThread::iHudDrawStringEvent(Event *ev)
 
 	if (argnum != 3)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_string!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_string!\n");
 		return;
 	}
 
@@ -354,7 +354,7 @@ void ScriptThread::iHudDrawStringEvent(Event *ev)
 
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_string: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_string: invalid player!\n");
 		return;
 	}
 
@@ -362,13 +362,13 @@ void ScriptThread::iHudDrawStringEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_string: invalid index %d!\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_string: invalid index %d!\n", index);
 		return;
 	}
 
 	text = ev->GetString(3);
 
-	iHudDrawString(player->client->ps.clientNum, index, text);
+	iHudDrawString(EntityNF(player)->client->ps.clientNum, index, text);
 }
 
 
@@ -382,7 +382,7 @@ void ScriptThread::iHudDrawVirtualSizeEvent(Event *ev)
 
 	if (argnum != 3)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_virtualsize!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for ihuddraw_virtualsize!\n");
 		return;
 	}
 
@@ -390,7 +390,7 @@ void ScriptThread::iHudDrawVirtualSizeEvent(Event *ev)
 
 	if (!player)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_virtualsize: invalid player!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_virtualsize: invalid player!\n");
 		return;
 	}
 
@@ -398,11 +398,11 @@ void ScriptThread::iHudDrawVirtualSizeEvent(Event *ev)
 
 	if (index < 0 || index > 255)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_virtualsize: invalid index %d!\n", index);
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: ihuddraw_virtualsize: invalid index %d!\n", index);
 		return;
 	}
 
 	virtualsize = ev->GetInteger(3);
 
-	iHudDrawVirtualSize(player->client->ps.clientNum, index, virtualsize);
+	iHudDrawVirtualSize(EntityNF(player)->client->ps.clientNum, index, virtualsize);
 }

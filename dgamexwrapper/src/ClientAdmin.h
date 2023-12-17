@@ -3,7 +3,7 @@
 #include "sv_misc.h"
 #include <vector>
 #include <list>
-using namespace std;
+using std::string, std::vector, std::list;
 
 constexpr int rconClientNum = -2;
 constexpr int internalClientNum = -3;

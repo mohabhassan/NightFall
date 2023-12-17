@@ -1,5 +1,5 @@
 #include "Director.h"
-
+#include "AddressDefinitions.h"
 
 Entry_index_director		***DirectorClass::StringDict_reverseTable;
 DirectorClass *Director;

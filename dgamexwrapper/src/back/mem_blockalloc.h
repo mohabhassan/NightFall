@@ -59,7 +59,7 @@ class MEM_BlockAlloc {
 	friend class MEM_BlockAlloc_enum< aclass, blocksize >;
 
 #ifndef _DEBUG_MEMBLOCK
-	// Free block list [not usable], avoid slow down by using gi.Free
+	// Free block list [not usable], avoid slow down by using gi->Free
 	block_s< aclass, blocksize >	*m_FreeBlock;
 
 	// Starting block list that will be used for further memory allocation
@@ -353,7 +353,7 @@ void MEM_BlockAlloc< a, b >::FreeAll( void )
 	if( m_FreeBlock )
 	{
 		m_BlockCount--;
-		gi.Free( m_FreeBlock );
+		gi->Free( m_FreeBlock );
 		m_FreeBlock = NULL;
 	}
 #endif

@@ -2,11 +2,14 @@
 
 gentity_t *G_GetEntityByClient(int clientNum)
 {
-	gentity_t* gent = G_GetGEntity(clientNum);
+	gentity_t* gent_actual = G_GetGEntity(clientNum);
 
-	for (int i = 0; gent && i < globals->num_entities; i++, gent++)
+	for (int i = 0; i < globals->num_entities; i++, gent_actual = G_GetGEntity(i))
 	{
-		if (gent->client && gent->client->ps.clientNum == clientNum)//useful when sv_privatePassword is set
+		if (!gent_actual)
+			continue;
+		GEntity gent(gent_actual);
+		if (gent->client->isValid() && gent->client->ps.clientNum == clientNum)//useful when sv_privatePassword is set
 			return gent;
 	}
 
@@ -17,11 +20,14 @@ gentity_t *G_GetEntityByClient(int clientNum)
 // Guarenteed gent and gent->client if no NULL retuned
 gentity_t * G_GetEntityByClientName(const char *name)
 {
-	gentity_t* gent = G_GetGEntity(0);
+	gentity_t* gent_actual = G_GetGEntity(0);
 
-	for (int i = 0; gent && i < globals->num_entities; i++, gent++)
+	for (int i = 0;  i < globals->num_entities; i++, gent_actual = G_GetGEntity(i))
 	{
-		if (gent->client && !stricmp(gent->client->pers.netname, name))
+		if (!gent_actual)
+			continue;
+		GEntity gent(gent_actual);
+		if (gent->client->isValid() && !stricmp(gent->client->pers.netname, name))
 			return gent;
 	}
 
@@ -33,7 +39,7 @@ Entity *G_GetEntity(int ent_num)
 {
 	gentity_t* gent = G_GetGEntity(ent_num);
 	if (gent)
-		return (Entity*)gent->entity;
+		return GEntity(gent)->entity;
 	else
 		return NULL;
 }
@@ -41,15 +47,15 @@ Entity *G_GetEntity(int ent_num)
 
 int G_GetEntityIndex(int number)
 {
-	gentity_t * ent = globals->gentities;
 
 	if (number < 0 || number > globals->max_entities) {
 		return -1;
 	}
 
-	for (int i = 0; i < globals->num_entities; i++, ent++)
+	for (int i = 0; i < globals->num_entities; i++)
 	{
-		if (ent->s.number == number) {
+		GEntity gent = globals->GetGEntity(i);
+		if (gent->s.number == number) {
 			return i;
 		}
 	}
@@ -59,20 +65,19 @@ int G_GetEntityIndex(int number)
 
 int G_GetEntityIndex(gentity_t * ent)
 {
-	return G_GetEntityIndex(ent->s.number);
+	return G_GetEntityIndex(GEntity(ent)->s.number);
 }
 
 gentity_t *G_GetGEntity(int ent_num)
 {
-	gentity_t * ent = &globals->gentities[ent_num];
 
 	if (ent_num < 0 || ent_num > globals->max_entities)
 	{
-		gi.DPrintf("G_GetEntity: %d out of valid range.\n", ent_num);
+		gi->DPrintf("G_GetEntity: %d out of valid range.\n", ent_num);
 		return NULL;
 	}
 
-	return ent;
+	return globals->GetGEntity(ent_num);
 }
 
 
@@ -80,28 +85,36 @@ void G_PrintToAllClients(const char *pszString, qboolean bBold)
 {
 	if (bBold)
 	{
-		gi.SendServerCommand(-1, "print \"" HUD_MESSAGE_WHITE "%s\n\"", pszString);
+		gi->SendServerCommand(-1, "print \"" HUD_MESSAGE_WHITE "%s\n\"", pszString);
 	}
 	else
 	{
-		gi.SendServerCommand(-1, "print \"" HUD_MESSAGE_YELLOW "%s\n\"", pszString);
+		gi->SendServerCommand(-1, "print \"" HUD_MESSAGE_YELLOW "%s\n\"", pszString);
 	}
 }
 
 void G_PrintToClient(int clientnum, const char* pszString)
 {
-	constexpr int buf_len = 500;
-	static char buf[buf_len];
-	int remlen = strlen(pszString);
-	int curr_index = 0;
-	while (remlen > buf_len-1)
+	using std::string;
+	constexpr size_t buf_len = 500;
+	std::string str = pszString;
+	size_t remlen = str.size();
+	size_t curr_index = 0;
+	while (remlen > buf_len - 1)
 	{
-		strncpy(buf, pszString+curr_index, buf_len - 1);
-		buf[buf_len-1] = NULL;
-		remlen = remlen - buf_len - 1;
-		curr_index += buf_len - 1;
-		gi.SendServerCommand(clientnum, "print \"%s\"", buf);
+		string buf = str.substr(curr_index, buf_len - 1);
+		size_t last_newline_index = buf.find_last_of('\n');
+		buf = buf.substr(0, last_newline_index + 1);
+		size_t part_size = buf.size();
+		remlen = remlen - part_size - 1;
+		curr_index += part_size - 1;
+		gi->SendServerCommand(clientnum, "print \"%s\"", buf.c_str());
 	}
-	strncpy(buf, pszString + curr_index, buf_len - 1);
-	gi.SendServerCommand(clientnum, "print \"%s\n\"", buf);
+
+	if (remlen > 0)
+	{
+		string buf = str.substr(curr_index, buf_len - 1);
+		gi->SendServerCommand(clientnum, "print \"%s\"", buf.c_str());
+	}
 }
+

@@ -1,6 +1,7 @@
 #include "ScriptVariable.h"
 #include "Director.h"
 #include "Class.h"
+#include "AddressDefinitions.h"
 
 #include <string>
 #include <algorithm>
@@ -660,7 +661,7 @@ void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 		intValue = index.intValue();
 
 		if (intValue > 2) {
-			gi.Printf("Vector index '%d' out of range", intValue);
+			gi->Printf("Vector index '%d' out of range", intValue);
 			return;
 		}
 
@@ -700,7 +701,7 @@ void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 		string = stringValue();
 
 		if (intValue >= strlen(string)) {
-			gi.Printf("String index '%d' out of range", intValue);
+			gi->Printf("String index '%d' out of range", intValue);
 			return;
 		}
 
@@ -714,7 +715,7 @@ void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 		intValue = index.intValue();
 
 		if (!intValue || intValue > m_data.constArrayValue->size) {
-			gi.Printf("array index %d out of range", intValue);
+			gi->Printf("array index %d out of range", intValue);
 			return;
 		}
 
@@ -729,7 +730,7 @@ void ScriptVariable::setArrayAtRef(ScriptVariable& index, ScriptVariable& value)
 		break;
 
 	default:
-		gi.Printf("[] applied to invalid type '%s'\n", typenames[GetType()]);
+		gi->Printf("[] applied to invalid type '%s'\n", typenames[GetType()]);
 		break;
 	}
 	}*/
@@ -852,7 +853,7 @@ int HashCode< ScriptVariable >(const ScriptVariable& key)
 
 
 	default:
-		gi.Printf("Bad hash code value: %s", key.stringValue().c_str());
+		gi->Printf("Bad hash code value: %s", key.stringValue().c_str());
 	}
 }
 */

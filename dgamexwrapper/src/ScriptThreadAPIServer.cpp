@@ -45,14 +45,14 @@ void ScriptThread::RegisterAPIRouteEvent(Event * ev)
 	int argnum = ev->NumArgs();
 	if (argnum != 3)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for register_api_route!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for register_api_route!\n");
 		return;
 	}
 	str uri = ev->GetString(1);
 	uri.tolower();
 	if (uri.length() == 0)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: empty uri passed to register_api_route!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: empty uri passed to register_api_route!\n");
 		ev->AddInteger(APIR_INVALID);
 		return;
 	}
@@ -62,7 +62,7 @@ void ScriptThread::RegisterAPIRouteEvent(Event * ev)
 
 	if (method.length() == 0 || (method != "get" && method != "post"))
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to register_api_route!\n", method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to register_api_route!\n", method.c_str());
 		ev->AddInteger(APIR_INVALID);
 		return;
 	}
@@ -88,21 +88,21 @@ void ScriptThread::RegisterAPIRouteEvent(Event * ev)
 	}
 	else if (script.GetType() != VARIABLE_STRING)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: register_api_route: invalid script %s of type %s for uri/method %s / %s!\n", script.stringValue(), script.GetTypeName(), uri.c_str(), method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: register_api_route: invalid script %s of type %s for uri/method %s / %s!\n", script.stringValue(), script.GetTypeName(), uri.c_str(), method.c_str());
 		ev->AddInteger(APIR_INVALID);
 		return;
 	}
 
 	if (script.GetType() == VARIABLE_STRING && script.stringValue().length() == 0)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: register_api_route: empty script %s of type %s for uri/method %s / %s!\n", script.stringValue(), script.GetTypeName(), uri.c_str(), method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: register_api_route: empty script %s of type %s for uri/method %s / %s!\n", script.stringValue(), script.GetTypeName(), uri.c_str(), method.c_str());
 		ev->AddInteger(APIR_INVALID);
 		return;
 	}
 
 	if (!HTTPServer::RegisterRoute(uri.c_str(), method.c_str(), script))
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: register_api_route: error while registering script %s of type %s for uri/method %s / %s : api server not running or route already exists!", script.stringValue(), script.GetTypeName(), uri.c_str(), method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: register_api_route: error while registering script %s of type %s for uri/method %s / %s : api server not running or route already exists!", script.stringValue(), script.GetTypeName(), uri.c_str(), method.c_str());
 		ev->AddInteger(APIR_ERROR);
 		return;
 	}
@@ -121,7 +121,7 @@ void ScriptThread::UnregisterAPIRouteEvent(Event * ev)
 	int argnum = ev->NumArgs();
 	if (argnum != 2)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for unregister_api_route!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for unregister_api_route!\n");
 		return;
 	}
 
@@ -129,7 +129,7 @@ void ScriptThread::UnregisterAPIRouteEvent(Event * ev)
 	uri.tolower();
 	if (uri.length() == 0)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: empty uri passed to unregister_api_route!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: empty uri passed to unregister_api_route!\n");
 		ev->AddInteger(APIR_INVALID);
 		return;
 	}
@@ -139,7 +139,7 @@ void ScriptThread::UnregisterAPIRouteEvent(Event * ev)
 
 	if (method.length() == 0 || (method != "get"  && method != "post"))
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to unregister_api_route!\n", method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to unregister_api_route!\n", method.c_str());
 		ev->AddInteger(APIR_INVALID);
 		return;
 	}
@@ -152,7 +152,7 @@ void ScriptThread::UnregisterAPIRouteEvent(Event * ev)
 
 	if (!HTTPServer::UnregisterRoute(uri.c_str(), method.c_str()))
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: unregister_api_route: error while registering route for uri/method %s / %s : api server not running or route does not exist!", uri.c_str(), method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: unregister_api_route: error while registering route for uri/method %s / %s : api server not running or route does not exist!", uri.c_str(), method.c_str());
 		ev->AddInteger(APIR_ERROR);
 		return;
 	}

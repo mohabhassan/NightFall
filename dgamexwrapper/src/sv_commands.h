@@ -1,7 +1,7 @@
 #pragma once
 #include "dgamex86.h"
 #include <string>
-using namespace std;
+using std::string;
 class ConsoleCommand
 {
 	string command;

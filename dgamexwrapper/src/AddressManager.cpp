@@ -2,40 +2,43 @@
 #include "AddressDefinitions.h"
 
 using namespace std;
-list<AddressEntry>* AddressManager::addresses;
+unordered_map<string, AddressEntry> AddressManager::addresses;
 unsigned int AddressManager::dllBaseAddress;
 
 void AddressManager::Init(unsigned int dllBaseAddr)
 {
+	InitAddresses();
+
 	dllBaseAddress = defaultBaseAddr;
 
 	if (dllBaseAddr != dllBaseAddress)
 	{
 		dllBaseAddress = dllBaseAddr;
 		
-		for (AddressEntry& e : *addresses)
+		for (auto& pair : addresses)
 		{
+			AddressEntry& e = pair.second;
 			if (!e.IsMOHAAAddress())
 			{
 				e.SetBase(dllBaseAddress);
 			}
 		}
 	}
+
 }
 
 void AddressManager::Shutdown()
 {
-	if (addresses)
-	{
-		delete addresses;
-	}
 }
 
-AddressEntry& AddressManager::AddAddress(unsigned int address, bool isMOH)
+AddressEntry& AddressManager::AddAddress(std::string name, unsigned int address, bool isMOH)
 {
-	if (!addresses)
-	{
-		addresses = new list<AddressEntry>();
-	}
-	return addresses->emplace_back(address, defaultBaseAddr, isMOH);
+	AddressEntry& e = addresses[name];
+	e.Init(address, defaultBaseAddr, isMOH);
+	return e;
+}
+
+AddressEntry& AddressManager::GetAddress(std::string name)
+{
+	return addresses[name];
 }

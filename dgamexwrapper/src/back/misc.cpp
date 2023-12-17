@@ -9,9 +9,12 @@
 #include "windows.h"
 #endif
 
-#include "gamex86.h"
 #include "misc.h"
-#include "slre.h"
+#include "dgamex86.h"
+
+#ifndef __cplusplus
+#include <stdbool.h>
+#endif
 
 #pragma warning(disable : 4244 4013 4996 4700)
 
@@ -22,8 +25,6 @@
 	};*/
 #endif
 
-iplist_t iplist;
-int loaded_iplist = 0;
 /* ==============================
              game-related functions
      ==============================
@@ -46,7 +47,7 @@ void SendGameMessage(int clientNum, char message_type, const char *text, ... )
 	buffer[3999] = '\0';
 	va_end (argptr);
 
-	gi.SendServerCommand(clientNum, "print \"%c%s\"", message_type, buffer);
+	gi->SendServerCommand(clientNum, "print \"%c%s\"", message_type, buffer);
 
 }
 
@@ -72,31 +73,30 @@ void BroadcastGameMessage(int maxClients, char message_type, const char *text, .
 
 	for(clientNum = 0; clientNum < maxClients; clientNum++)
 	{
-		gi.SendServerCommand(clientNum, "print \"%c%s\"", message_type, buffer);
+		gi->SendServerCommand(clientNum, "print \"%c%s\"", message_type, buffer);
 	}
 }
 
 
-const char *Info_ValueForKey (const char *s, const char *key)
-{
-	char	pkey[512];
-	static	char value[2][512];	// use two buffers so compares
-								// work without stomping on each other
-	static	int	valueindex;
+char *Info_ValueForKey(const char *s, const char *key) {
+	char	pkey[BIG_INFO_KEY];
+	static	char value[2][BIG_INFO_VALUE];	// use two buffers so compares
+											// work without stomping on each other
+	static	int	valueindex = 0;
 	char	*o;
 
-	if ( !s || !key ) {
+	if (!s || !key) {
 		return "";
 	}
 
-//	if ( strlen( s ) >= MAX_INFO_STRING ) {
-//		Com_Error( ERR_DROP, "Info_ValueForKey: oversize infostring" );
-//	}
+	if (strlen(s) >= BIG_INFO_STRING) {
+		gi->Error(ERR_DROP, "Info_ValueForKey: oversize infostring");
+	}
 
 	valueindex ^= 1;
 	if (*s == '\\')
 		s++;
-	while (1)
+	while (true)
 	{
 		o = pkey;
 		while (*s != '\\')
@@ -118,13 +118,15 @@ const char *Info_ValueForKey (const char *s, const char *key)
 		}
 		*o = 0;
 
-		if (!strcmp (key, pkey) )
+		if (!stricmp(key, pkey))
 			return value[valueindex];
 
 		if (!*s)
-			return "";
+			break;
 		s++;
 	}
+
+	return "";
 }
 //
 //void Info_SetValueForKey( char *s, const char *key, const char *value ) //not working
@@ -140,7 +142,7 @@ const char *Info_ValueForKey (const char *s, const char *key)
 //	{
 //		if (strchr (key, *blacklist) || strchr (value, *blacklist))
 //		{
-//			gi.Printf ("Can't use keys or values with a '%c': %s = %s\n", *blacklist, key, value);
+//			gi->Printf ("Can't use keys or values with a '%c': %s = %s\n", *blacklist, key, value);
 //			return;
 //		}
 //	}
@@ -212,6 +214,7 @@ const char *Info_ValueForKey (const char *s, const char *key)
 //
 //}
 /* add a line to the server log with level and timestamp  */
+/*
 void add_log(const char *level, const char *fmt, ...){
 	int loggable = 0;
 	char timestr[30];
@@ -231,14 +234,14 @@ void add_log(const char *level, const char *fmt, ...){
 			}
 		}
 		getDateTimeInto(timestr);
-		if (gi.Printf != NULL){
-			gi.Printf("[%s] %s : %s\n", timestr, level, text);
+		if (gi->Printf != NULL){
+			gi->Printf("[%s] %s : %s\n", timestr, level, text);
 		} else { // should never happen, but who knows...
 			printf("[%s] %s : %s\n", timestr, level, text);
 		}
 	}
 }
-
+*/
 
 void *MyMallocImpl( int size, const char * function, const char * file, int line ){
 	void * ret = malloc(size);
@@ -253,95 +256,6 @@ void MyFreeImpl( void *ptr, const char * function, const char * file, int line )
 		fprintf(stderr,"Freed memory at %p [%s %s:%d]\n",ptr,function,file,line);
 	}
 	free(ptr);
-}
-void initIPBlocker()
-{
-	char *iplist_file;
-	char *pch;
-	struct slre_cap cap[1];
-	int x,x0,x1,x2,x3;
-	iplist.ip_index = 0;
-	gi.Printf("Opening ipfilter.cfg\n");
-	x = gi.FS_ReadFile("ipfilter.cfg",&iplist_file);
-	if(x != -1 && x > 1)
-	{
-		gi.Printf("Opened ipfilter.cfg size in bytes: %d\n",x);
-		pch = strtok(iplist_file,"\r\n");
-		while(pch != NULL)
-		{
-			if((x = slre_match("(^[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?$)", pch, strlen(pch), cap, 1,0)) > 0)
-			{
-				sscanf_s(cap[0].ptr,"%d.%d.%d.%d",&x0,&x1,&x2,&x3);
-				itoa(x0,iplist.ip_str[iplist.ip_index][0],10);
-				itoa(x1,iplist.ip_str[iplist.ip_index][1],10);
-				itoa(x2,iplist.ip_str[iplist.ip_index][2],10);
-				itoa(x3,iplist.ip_str[iplist.ip_index][3],10);
-				iplist.ip_index++;
-				gi.Printf("Loaded ip: %s.%s.%s.%s\n",iplist.ip_str[iplist.ip_index-1][0], iplist.ip_str[iplist.ip_index-1][1], iplist.ip_str[iplist.ip_index-1][2], iplist.ip_str[iplist.ip_index-1][3]);
-			}
-			gi.Printf("%d return\n",x);
-			pch = strtok(NULL,"\r\n");
-		}
-		gi.Printf("Loaded ipfilter.cfg, Num IPS: %d\n" , iplist.ip_index);
-		loaded_iplist = 1;
-		return;
-	}
-	gi.Printf("Could not open ipfilter.cfg\n");
-}
-int strHasIP (const char *test)
-{
-	char buff[256];
-	struct slre_cap cap[1];
-	int x,x0,x1,x2,x3 , i =0;
-	if(loaded_iplist <= 0)
-	{
-		gi.Printf("strHasIP() Error: loaded_iplist is 0, this should never happen !\n");
-		return 0;
-	}
-	memset(buff,0,sizeof(buff));
-	strcpy(buff,test);
-	for(i = 0 ; i< iplist.ip_index; i++)
-	{
-		if(		( strstr(buff,iplist.ip_str[i][0]) != NULL && strstr(buff,iplist.ip_str[i][1]) != NULL && strstr(buff,iplist.ip_str[i][2]) != NULL && strstr(buff,iplist.ip_str[i][3]) != NULL) )
-		{
-			gi.Printf("Caught Registered IP\n");
-			return 1;
-		}
-	}
-	if(strstr(buff,"."))
-	{
-		if((x = slre_match("(^[0-9]+?\.[0-9]+?\.[0-9]+?\.[0-9]+?$)", buff, strlen(buff), cap, 1,0)) > 0)
-		{
-				sscanf_s(cap[0].ptr,"%d.%d.%d.%d",&x0,&x1,&x2,&x3);
-				itoa(x0,iplist.ip_str[iplist.ip_index][0],10);
-				itoa(x1,iplist.ip_str[iplist.ip_index][1],10);
-				itoa(x2,iplist.ip_str[iplist.ip_index][2],10);
-				itoa(x3,iplist.ip_str[iplist.ip_index][3],10);
-				iplist.ip_index++;
-				gi.Printf("Caught new ip: %s.%s.%s.%s|cap.ptr:%s\n",iplist.ip_str[iplist.ip_index-1][0], iplist.ip_str[iplist.ip_index-1][1], iplist.ip_str[iplist.ip_index-1][2], iplist.ip_str[iplist.ip_index-1][3] , cap[0].ptr);
-				return 1;
-		}
-	}
-	return 0;
-}
-
-void shutDownIPBlocker()
-{
-	int i = 0;
-	char buff[800];
-	if(loaded_iplist != 1)
-	{
-		gi.Printf("shutDownIPBlocker() Error: loaded_iplist is 0, this should never happen !\n");
-		return;
-	}
-	memset(buff,0,sizeof(buff));
-	for( i = 0 ; i < iplist.ip_index ; i++)
-	{
-		sprintf(buff + strlen(buff),"%s.%s.%s.%s\n",iplist.ip_str[i][0],iplist.ip_str[i][1],iplist.ip_str[i][2],iplist.ip_str[i][3]);
-	}
-	gi.FS_WriteFile("ipfilter.cfg",buff,strlen(buff));
-	loaded_iplist = 0;
-	gi.Printf("IP Filter ShutDown\n");
 }
 /* Allocate memory - with optional debug  info */
 #define MyMalloc(size)  MyMallocImpl(size, __FUNCTION__, __FILE__, __LINE__)
@@ -364,7 +278,7 @@ void CreateRandomText(int length, char *returned_text)
     long counter = 0;
     //This variable will hold a random value between 0 and 1, both included
     float tempRand;
-    //Here we seed the random generator with the gi.miliseconds in seconds
+    //Here we seed the random generator with the gi->miliseconds in seconds
     srand(time(NULL));
 
 	if(length <= 0) return;
@@ -472,7 +386,7 @@ char * make_message(const char *fmt, ...) {
 		} else {           /* glibc 2.0 */
 			size *= 2;  /* twice the old size */
 		}
-		if ((np = realloc (p, size)) == NULL) {
+		if ((np = reinterpret_cast<char*>(realloc (p, size))) == NULL) {
 			//free(p);
 			MyFree(p);
 			return NULL;
@@ -549,11 +463,49 @@ int parseint(const char *str, int mustbefullmatch, int errorvalue){
 
 
 
+bool validateIP(const char *ip) {
+	int b1 = 0, b2 = 0, b3 = 0, b4 = 0;
+	constexpr int buffLen = 64;
+	char ipbuffer[buffLen] = { 0 };
+	int i = 0;
 
+	strcpy(ipbuffer, ip);
 
+	for (i = 0; i < buffLen; i++) {
+		if (ipbuffer[i] == '*') ipbuffer[i] = '0';
+	}
 
+	if (sscanf_s(ipbuffer, "%i.%i.%i.%i", &b1, &b2, &b3, &b4) != 4)
+		return false;
 
+	if (b1 < 0 || b2 < 0 || b3 < 0 || b4 < 0 || b1 > 255 || b2 > 255 || b3 > 255 || b4 > 255)
+		return false;
 
+	return true;
+}
+
+//CheckFPSSkin
+//checks if userinfo skin has "_fps" inside
+//returns true if player should be kicked.
+bool CheckFPSSkin(char* userinfo)
+{
+	char skinallies[257];
+	char skinaxis[257];
+	//strncpy( skinallies, Info_ValueForKey(userinfo, "dm_playermodel"), sizeof(skinallies) );
+	//strncpy( skinaxis, Info_ValueForKey(userinfo, "dm_playergermanmodel"), sizeof(skinallies) );
+	strncpy(skinallies, Info_ValueForKey(userinfo, "dm_playermodel"), 256);
+	strncpy(skinaxis, Info_ValueForKey(userinfo, "dm_playergermanmodel"), 256);
+	skinallies[256] = '\0';
+	skinaxis[256] = '\0';
+
+	return (strstr(skinallies, "_fps") || strstr(skinaxis, "_fps"));
+}
+
+bool CheckCommentSlashesInName(char* name)
+{
+	int len = strlen(name);
+	return name[len - 2] == '/' && (name[len - 1] == '/' || name[len - 1] == '*');
+}
 // =================================================================
 // Custom signal handling (linux only) to print info on application crashes
 // =================================================================
@@ -603,14 +555,14 @@ void sighandler(int sig, siginfo_t *info, void *secret) {
 
   /* Do something useful with siginfo_t */
   if (sig == SIGSEGV){
-	if (gi.Printf != NULL){
-		gi.Printf("Got signal %d - %s, faulty address is %p\n", sig, signame, info->si_addr);
+	if (gi->Printf != NULL){
+		gi->Printf("Got signal %d - %s, faulty address is %p\n", sig, signame, info->si_addr);
 	} else {
 		printf("Got signal %d - %s, faulty address is %p\n", sig, signame, info->si_addr);
 	}
   } else {
-	if (gi.Printf != NULL){
-		gi.Printf("Got signal %d - %s\n", sig, signame);
+	if (gi->Printf != NULL){
+		gi->Printf("Got signal %d - %s\n", sig, signame);
 	} else {
 		printf("Got signal %d - %s\n", sig, signame);
 	}
@@ -622,15 +574,15 @@ void sighandler(int sig, siginfo_t *info, void *secret) {
 
   messages = backtrace_symbols(trace, trace_size);
 
-  if (gi.Printf != NULL){
-	gi.Printf("Execution path:\n");
+  if (gi->Printf != NULL){
+	gi->Printf("Execution path:\n");
   } else {
 	printf("Execution path:\n");
   }
 
   for (i=1; i<trace_size; ++i){ /* skip first stack frame (points here) */
-    if (gi.Printf != NULL){
-		gi.Printf(" --> %s\n", messages[i]);
+    if (gi->Printf != NULL){
+		gi->Printf(" --> %s\n", messages[i]);
 	} else {
 		printf(" --> %s\n", messages[i]);
 	}

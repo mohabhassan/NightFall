@@ -26,7 +26,7 @@ void ScriptThread::CreateAPIRequest(Event * ev)
 	int argnum = ev->NumArgs();
 	if (argnum < 3 || argnum > 4)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for create_api_request!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for create_api_request!\n");
 		return;
 	}
 
@@ -35,7 +35,7 @@ void ScriptThread::CreateAPIRequest(Event * ev)
 	//url.tolower();
 	if (url.length() == 0)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: empty url passed to create_api_request!\n");
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: empty url passed to create_api_request!\n");
 		ev->AddInteger(CAPIR_INVALID);
 		return;
 	}
@@ -45,7 +45,7 @@ void ScriptThread::CreateAPIRequest(Event * ev)
 
 	if (method.length() == 0 || (method != "get" && method != "post"))
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to create_api_request!\n", method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: invalid method \"%s\" passed to create_api_request!\n", method.c_str());
 		ev->AddInteger(CAPIR_INVALID);
 		return;
 	}
@@ -66,14 +66,14 @@ void ScriptThread::CreateAPIRequest(Event * ev)
 	}
 	else if (script.GetType() != VARIABLE_STRING)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: create_api_request: invalid script %s of type %s for url/method %s / %s!\n", script.stringValue(), script.GetTypeName(), url.c_str(), method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: create_api_request: invalid script %s of type %s for url/method %s / %s!\n", script.stringValue(), script.GetTypeName(), url.c_str(), method.c_str());
 		ev->AddInteger(CAPIR_INVALID);
 		return;
 	}
 
 	if (script.GetType() == VARIABLE_STRING && script.stringValue().length() == 0)
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: create_api_request: empty script %s of type %s for url/method %s / %s!\n", script.stringValue(), script.GetTypeName(), url.c_str(), method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: create_api_request: empty script %s of type %s for url/method %s / %s!\n", script.stringValue(), script.GetTypeName(), url.c_str(), method.c_str());
 		ev->AddInteger(CAPIR_INVALID);
 		return;
 	}
@@ -88,7 +88,7 @@ void ScriptThread::CreateAPIRequest(Event * ev)
 	/*
 	if (!HTTPClient::CreateAPIRequest(url.c_str(), method.c_str(), script))
 	{
-		gi.Printf(PATCH_NAME " SCRIPT ERROR: create_api_request: error while creating request with script %s of type %s for url/method %s / %s!", script.stringValue(), script.GetTypeName(), url.c_str(), method.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: create_api_request: error while creating request with script %s of type %s for url/method %s / %s!", script.stringValue(), script.GetTypeName(), url.c_str(), method.c_str());
 		ev->AddInteger(CAPIR_ERROR);
 		return;
 	}

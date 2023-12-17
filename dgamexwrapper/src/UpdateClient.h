@@ -1,7 +1,6 @@
 #pragma once
-#include "misc.h"
 #include <string>
-using namespace std;
+using std::string;
 class UpdateClient
 {
 	string RequestUpdateInfo();

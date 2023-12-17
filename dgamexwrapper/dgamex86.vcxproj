@@ -62,6 +62,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
+  <ImportGroup Label="Shared">
+    <Import Project="BaseHeaders\BaseHeaders.vcxitems" Label="Shared" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='BreakThrough|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
@@ -143,6 +146,8 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -408,6 +413,7 @@
   <ItemGroup>
     <ClCompile Include="libs\civetweb\src\CivetServer.cpp" />
     <ClCompile Include="libs\civetweb\src\civetweb.c" />
+    <ClCompile Include="src\AddressDefinitions.cpp" />
     <ClCompile Include="src\AddressManager.cpp" />
     <ClCompile Include="src\Animate.cpp" />
     <ClCompile Include="src\ChatFilter.cpp" />
@@ -431,8 +437,8 @@
     <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Listener.cpp" />
     <ClCompile Include="src\Memory.cpp" />
-    <ClCompile Include="src\misc.cpp" />
     <ClCompile Include="src\NameFilter.cpp" />
+    <ClCompile Include="src\nf_misc.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PlayerAdminCommands.cpp" />
     <ClCompile Include="src\PlayerClientCommands.cpp" />
@@ -463,13 +469,11 @@
     <ClInclude Include="libs\civetweb\include\CivetServer.h" />
     <ClInclude Include="libs\civetweb\include\civetweb.h" />
     <ClInclude Include="src\AddressDefinitions.h" />
-    <ClInclude Include="src\AddressManager.h" />
     <ClInclude Include="src\ChatFilter.h" />
     <ClInclude Include="src\ClassMemory.h" />
     <ClInclude Include="src\ClientAdmin.h" />
     <ClInclude Include="src\ClientFilter.h" />
     <ClInclude Include="src\CustomCvar.h" />
-    <ClInclude Include="src\GameVersion.h" />
     <ClInclude Include="src\Animate.h" />
     <ClInclude Include="src\Class.h" />
     <ClInclude Include="src\ClassDef.h" />
@@ -479,7 +483,6 @@
     <ClInclude Include="src\DM_Team.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Event.h" />
-    <ClInclude Include="src\dgamex86.h" />
     <ClInclude Include="src\g_json.h" />
     <ClInclude Include="src\g_misc.h" />
     <ClInclude Include="src\HTTPClient.h" />
@@ -488,9 +491,7 @@
     <ClInclude Include="src\IPFilter.h" />
     <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Listener.h" />
-    <ClInclude Include="src\misc.h" />
     <ClInclude Include="src\NameFilter.h" />
-    <ClInclude Include="src\OffsetDefinitions.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\qcommon.h" />
     <ClInclude Include="src\safeptr.h" />

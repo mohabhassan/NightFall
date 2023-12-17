@@ -1,6 +1,6 @@
 #include "Player.h"
 
-void Player::ClientCommandsInit()
+void PlayerNF::ClientCommandsInit()
 {
 
 	cerSet.AddEventResponse(new Event(
@@ -10,11 +10,11 @@ void Player::ClientCommandsInit()
 		NULL,
 		"Print current patch version"
 	),
-		&Player::PatchVersionEvent);
+		&PlayerNF::PrePatchVersionEvent);
 }
 
-void Player::PatchVersionEvent(Event * ev)
+void PlayerNF::PatchVersionEvent(Event * ev)
 {
-	gi.SendServerCommand(client->ps.clientNum, "print \"" PATCH_NAME " version " PATCH_VERSION " (" PATCH_STAGE ")\n\"" );
-	gi.SendServerCommand(client->ps.clientNum, "print \"================\n\"" );
+	gi->SendServerCommand(client->ps.clientNum, "print \"" PATCH_NAME " version " PATCH_VERSION " (" PATCH_STAGE ")\n\"" );
+	gi->SendServerCommand(client->ps.clientNum, "print \"================\n\"" );
 }

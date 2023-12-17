@@ -1,5 +1,6 @@
 #include "sv_misc.h"
 #include "Winsock2.h"
+#include "AddressDefinitions.h"
 
 using std::to_string;
 
@@ -18,7 +19,11 @@ client_t * GetClientByClientNum(int clientNum)
 	}
 	else
 	{
-		return &(*svs_clients)[clientNum];
+		if (gameInfo.IsAA())
+			return (client_t*)&((clientAA_t*)*svs_clients)[clientNum];
+		else
+			return (client_t*)&((clientDSH_t*)*svs_clients)[clientNum];
+
 	}
 }
 
@@ -32,10 +37,11 @@ void __cdecl NET_OutOfBandPrint(netSrc_t sock, netAdr_t adr, const char * format
 	NET_OutOfBandPrint_Real(sock, adr, string);
 }
 
-string GetIPFromClient(client_t* cl)
+string GetIPFromClient(client_t* cl_actual)
 {
-	if (!cl)
+	if (!cl_actual)
 		return "";
+	Client cl(cl_actual);
 	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
 		return "127.0.0.1";
 	else if (cl->netchan.remoteAddress.type == NA_IP)
@@ -44,10 +50,11 @@ string GetIPFromClient(client_t* cl)
 		return "";
 }
 
-string GetPortFromClient(client_t* cl)
+string GetPortFromClient(client_t* cl_actual)
 {
-	if (!cl)
+	if (!cl_actual)
 		return "";
+	Client cl(cl_actual);
 	return to_string(ntohs(cl->netchan.remoteAddress.port));
 }
 
