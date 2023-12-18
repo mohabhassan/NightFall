@@ -739,6 +739,7 @@ void	G_Shutdown (void)
 	#endif	
 }
 
+string dllMainErr_str;
 //input: gameImport_T* , output: gameExport_t*
 void* __cdecl GetGameAPI( void *import_actual )
 {
@@ -759,27 +760,11 @@ void* __cdecl GetGameAPI( void *import_actual )
 		printf( "dlsym failed. reason: \"%s\"\n", dlerror() );
 
 	#endif
-
+	if (!dllMainErr_str.empty())
 	{
-		gameImportAA_t* tmp_import = (gameImportAA_t*)import_actual;
-		//get version info based on calling exe's hashes.
-		char szExeFileName[MAX_PATH];
-		GetModuleFileNameA(NULL, szExeFileName, MAX_PATH);
-
-		namespace fs = std::filesystem;
-		fs::path p = szExeFileName;
-
-		char md5csum[MD5_STR_SIZE];
-		if (!md5File(szExeFileName, md5csum))
-		{
-			tmp_import->Printf("NightFall GetGameAPI ERROR: could not calculate md5 checksum for exe: %s", szExeFileName);
-			return NULL;
-		}
-		if (!gameInfo.InitFromMD5(string(md5csum)))
-		{
-			tmp_import->Printf("NightFall GetGameAPI ERROR: no exe match found for md5: %s", md5csum);
-			return NULL;
-		}
+		gameImportAA_t* tmp_import = (gameImportAA_t*)import_actual; // we only use Printf which is the same for any expansion/side
+		tmp_import->Printf(dllMainErr_str.c_str());
+		return NULL;
 	}
 
 	shared_ptr<BaseGameImport> import = GameImportFactory::GetGameImport(import_actual);
@@ -960,6 +945,23 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 		*/
 
 
+
+		//get version info based on calling exe's hashes.
+		char szExeFileName[MAX_PATH];
+		GetModuleFileNameA(NULL, szExeFileName, MAX_PATH);
+
+		namespace fs = std::filesystem;
+		fs::path p = szExeFileName;
+
+		char md5csum[MD5_STR_SIZE];
+		if (!md5File(szExeFileName, md5csum))
+		{
+			dllMainErr_str = "NightFall GetGameAPI ERROR: could not calculate md5 checksum for exe: " + string(szExeFileName);
+		}
+		else if (!gameInfo.InitFromMD5(string(md5csum)))
+		{
+			dllMainErr_str = "NightFall GetGameAPI ERROR: no exe match found for md5: " + string(md5csum);
+		}
 
 		hmod = LoadLibraryA(DGAMEX86_PATH.c_str());
 

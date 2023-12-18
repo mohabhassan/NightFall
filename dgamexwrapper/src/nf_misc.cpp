@@ -45,9 +45,9 @@ bool md5File(const char* file_name, char md5Str[MD5_STR_SIZE])//MD5_DIGEST_SIZE*
 
 	wc_Md5Final(&md5, md5sum);
 
-	md5Str = { 0 };
 	for (int di = 0; di < MD5_DIGEST_SIZE; ++di)
 		sprintf(md5Str + di * 2, "%02x", md5sum[di]);
+	md5Str[MD5_STR_SIZE] = 0;
 	delete[] buff;
 	return true;
 }
