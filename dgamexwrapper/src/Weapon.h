@@ -1,7 +1,7 @@
 #pragma once
 #include "Item.h"
-#ifdef MOHAA_TMP
-class Weapon : public Item
+#ifdef MOHAA_TMP //todo: see if we need this
+class WeaponAA : public ItemAA
 {
 protected:
     int m_iAnimSlot; /* bitsize 32, bitpos 8416 */
@@ -28,7 +28,7 @@ protected:
     weaponstate_t weaponstate; /* bitsize 32, bitpos 9152 */
     int rank; /* bitsize 32, bitpos 9184 */
     int order; /* bitsize 32, bitpos 9216 */
-    SafePtr<Sentient> last_owner; /* bitsize 128, bitpos 9248 */
+    SafePtr<SentientAA> last_owner; /* bitsize 128, bitpos 9248 */
     float last_owner_trigger_time; /* bitsize 32, bitpos 9376 */
     qboolean notdroppable; /* bitsize 32, bitpos 9408 */
     int aimanim; /* bitsize 32, bitpos 9440 */
@@ -94,6 +94,6 @@ public:
     int m_iNumLeftArmShots; /* bitsize 32, bitpos 12960 */
     int m_iNumRightArmShots; /* bitsize 32, bitpos 12992 */
     AIRanges_t mAIRange; /* bitsize 32, bitpos 13024 */
-    SafePtr<Entity> aim_target; /* bitsize 128, bitpos 13056 */
+    SafePtr<EntityAA> aim_target; /* bitsize 128, bitpos 13056 */
 };
-#endif // MOHAA
+#endif

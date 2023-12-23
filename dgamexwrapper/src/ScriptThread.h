@@ -98,6 +98,8 @@ public:
 	void		RegexParseEvent(Event * ev);
 	void		JsonParseEvent(Event * ev);
 	void		JsonStringifyEvent(Event * ev);
+	void		CharToIntEvent(Event* ev);
+	void		BindWeapEvent(Event* ev);
 
 	static void		ScriptedEventsInit();
 

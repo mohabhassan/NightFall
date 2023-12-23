@@ -146,7 +146,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;libs/RebornSecurityHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
@@ -181,7 +181,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;libs/RebornSecurityHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MOHBT;SERVER;NO_FILES;NO_CGI;NO_SSL;CURL_STATICLIB;WC_NO_HARDEN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -241,7 +241,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;libs/RebornSecurityHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MOHBT;CLIENT;NO_FILES;NO_CGI;NO_SSL;CURL_STATICLIB;WC_NO_HARDEN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -302,7 +302,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;libs/RebornSecurityHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MOHAA;SERVER;NO_FILES;NO_CGI;NO_SSL;CURL_STATICLIB;WC_NO_HARDEN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -364,7 +364,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;libs/RebornSecurityHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MOHSH;SERVER;NO_FILES;NO_CGI;NO_SSL;CURL_STATICLIB;WC_NO_HARDEN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

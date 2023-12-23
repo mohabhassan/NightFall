@@ -1,14 +1,13 @@
 #pragma once
 #include "Animate.h"
 
-#ifdef MOHAA_TMP
-class ScriptThreadLabel
+class ScriptThreadLabelAA
 {
     void* m_Script;//FIXME: GameScript*
     const_str m_Label;
 };
 
-class Trigger :	public sdgfsgAnimate // todo: universalize handle this
+class TriggerAA :	public AnimateAA // todo: universalize handle this
 {
 protected:
     float wait; /* bitsize 32, bitpos 7200 */
@@ -18,7 +17,7 @@ protected:
     int count; /* bitsize 32, bitpos 7328 */
     const_str noise; /* bitsize 32, bitpos 7360 */
     const_str message; /* bitsize 32, bitpos 7392 */
-    ScriptThreadLabel /* id 260 */ m_Thread; /* bitsize 64, bitpos 7424 */
+    ScriptThreadLabelAA /* id 260 */ m_Thread; /* bitsize 64, bitpos 7424 */
     SafePtr<Entity> activator; /* bitsize 128, bitpos 7488 */
     int respondto; /* bitsize 32, bitpos 7616 */
     qboolean useTriggerDir; /* bitsize 32, bitpos 7648 */
@@ -30,5 +29,4 @@ protected:
     qboolean edgeTriggered; /* bitsize 32, bitpos 7904 */
     int multiFaceted; /* bitsize 32, bitpos 7936 */
 };
-#endif // MOHAA
 

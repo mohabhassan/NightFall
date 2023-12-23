@@ -8,7 +8,6 @@
 #include "sv_misc.h"
 #include <time.h>
 
-
 void ScriptThread::MiscInit()
 {
 	////////////////////////////////////////
@@ -228,6 +227,17 @@ void ScriptThread::MiscInit()
 		EV_RETURN
 	),
 		&ScriptThread::JsonStringifyEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"chartoint",
+		EV_DEFAULT,
+		"s",
+		"character",
+		"Converts the given character to a string.",
+		EV_RETURN
+	),
+		&ScriptThread::CharToIntEvent);
+
 }
 
 
@@ -866,4 +876,12 @@ void ScriptThread::JsonStringifyEvent(Event * ev)
 	json j;
 	GameVarToJson(var, j);
 	ev->AddString(j.dump().c_str());
+}
+void ScriptThread::CharToIntEvent(Event* ev)
+{
+	str char_str = ev->GetString(1);
+
+	int res = char_str[0];
+
+	ev->AddInteger(res);
 }

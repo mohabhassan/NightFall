@@ -1,6 +1,7 @@
 #pragma once
-#include "safeptr.h"
 #include "ClassMemory.h"
+
+class SafePtrBase;
 /*
  * Class Class
  * Used as a sub class for the patch.
@@ -16,3 +17,4 @@ public:
 	CLASS_CUSTOM_ALLOCATION;
 };
 
+#include "safeptr.h"

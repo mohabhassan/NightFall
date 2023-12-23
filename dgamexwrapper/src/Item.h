@@ -1,10 +1,10 @@
 #pragma once
 #include "Trigger.h"
 #include "Sentient.h"
-#ifdef MOHAA_TMP
-class Item : public Trigger
+class ItemAA : public TriggerAA
 {
-    SafePtr<Sentient> owner; /* bitsize 128, bitpos 7968 */
+public:
+    SafePtr<SentientAA> owner; /* bitsize 128, bitpos 7968 */
     qboolean respawnable; /* bitsize 32, bitpos 8096 */
     qboolean playrespawn; /* bitsize 32, bitpos 8128 */
     float respawntime; /* bitsize 32, bitpos 8160 */
@@ -16,4 +16,3 @@ class Item : public Trigger
     str sPickupSound; /* bitsize 32, bitpos 8352 */
     qboolean no_remove; /* bitsize 32, bitpos 8384 */
 };
-#endif // MOHAA

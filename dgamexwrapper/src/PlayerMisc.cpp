@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "g_misc.h"
 #include "ClientAdmin.h"
+#include "Item.h"
 
 #define	BUTTON_ATTACK2		2	// +/-attacksecondary
 
@@ -98,6 +99,17 @@ void PlayerNF::MiscInit()
 			"Adds number of deaths to player. (Can be also negative)"
 		),
 			&PlayerNF::PreAddDeathsEventAA);
+
+
+		cerSet.AddEventResponse(new Event(
+			"bindweap",
+			EV_DEFAULT,
+			"e",
+			"weapon",
+			"Binds weapon to player and set player as weapon owner.",
+			EV_NORMAL
+		),
+			&PlayerNF::PreBindWeapEventAA);
 	}
 
 }
@@ -192,4 +204,17 @@ void PlayerNF::AddDeathsEventAA(Event* ev)
 {
 	if (current_team)
 		current_team->AddDeathsAA((Player*)realPlayer, ev->GetInteger(1));
+}
+
+void PlayerNF::BindWeapEventAA(Event* ev)
+{
+	ItemAA* itm = (ItemAA*)ev->GetEntity(1);
+	if (itm->owner == (SentientAA*)realPlayer)
+	{
+		itm->owner = nullptr;
+	}
+	else
+	{
+		itm->owner = (SentientAA*)realPlayer;
+	}
 }

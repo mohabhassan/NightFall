@@ -130,6 +130,7 @@ public:
 
 	ScriptEventHandler(AddKillsEventAA);
 	ScriptEventHandler(AddDeathsEventAA);
+	ScriptEventHandler(BindWeapEventAA);
 
 	//The following functions are console(client command) events.
 	ScriptEventHandler(PatchVersionEvent);
