@@ -238,6 +238,23 @@ void ScriptThread::MiscInit()
 	),
 		&ScriptThread::CharToIntEvent);
 
+	cerSet.AddEventResponse(new Event(
+		"setcvar_ex",
+		EV_DEFAULT,
+		"ssSI",
+		"cvar value options flags",
+		"Sets cvar to value, using provided options and flags."
+	),
+		&ScriptThread::SetCvarExEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"teamswitchdelay",
+		EV_DEFAULT,
+		"f",
+		"delay",
+		"Sets minimum allowed delay for players to change between teams."
+	),
+		&ScriptThread::TeamSwitchDelayEvent);
 }
 
 
@@ -877,6 +894,7 @@ void ScriptThread::JsonStringifyEvent(Event * ev)
 	GameVarToJson(var, j);
 	ev->AddString(j.dump().c_str());
 }
+
 void ScriptThread::CharToIntEvent(Event* ev)
 {
 	str char_str = ev->GetString(1);
@@ -884,4 +902,41 @@ void ScriptThread::CharToIntEvent(Event* ev)
 	int res = char_str[0];
 
 	ev->AddInteger(res);
+}
+
+void ScriptThread::SetCvarExEvent(Event* ev)
+{
+	int numArgs = ev->NumArgs();
+	if (numArgs <2 || numArgs > 4)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for setcvar_ex!\n");
+		return;
+	}
+	string name = ev->GetString(1);
+	string value = ev->GetString(2);
+	string options = "";
+	if (numArgs >=3)
+		options = ev->GetString(3);
+	int flags = 0;
+	if (numArgs == 4)
+		flags = ev->GetInteger(4);
+	bool silent = false;
+	if (options.find('S') != string::npos || options.find('s') != string::npos)
+		silent = true;
+
+	CustomCvar var(name, value, 0);
+	var.SetValue(value, silent);
+}
+
+void ScriptThread::TeamSwitchDelayEvent(Event* ev)
+{
+	int numArgs = ev->NumArgs();
+	if (numArgs != 1)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for teamswitchdelay!\n");
+		return;
+	}
+	float delay = ev->GetFloat(1);
+	CustomCvar var("g_teamswitchdelay", "15", 0);
+	var.SetValue(std::to_string(delay), true);
 }

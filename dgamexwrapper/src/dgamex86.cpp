@@ -763,7 +763,7 @@ void* __cdecl GetGameAPI( void *import_actual )
 	if (!dllMainErr_str.empty())
 	{
 		gameImportAA_t* tmp_import = (gameImportAA_t*)import_actual; // we only use Printf which is the same for any expansion/side
-		tmp_import->Printf(dllMainErr_str.c_str());
+		tmp_import->Printf((dllMainErr_str+"\n").c_str());
 		return NULL;
 	}
 

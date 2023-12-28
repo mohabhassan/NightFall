@@ -129,7 +129,7 @@ class Event : public Class
 {
 public:
 	qboolean			fromScript;
-	short unsigned int	eventnum;
+	short unsigned int	eventnum; //set by game
 	short unsigned int	dataSize;
 	ScriptVariable		*data;
 

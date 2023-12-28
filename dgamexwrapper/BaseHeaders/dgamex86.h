@@ -5201,6 +5201,7 @@ public:
 	IMPORT_FUNCTION(Args, char*, void);
 	IMPORT_FUNCTION(Milliseconds, int, void);
 	IMPORT_FUNCTION(Cvar_Get, cvar_t*, const char* varName, const char* varValue, int varFlags);
+	IMPORT_FUNCTION(Cvar_Set, void, const char* varName, const char* varValue);
 	IMPORT_FUNCTION(MSG_WriteBits, void, int value, int bits);
 	IMPORT_FUNCTION(MSG_WriteByte, void, int c);
 	IMPORT_FUNCTION(MSG_WriteShort, void, int c);
@@ -5307,6 +5308,7 @@ public:
 	IMPORT_FUNCTION_OVERRIDE(Args, char*, ECS(), ECS());
 	IMPORT_FUNCTION_OVERRIDE(Milliseconds, int, ECS(), ECS());
 	IMPORT_FUNCTION_OVERRIDE(Cvar_Get, cvar_t*, ECS(const char* varName, const char* varValue, int varFlags), ECS(varName, varValue, varFlags));
+	IMPORT_FUNCTION_OVERRIDE(Cvar_Set, void, ECS(const char* varName, const char* varValue), ECS(varName, varValue));
 	IMPORT_FUNCTION_OVERRIDE(MSG_WriteBits, void, ECS(int value, int bits), ECS(value, bits));
 	IMPORT_FUNCTION_OVERRIDE(MSG_WriteByte, void, ECS(int c), ECS(c));
 	IMPORT_FUNCTION_OVERRIDE(MSG_WriteShort, void, ECS(int c), ECS(c));

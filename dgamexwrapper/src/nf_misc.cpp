@@ -173,3 +173,12 @@ bool CheckCommentSlashesInName(char* name)
 	int len = strlen(name);
 	return name[len - 2] == '/' && (name[len - 1] == '/' || name[len - 1] == '*');
 }
+
+//output is read only
+char* CopyString(const char* in)
+{
+	char* out;
+	out = (char*)gi->Malloc(strlen(in) + 1);
+	strcpy(out, in);
+	return out;
+}

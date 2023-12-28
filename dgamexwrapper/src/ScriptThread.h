@@ -99,7 +99,8 @@ public:
 	void		JsonParseEvent(Event * ev);
 	void		JsonStringifyEvent(Event * ev);
 	void		CharToIntEvent(Event* ev);
-	void		BindWeapEvent(Event* ev);
+	void		SetCvarExEvent(Event* ev);
+	void		TeamSwitchDelayEvent(Event* ev);
 
 	static void		ScriptedEventsInit();
 

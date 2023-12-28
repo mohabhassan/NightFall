@@ -18,5 +18,7 @@ public:
 	int GetIntValue();
 	float GetFloatValue();
 
+	void SetValue(std::string v, bool silent = false);
+
 };
 
