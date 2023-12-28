@@ -1,6 +1,7 @@
 #include "ScriptThread.h"
 #include <algorithm>
 #include <filesystem>
+#include "CustomCvar.h"
 
 #define MAX_SCRIPTFILES 32
 
@@ -255,6 +256,8 @@ void ScriptThread::FOpenEvent(Event *ev)
 	else
 	{
 		scriptFiles.push_back(fp);
+		CustomCvar sv_scriptfiles("sv_scriptfiles", "0", 0);
+		sv_scriptfiles.SetValue(std::to_string(sv_scriptfiles.GetIntValue() + 1), true);
 	}
 
 	ev->AddInteger((int)fp);
@@ -287,6 +290,8 @@ void ScriptThread::FCloseEvent(Event *ev)
 	{
 		ret = fclose(fp);
 		scriptFiles.erase(it);
+		CustomCvar sv_scriptfiles("sv_scriptfiles", "0", 0);
+		sv_scriptfiles.SetValue(std::to_string(sv_scriptfiles.GetIntValue() - 1), true);
 	}
 
 	ev->AddInteger(ret);

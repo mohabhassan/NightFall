@@ -372,56 +372,56 @@ void  G_ClientCommand (GEntity &ent ){
 	}
 	else if (!strcmp(cmd, "dmmessage"))
 	{
-			int numArgs = gi->Argc();
-			if (numArgs >= 3)
+		int numArgs = gi->Argc();
+		if (numArgs >= 3)
+		{
+			vector<string> args;
+			//sayteam test1 test2 test3 test4 test5 sdfgfsg
+			//args are:
+			//clientnum part1 part2 part3 part4 ...
+			//example:
+			//1 test1 test2 test3 test4 ...
+			//
+			//test1 is arg 2
+			//sayteam is -1
+			//normal say is 0
+			//sayprivate & sayone: clientnum is actualy clientnum (it's a bit fuzzy when using sv_privateclients)
+			for (size_t i = 2; i < numArgs; i++)
 			{
-				vector<string> args;
-				//sayteam test1 test2 test3 test4 test5 sdfgfsg
-				//args are:
-				//clientnum part1 part2 part3 part4 ...
-				//example:
-				//1 test1 test2 test3 test4 ...
-				//
-				//test1 is arg 2
-				//sayteam is -1
-				//normal say is 0
-				//sayprivate & sayone: clientnum is actualy clientnum (it's a bit fuzzy when using sv_privateclients)
-				for (size_t i = 2; i < numArgs; i++)
-				{
-					args.push_back(gi->Argv(i));
-				}
+				args.push_back(gi->Argv(i));
+			}
 				
-				bool shouldKick;
-				string reason;
-				ChatFilter filter;
-				if (!filter.CanSend(args, GClient(ent->client)->ps.clientNum, shouldKick, reason))
+			bool shouldKick;
+			string reason;
+			ChatFilter filter;
+			if (!filter.CanSend(args, GClient(ent->client)->ps.clientNum, shouldKick, reason))
+			{
+				if (shouldKick)
 				{
-					if (shouldKick)
-					{
-						ClientAdmin admin(internalClientNum);
-						admin.AddKick(GClient(ent->client)->ps.clientNum, true, reason.c_str());
-						gi->DropClient(GClient(ent->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
-					}
-					else
-					{
-						gi->SendServerCommand(GClient(ent->client)->ps.clientNum, "hudprint \"%s\n\"", reason.c_str());
-					}
+					ClientAdmin admin(internalClientNum);
+					admin.AddKick(GClient(ent->client)->ps.clientNum, true, reason.c_str());
+					gi->DropClient(GClient(ent->client)->ps.clientNum, ("has been kicked for " + reason).c_str());
+				}
+				else
+				{
+					gi->SendServerCommand(GClient(ent->client)->ps.clientNum, "hudprint \"%s\n\"", reason.c_str());
+				}
+				return;
+			}
+
+			try
+			{
+				int target = std::stoi(gi->Argv(1));
+				if (!filter.CheckScriptCallback(args, ent, target))
+				{
 					return;
 				}
-
-				try
-				{
-					int target = std::stoi(gi->Argv(1));
-					if (!filter.CheckScriptCallback(args, ent, target))
-					{
-						return;
-					}
-				}
-				catch (const std::exception&)
-				{
-					gi->Printf(PATCH_NAME " dmmessage error: invalid chat target %s or invalid script return value ! Ignoring...\n", gi->Argv(1));
-				}
 			}
+			catch (const std::exception&)
+			{
+				gi->Printf(PATCH_NAME " dmmessage error: invalid chat target %s or invalid script return value ! Ignoring...\n", gi->Argv(1));
+			}
+		}
 	}
 	globals_backup->ClientCommand()(ent);
 }
