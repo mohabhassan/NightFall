@@ -3,7 +3,12 @@
 #include "ClientAdmin.h"
 #include "Item.h"
 
+#define	BUTTON_ATTACK1		1	// +/-attackprimary
 #define	BUTTON_ATTACK2		2	// +/-attacksecondary
+#define BUTTON_RUN			4
+#define BUTTON_USE			8
+#define BUTTON_LEANLEFT		16
+#define BUTTON_LEANRIGHT	32
 
 void PlayerNF::MiscInit()
 {
@@ -53,6 +58,35 @@ void PlayerNF::MiscInit()
 	),
 		&PlayerNF::PreSecFireHeldEvent);
 	cerSet.AddEventResponse(new Event(
+		"runheld",
+		EV_DEFAULT,
+		NULL,
+		NULL,
+		"Returns 1 if player is holding a run (wasd) button.",
+		EV_GETTER
+	),
+		&PlayerNF::PreRunHeldEvent);
+	cerSet.AddEventResponse(new Event(
+		"leanleftheld",
+		EV_DEFAULT,
+		NULL,
+		NULL,
+		"Returns 1 if player is holding lean left button.",
+		EV_GETTER
+	),
+		&PlayerNF::PreLeanLeftHeldEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"leanrightheld",
+		EV_DEFAULT,
+		NULL,
+		NULL,
+		"Returns 1 if player is holding lean right button.",
+		EV_GETTER
+	),
+		&PlayerNF::PreLeanRightHeldEvent);
+
+	cerSet.AddEventResponse(new Event(
 		"userinfo",
 		EV_DEFAULT,
 		NULL,
@@ -80,6 +114,17 @@ void PlayerNF::MiscInit()
 		EV_RETURN
 	),
 		&PlayerNF::PreIsAdminEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"adminrights",
+		EV_DEFAULT,
+		NULL,
+		NULL,
+		"Returns integer rights of the admin",
+		EV_RETURN
+	),
+		&PlayerNF::PreAdminRightsEvent);
+
 	if (gameInfo.IsAA())
 	{
 		cerSet.AddEventResponse(new Event(
@@ -152,6 +197,21 @@ void PlayerNF::SecFireHeldEvent(Event *ev)
 	ev->AddInteger((bool)(buttons & BUTTON_ATTACK2));
 }
 
+void PlayerNF::RunHeldEvent(Event* ev)
+{
+	ev->AddInteger((bool)(buttons & BUTTON_RUN));
+}
+
+void PlayerNF::LeanLeftHeldEvent(Event* ev)
+{
+	ev->AddInteger((bool)(buttons & BUTTON_LEANLEFT));
+}
+
+void PlayerNF::LeanRightHeldEvent(Event* ev)
+{
+	ev->AddInteger((bool)(buttons & BUTTON_LEANRIGHT));
+}
+
 void PlayerNF::GetUserInfoEvent(Event *ev)
 {
 	ev->AddString(client->pers.userinfo);
@@ -189,6 +249,20 @@ void PlayerNF::IsAdminEvent(Event * ev)
 	else
 	{
 		ev->AddInteger(0);
+	}
+}
+
+void PlayerNF::AdminRightsEvent(Event* ev)
+{
+	ClientAdmin admin(client->ps.clientNum);
+
+	if (admin.isAdmin())
+	{
+		ev->AddInteger(admin.getRights());
+	}
+	else
+	{
+		ev->AddInteger(-1);
 	}
 }
 

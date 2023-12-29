@@ -124,9 +124,13 @@ public:
 	ScriptEventHandler(GetConnStateEvent);
 	ScriptEventHandler(GetActiveWeapEvent);
 	ScriptEventHandler(SecFireHeldEvent);
+	ScriptEventHandler(RunHeldEvent);
+	ScriptEventHandler(LeanLeftHeldEvent);
+	ScriptEventHandler(LeanRightHeldEvent);
 	ScriptEventHandler(GetUserInfoEvent);
 	ScriptEventHandler(GetInventoryEvent);
 	ScriptEventHandler(IsAdminEvent);
+	ScriptEventHandler(AdminRightsEvent);
 
 	ScriptEventHandler(AddKillsEventAA);
 	ScriptEventHandler(AddDeathsEventAA);

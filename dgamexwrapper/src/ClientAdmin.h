@@ -113,6 +113,7 @@ public:
 	bool attemptLogout();
 
 	bool hasRight(AccessLevel right);
+	int	getRights();
 
 	void AddKick(int kickedClientNum, bool hasReason = false, string reason = "");
 	void AddBan(int bannedClientNum, bool hasReason = false, string reason = "");
