@@ -61,3 +61,12 @@ class FileManager():
                 shutil.rmtree(fpath, ignore_errors=True)
         
         print('unloaded test files')
+    def delete(self, path, is_main=False):
+        if is_main:
+            fpath = self.game_path / path
+        else:
+            fpath = self.main_path / path
+        if os.path.isfile(fpath):
+            os.remove(fpath)
+        elif os.path.isdir(fpath):
+            shutil.rmtree(fpath, ignore_errors=True)

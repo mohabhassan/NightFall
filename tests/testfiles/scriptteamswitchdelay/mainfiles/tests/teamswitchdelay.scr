@@ -1,0 +1,19 @@
+main:
+    teamswitchdelay 16
+	wait 1
+    setcvar test_scriptteamswitchdelay_stage 1
+    
+    while(!$player) waitframe;
+    while($player.dmteam != "axis") waitframe;
+    local.axistime = level.time
+    while($player.dmteam == "axis") waitframe;
+    local.axistime = level.time - local.axistime
+    println "axistime " local.axistime
+    teamswitchdelay 60
+    
+    local.alliestime = level.time
+    while($player.dmteam == "allies") waitframe;
+    local.alliestime = level.time - local.alliestime
+    println "alliestime " local.axistime
+
+end

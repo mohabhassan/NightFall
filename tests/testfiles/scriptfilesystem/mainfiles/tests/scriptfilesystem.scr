@@ -35,6 +35,9 @@ main:
     waitthread test_freadpak
     waitthread test_flist
 
+    waitthread test_fnewdir
+    waitthread test_fremovedir
+
     setcvar test_filesystem_score (level.filesystem_testcases_passed + "/" + level.filesystem_testcases_total)
     setcvar test_filesystem_failed level.filesystem_failed_testscases
     setcvar test_filesystem_status finished
@@ -229,4 +232,23 @@ test_flist:
     waitthread validate_test (local.ret[2]) "test_folder/" "(flist test25)" 
 
 
+end
+
+test_fnewdir:
+    local.ret = fnewdir "test_fnewdir"
+    waitthread validate_test (local.ret==0) 1 "(fnewdir test1)"
+    local.ret = fnewdir "test_fnewdir2/test_fnewdir" // non-existent path
+    waitthread validate_test (local.ret==0) 0 "(fnewdir test2)"
+    local.ret = fnewdir "test_fnewdir3" // already exists
+    waitthread validate_test (local.ret==0) 1 "(fnewdir test3)"
+end
+
+
+test_fremovedir:
+    local.ret = fremovedir "test_fremovedir" // empty
+    waitthread validate_test (local.ret==0) 1 "(fremovedir test1)"
+    local.ret = fremovedir "test_fremovedir2" // non-empty
+    waitthread validate_test (local.ret==0) 0 "(fremovedir test2)"
+    local.ret = fremovedir "test_fremovedir3" //non-existent
+    waitthread validate_test (local.ret==0) 1 "(fremovedir test3)"
 end

@@ -20,6 +20,10 @@ main:
     local.t = "ttt"
     waitthread validate_test (typeof local.t) "const string" "(typeof local.t=ttt)"
 
+    waitthread validate_test (chartoint "a") 97 "(chartoint a)"
+    waitthread validate_test (chartoint "A") 65 "(chartoint A)"
+    waitthread validate_test (chartoint "#") 35 "(chartoint #)"
+
     waitthread validate_test (getproperty "nightfall_test") -3 "(getproperty nightfall_test)"
     waitthread validate_test (setproperty "nightfall_test" "nf_t_1") 0 "(setproperty nightfall_test nf_t_1)"
     waitthread validate_test (getproperty "nightfall_test") "nf_t_1" "(getproperty nightfall_test)"

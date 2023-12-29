@@ -181,12 +181,15 @@ class BotManager():
 
         return insts
 
+    def join_team(self, team=b'axis'):
+        assert self.send_cmd_await_output(b'join_team ' + team, b'mohpc_test' + str(self.instance_id).encode() + b' has joined the ' + team.capitalize())
+        self.send_command(b'primarydmweapon rifle')
+    
     def spawn(self, team=b'axis'):
         print('BotManager: spawn: team:',  team.decode(), 'instance_id:', self.instance_id)
         self.send_command(b'set dm_playermodel american_army')
         self.send_command(b'set dm_playergermanmodel german_wehrmacht_soldier')
         assert self.instance_id != -1
-        assert self.send_cmd_await_output(b'join_team ' + team, b'mohpc_test' + str(self.instance_id).encode() + b' has joined the ' + team.capitalize())
-        self.send_command(b'primarydmweapon rifle')
+        self.join_team(team)
         time.sleep(1) #for spawn
         print('BotManager: spawned:', team.decode())

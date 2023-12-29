@@ -24,4 +24,5 @@ class TestScriptFileSystem():
         failed = rcon_manager.get_cvar_value(b'test_filesystem_failed')
         failed = failed.replace('\n','\\n')
         assert passed == total, f'Score is {score}, failed tests are: {failed}'
+        file_manager.delete('test_fnewdir')
 

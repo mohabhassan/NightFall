@@ -64,6 +64,23 @@ class TestScriptMisc():
         tz = -time.timezone//3600
         assert int(res) == tz
         
+    #@pytest.mark.supported_game_vers('1.11')
+    @pytest.mark.timeout(240)
+    def test_scriptteamswitchdelay(self, game_manager, file_manager, rcon_manager, bot_manager):
+        time.sleep(30) #team switch delays are ignored for the first 30 seconds
+        bot_manager.spawn(b'axis')
+        time.sleep(1)
+        bot_manager.send_cmd_await_output(b'join_team allies', b'Can not change teams again for another')
+        time.sleep(16)
+        bot_manager.join_team(b'allies')
+        
+        time.sleep(1)
+        
+        #bot_manager.join_team(b'allies')
+        time.sleep(30)
+        bot_manager.send_cmd_await_output(b'join_team axis', b'Can not change teams again for another')
+        time.sleep(30)
+        bot_manager.join_team(b'axis')
     
 
     def test_scriptmiscall(self, game_manager, file_manager, rcon_manager, bot_manager):
