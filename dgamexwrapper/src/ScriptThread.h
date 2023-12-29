@@ -51,6 +51,9 @@ public:
 	void		FReadPakEvent(Event * ev);
 	void		FListEvent(Event * ev);
 
+	void		FNewDirEvent(Event * ev);
+	void		FRemoveDirEvent(Event * ev);
+
 	static void		MathsInit();
 
 	void		MSinEvent(Event * ev);
