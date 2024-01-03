@@ -278,7 +278,7 @@ void ScriptThread::FOpenEvent(Event *ev)
 	{
 		scriptFiles.push_back(fp);
 		CustomCvar sv_scriptfiles("sv_scriptfiles", "0", 0);
-		sv_scriptfiles.SetValue(std::to_string(sv_scriptfiles.GetIntValue() + 1), true);
+		sv_scriptfiles.SetValue(std::to_string(scriptFiles.size()), true);
 	}
 
 	ev->AddInteger((int)fp);
@@ -312,7 +312,7 @@ void ScriptThread::FCloseEvent(Event *ev)
 		ret = fclose(fp);
 		scriptFiles.erase(it);
 		CustomCvar sv_scriptfiles("sv_scriptfiles", "0", 0);
-		sv_scriptfiles.SetValue(std::to_string(sv_scriptfiles.GetIntValue() - 1), true);
+		sv_scriptfiles.SetValue(std::to_string(scriptFiles.size()), true);
 	}
 
 	ev->AddInteger(ret);
