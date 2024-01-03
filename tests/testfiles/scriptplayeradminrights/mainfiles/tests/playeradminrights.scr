@@ -1,0 +1,52 @@
+main:
+	wait 1
+
+    level.playeradminrights_testcases_passed = 0
+    level.playeradminrights_testcases_total = 0
+    level.playeradminrights_failed_testscases = ""
+
+    setcvar test_playeradminrights_status running
+
+    while(!$player) waitframe;
+
+    while(getcvar test_playeradminrights_botstatus != admin1) waitframe;
+    waitthread validate_test ($player isadmin) 1 "($player isadmin11)"
+    println "isadmin11:"
+    local.isadmin = $player isadmin
+    println local.isadmin
+    waitthread validate_test ($player.adminrights) 16383 "($player adminrights1)"
+    while(getcvar test_playeradminrights_botstatus != noadmin1) waitframe;
+    waitthread validate_test ($player isadmin)  0 "($player isadmin12)"
+    println "isadmin12:"
+    local.isadmin = $player isadmin
+    println local.isadmin
+    
+    while(getcvar test_playeradminrights_botstatus != admin2) waitframe;
+    waitthread validate_test ($player isadmin) 1 "($player isadmin21)"
+    println "isadmin21:"
+    local.isadmin = $player isadmin
+    println local.isadmin
+    waitthread validate_test ($player.adminrights) 42 "($player adminrights2)"
+    while(getcvar test_playeradminrights_botstatus != noadmin2) waitframe;
+    waitthread validate_test ($player isadmin)  0 "($player isadmin22)"
+    println "isadmin22:"
+    local.isadmin = $player isadmin
+    println local.isadmin
+    
+    setcvar test_playeradminrights_score (level.playeradminrights_testcases_passed + "/" + level.playeradminrights_testcases_total)
+    setcvar test_playeradminrights_failed level.playeradminrights_failed_testscases
+    setcvar test_playeradminrights_status finished
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("playeradminrights test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.playeradminrights_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.playeradminrights_testcases_passed++
+    }
+    level.playeradminrights_testcases_total++
+end

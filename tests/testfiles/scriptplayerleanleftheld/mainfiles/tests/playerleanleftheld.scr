@@ -1,0 +1,42 @@
+main:
+	wait 1
+
+    level.playerleanleftheld_testcases_passed = 0
+    level.playerleanleftheld_testcases_total = 0
+    level.playerleanleftheld_failed_testscases = ""
+
+    setcvar test_playerleanleftheld_status running
+
+    while(!$player) waitframe;
+
+    println "waiting for player to spawn ::::::::::::::::::::::"
+    println "leanleftheld:"
+    println $player.leanleftheld
+    while($player && $player.dmteam == spectator) waitframe;
+    println "player spawned ::::::::::::::::::::::"
+    wait 5; //wait for player to spawn
+    while(getcvar test_playerleanleftheld_botstatus != leanleftheld) waitframe;
+    println "leanleftheld:"
+    println $player.leanleftheld
+    waitthread validate_test $player.leanleftheld 1 "($player.leanleftheld1)"
+    while(getcvar test_playerleanleftheld_botstatus != noleanleftheld) waitframe;
+    waitthread validate_test $player.leanleftheld 0 "($player.leanleftheld0)"
+    
+    
+    setcvar test_playerleanleftheld_score (level.playerleanleftheld_testcases_passed + "/" + level.playerleanleftheld_testcases_total)
+    setcvar test_playerleanleftheld_failed level.playerleanleftheld_failed_testscases
+    setcvar test_playerleanleftheld_status finished
+end
+
+validate_test local.actual local.expected local.test:
+    if(local.actual != local.expected)
+    {
+        println("playerleanleftheld test error: " + local.test + " = " + local.actual + "  expected: " + local.expected)
+        level.playerleanleftheld_failed_testscases += (local.test + "=" + local.actual + "|")
+    }
+    else
+    {
+        level.playerleanleftheld_testcases_passed++
+    }
+    level.playerleanleftheld_testcases_total++
+end
