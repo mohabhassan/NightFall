@@ -121,7 +121,7 @@ void PlayerNF::MiscInit()
 		NULL,
 		NULL,
 		"Returns integer rights of the admin",
-		EV_RETURN
+		EV_GETTER
 	),
 		&PlayerNF::PreAdminRightsEvent);
 
