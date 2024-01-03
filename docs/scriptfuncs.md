@@ -4,6 +4,7 @@
 - [NightFall Scripting Functions Documentation](#nightfall-scripting-functions-documentation)
 	- [Table of Contents](#table-of-contents)
 	- [New NightFall functions](#new-nightfall-functions)
+		- [setcvar\_ex](#setcvar_ex)
 		- [register\_api\_route](#register_api_route)
 		- [unregister\_api\_route](#unregister_api_route)
 		- [create\_api\_request](#create_api_request)
@@ -12,6 +13,7 @@
 		- [json\_parse](#json_parse)
 		- [json\_stringify](#json_stringify)
 	- [Slightly modified reborn functions](#slightly-modified-reborn-functions)
+		- [bindweap](#bindweap)
 		- [getactiveweap](#getactiveweap)
 		- [fopen](#fopen)
 		- [fclose](#fclose)
@@ -20,6 +22,15 @@
 		- [fsaveall](#fsaveall)
 		- [getdate](#getdate)
 		- [registerev](#registerev)
+	- [Undocumented reborn functions](#undocumented-reborn-functions)
+		- [chartoint](#chartoint)
+		- [teamswitchdelay](#teamswitchdelay)
+		- [fnewdir](#fnewdir)
+		- [fremovedir](#fremovedir)
+		- [runheld](#runheld)
+		- [leanleftheld](#leanleftheld)
+		- [leanrightheld](#leanrightheld)
+		- [adminrights](#adminrights)
 	- [Reborn original functions](#reborn-original-functions)
 		- [Date/Time Functions](#datetime-functions)
 		- [Maths Functions](#maths-functions)
@@ -30,6 +41,7 @@
 ---
 ## New NightFall functions
 ---
+### [setcvar_ex](scriptallfuncs.md#setcvar_ex)
 ### [register_api_route](scriptallfuncs.md#register_api_route)
 ### [unregister_api_route](scriptallfuncs.md#unregister_api_route)
 ### [create_api_request](scriptallfuncs.md#create_api_request)
@@ -40,6 +52,7 @@
 ---
 ## Slightly modified reborn functions
 ---
+### [bindweap](scriptallfuncs.md#bindweap)
 ### [getactiveweap](scriptallfuncs.md#getactiveweap)
 ### [fopen](scriptallfuncs.md#fopen)
 ### [fclose](scriptallfuncs.md#fclose)
@@ -48,6 +61,17 @@
 ### [fsaveall](scriptallfuncs.md#fsaveall)
 ### [getdate](scriptallfuncs.md#getdate)
 ### [registerev](scriptallfuncs.md#registerev)
+---
+## Undocumented reborn functions
+---
+### [chartoint](scriptallfuncs.md#chartoint)
+### [teamswitchdelay](scriptallfuncs.md#teamswitchdelay)
+### [fnewdir](scriptallfuncs.md#fnewdir)
+### [fremovedir](scriptallfuncs.md#fremovedir)
+### [runheld](scriptallfuncs.md#runheld)
+### [leanleftheld](scriptallfuncs.md#leanleftheld)
+### [leanrightheld](scriptallfuncs.md#leanrightheld)
+### [adminrights](scriptallfuncs.md#adminrights)
 ---
 ## Reborn original functions
 ---

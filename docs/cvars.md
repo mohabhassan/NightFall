@@ -11,10 +11,12 @@
     - [sv\_api\_client](#sv_api_client)
     - [sv\_update](#sv_update)
     - [sv\_store](#sv_store)
+    - [sv\_scriptfiles](#sv_scriptfiles)
     - [sv\_disablechat](#sv_disablechat)
     - [sv\_disabletaunt](#sv_disabletaunt)
     - [sv\_filterchat](#sv_filterchat)
     - [g\_badchatlimit](#g_badchatlimit)
+    - [g\_teamswitchdelay](#g_teamswitchdelay)
     - [sv\_maxconnperip](#sv_maxconnperip)
     - [sv\_kickping](#sv_kickping)
 
@@ -82,6 +84,14 @@
 | Default value | `mainta/store.bin` or `maintt/store.bin` |
 
 ---
+### sv_scriptfiles
+| Name | sv_scriptfiles |
+|--|--|
+| Description | Specifies the amount of currently open script files (opened with [fopen](scriptallfuncs.md#fopen)). |
+| Default value | `main/store.bin` or `mainta/store.bin` or `maintt/store.bin` |
+| More Info | When you successfully open files with [fopen](scriptallfuncs.md#fopen), sv_scriptfiles increases.<br>When you close already opened files with [fclose](scriptallfuncs.md#fclose), sv_scriptfiles decreases. |
+
+---
 ### sv_disablechat
 | Name | sv_disablechat |
 |--|--|
@@ -108,6 +118,14 @@
 |--|--|
 | Description | Specifies amount of times a use can enter bad chat filter words before being kicked. |
 | Allowed values | 0 or more |
+
+---
+### g_teamswitchdelay
+| Name | g_teamswitchdelay |
+|--|--|
+| Description | Specifies amount of seconds a player must wait before switching to a new team. |
+| More Info | This is equivalent to script function [teamswitchdelay](scriptallfuncs.md#teamswitchdelay) and using the script function changes the value of this cvar silently. |
+| Allowed values | any integer value |
 
 ---
 ### sv_maxconnperip
