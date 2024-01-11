@@ -14,7 +14,9 @@ public:
 public:
 	Class();
 	virtual ~Class();
+#ifndef REBORNSECURITYFIXES_EXPORTS
 	CLASS_CUSTOM_ALLOCATION;
+#endif
 };
 
 #include "safeptr.h"
