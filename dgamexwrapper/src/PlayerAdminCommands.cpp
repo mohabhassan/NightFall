@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include "sv_misc.h"
 
 using namespace std;
 void PlayerNF::AdminCommandsInit()

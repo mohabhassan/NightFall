@@ -220,6 +220,12 @@ void SV_Commands_Shutdown()
 	Cmd_UnHookCommand(SV_KickNum_f_original, &SV_ClientKick2);
 }
 
+void SV_Commands_AddCommand(const char* cmd, xcommand_t cmdFunction)
+{
+	ConsoleCommands.emplace_back(cmd, cmdFunction);
+	gi->AddCommand(cmd, NULL);
+}
+
 /* same behaviour as normal kicks, but displays to the kicked user that he was kicked. */
 /* original game behaviour will display a "server disconnected" message instead of "kicked from server". */
 void SV_Kick2()

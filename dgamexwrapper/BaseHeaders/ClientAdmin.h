@@ -1,6 +1,5 @@
 #pragma once
 #include "dgamex86.h"
-#include "sv_misc.h"
 #include <vector>
 #include <list>
 using std::string, std::vector, std::list;

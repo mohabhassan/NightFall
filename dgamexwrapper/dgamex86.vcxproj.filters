@@ -218,9 +218,6 @@
     <ClInclude Include="src\ihuddraw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ScriptedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -237,12 +234,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CustomCvar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ClientAdmin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sv_misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\IPFilter.h">

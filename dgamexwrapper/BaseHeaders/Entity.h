@@ -28,7 +28,7 @@ class EntityAA : public SimpleEntity
 public:
 	int			entnum;//0
 	int			radnum;//1
-	gentity_t* edict;//2
+	gentityAA_t* edict;//2
 	gclientAA_t* client;//3
 	int			spawnflags;//4
 	str			 model;//5
@@ -92,7 +92,7 @@ class EntityDSH : public SimpleEntity
 public:
 	int			entnum;//0
 	int			radnum;//1
-	gentity_t	*edict;//2
+	gentityDSH_t	*edict;//2
 	gclientDSH_t	*client;//3
 	int			spawnflags;//4
 	str			 model;//5

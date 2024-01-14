@@ -2,6 +2,7 @@
 #include "g_misc.h"
 #include "ClientAdmin.h"
 #include "Item.h"
+#include "sv_misc.h"
 
 #define	BUTTON_ATTACK1		1	// +/-attackprimary
 #define	BUTTON_ATTACK2		2	// +/-attacksecondary

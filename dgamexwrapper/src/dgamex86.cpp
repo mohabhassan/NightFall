@@ -21,7 +21,8 @@
 #include "UpdateClient.h"
 #include "ClientFilter.h"
 #include "nf_misc.h"
-
+#include "RebornAPI.h"
+#include "sv_misc.h"
 
 //#include "hooks/script.h"
 
@@ -65,6 +66,9 @@ int start, middle, end;
 
 
 extern DirectorClass* Director;
+
+static RebornExports *rbe;
+//RebornImports rbi_back;
 /*
 //-----------------------	    End	   -----------------------\\
 */
@@ -155,34 +159,42 @@ char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 	}
 	else
 	{
+		//reborn check:
+		if (gameInfo.IsAA())
+		{
+			reason = rbe->RB_PreClientConnect(clientNum, firstTime);
+		}
+
 		//you can't use gclient_t here,
 		//for userinfo: gi->GetUserInfo
 		char userinfo[MAX_INFOSTRING];
 		gi->GetUserinfo(clientNum, userinfo, MAX_INFOSTRING);
-		//IP related checks
-		char* ip = Info_ValueForKey(userinfo, "ip");
-		if (ip == "")
+		if (reason == NULL)
 		{
-			gi->Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
-			reason = NULL;
-		}
-		else
-		{
-			IPFilter filter;
-			if (!filter.CanConnect(ip))
+			//IP related checks
+			char* ip = Info_ValueForKey(userinfo, "ip");
+			if (ip == "")
 			{
-				reason = "Banned IP.";
-			}
-			else if (!filter.CanConnectMaxConnections(clientNum))
-			{
-				reason = "Too many connection attempts from one IP.";
+				gi->Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
+				reason = NULL;
 			}
 			else
 			{
-				reason = NULL;
+				IPFilter filter;
+				if (!filter.CanConnect(ip))
+				{
+					reason = "Banned IP.";
+				}
+				else if (!filter.CanConnectMaxConnections(clientNum))
+				{
+					reason = "Too many connection attempts from one IP.";
+				}
+				else
+				{
+					reason = NULL;
+				}
 			}
 		}
-
 		//name related checks:
 		if (reason == NULL)
 		{
@@ -319,6 +331,10 @@ void G_ClientThink(GEntity &ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
 		gi->DropClient(GClient(ent->client)->ps.clientNum, "has been kicked for too high ping");
 	}
 
+	if (gameInfo.IsAA())
+		if (!rbe->RB_PreClientThink((gentityAA_t*)(gentity_t*)ent, ucmd, eyeInfo))
+			return;
+
 	globals_backup->ClientThink()( ent, ucmd, eyeInfo);
 	
 }
@@ -328,6 +344,17 @@ void G_ClientThink(GEntity &ent, userCmd_t *ucmd, userEyes_t *eyeInfo )
 void  G_ClientCommand (GEntity &ent ){
 	//gi->Argv(0) dmmessage Gi.Argv(1) 0 gi,Argv(2) blah gi->Args() 0 blah test
 	//gi->Printf("\ngi.Argv(0) %s Gi.Argv(1) %s gi,Argv(2) %s gi->Args() %s\n", gi->Argv(0) ,gi->Argv(1) ,gi->Argv(2) ,gi->Args());
+
+
+
+	if (gameInfo.IsAA() && gameInfo.IsServer() && rbe->RB_PreClientCommand)
+	{
+		if (!rbe->RB_PreClientCommand((gentityAA_t*)(gentity_t * )ent))
+		{
+			return;
+		}
+	}
+
 	char *cmd = gi->Argv(0);
 	if (!strcmp(cmd, "keyp"))
 	{
@@ -654,6 +681,12 @@ void G_InitGame( int startTime, int randomSeed )
 	initConsoleCommands();
 
 	startCrashReporter();
+
+	if (gameInfo.IsAA() && gameInfo.IsServer() && rbe->RB_InitGame)
+	{
+		rbe->RB_InitGame(startTime, randomSeed);
+	}
+
 	globals_backup->Init()( startTime, randomSeed );
 	//gi->Printf("Class count: %d", classcount);
 	gi->Printf(PATCH_NAME " Wrapper inited \n");
@@ -726,6 +759,10 @@ void	G_Shutdown (void)
 		uc.CheckForUpdate();
 	}
 
+	if (gameInfo.IsAA() && gameInfo.IsServer() && rbe->RB_Shutdown)
+	{
+		rbe->RB_Shutdown();
+	}
 	globals_backup->Shutdown()();
 
 	#ifndef _WIN32
@@ -737,6 +774,79 @@ void	G_Shutdown (void)
 		resetsighandlers();  // reset to the original signal handlers
 			
 	#endif	
+}
+
+void InitRebornProgs()
+{
+	//only for AA
+	if (!gameInfo.IsAA())
+		return;
+	RebornImports rbi;
+
+	rbi.MemoryMalloc = MemoryMalloc;
+	rbi.MemoryFree = MemoryFree;
+
+	rbi.Cvar_Get = [](const char* varName, const char* varValue, int varFlags) -> cvar_t* {return gi->Cvar_Get(varName, varValue, varFlags); };
+	rbi.Milliseconds = []() -> int {return gi->Milliseconds(); };
+
+	rbi.KickClient = [](int client_num, const char* reason, const char* public_reason) {
+		ClientAdmin admin(internalClientNum);
+		admin.AddKick(client_num, bool(reason), reason);
+		gi->DropClient(client_num, ("has been kicked for " + string(public_reason)).c_str());
+	};
+
+	rbi.Printf = [](const char* format, ...) {
+		va_list va;
+		char fullstr[4096];
+
+		va_start(va, format);
+		vsprintf(fullstr, format, va);
+		va_end(va);
+
+		gi->Printf(fullstr);
+	};
+
+	rbi.centerprintf = [](gentityAA_t * ent, const char* format, ...) {
+		va_list va;
+		char fullstr[4096];
+
+		va_start(va, format);
+		vsprintf(fullstr, format, va);
+		va_end(va);
+		gi->centerprintf((gentity_t*)ent, fullstr);
+	};
+	rbi.HookFunction = [](_Inout_ PVOID* ppPointerOriginal, _In_ PVOID pDetour) -> bool {
+		bool ok = true;
+		ok = ok && (DetourTransactionBegin() == NO_ERROR);
+		ok = ok && (DetourUpdateThread(GetCurrentThread()) == NO_ERROR);
+		ok = ok && (DetourAttach((ppPointerOriginal), (pDetour)) == NO_ERROR);
+		ok = ok && (DetourTransactionCommit() == NO_ERROR);
+		return ok;
+	};
+	rbi.UnHookFunction = [](_Inout_ PVOID* ppPointerOriginal, _In_ PVOID pDetour) -> bool {
+		bool ok = true;
+		ok = ok && (DetourTransactionBegin() == NO_ERROR);
+		ok = ok && (DetourUpdateThread(GetCurrentThread()) == NO_ERROR);
+		ok = ok && (DetourDetach((ppPointerOriginal), (pDetour)) == NO_ERROR);
+		ok = ok && (DetourTransactionCommit() == NO_ERROR);
+		return ok;
+	};
+	rbi.Trace = [](trace_t* results, const vec3_t start, const vec3_t mins, const vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask, qboolean cylinder, qboolean traceDeep)
+	{
+		gi->Trace(results, start, mins, maxs, end, passEntityNum, contentMask, cylinder, traceDeep);
+	};
+
+	rbi.AddCommand = [](const char* cmdName, xcommand_t cmdFunction)
+	{
+		SV_Commands_AddCommand(cmdName, cmdFunction);
+	};
+
+	rbi.Argc = []() ->int { return gi->Argc(); };
+	rbi.Argv = [](int arg) -> char*{ return gi->Argv(arg); };
+	rbi.Args = []() -> char*{ return gi->Args(); };
+	rbi.Info_ValueForKey = [](const char* s, const char* key) -> char*{ return Info_ValueForKey(s, key); };
+
+	rbe = GetRebornAPI(&rbi);
 }
 
 string dllMainErr_str;
@@ -871,6 +981,7 @@ void* __cdecl GetGameAPI( void *import_actual )
 	*/
 	//TODO: supress DavenExtra for BT.
 	//sizeof(Player);
+	InitRebornProgs();
 	return globals->GetRealGameExport();
 }
 
@@ -946,29 +1057,60 @@ BOOL WINAPI DllMain( HINSTANCE hModule, DWORD dwReason, PVOID lpReserved )
 
 
 
-		//get version info based on calling exe's hashes.
-		char szExeFileName[MAX_PATH];
-		GetModuleFileNameA(NULL, szExeFileName, MAX_PATH);
 
-		namespace fs = std::filesystem;
-		fs::path p = szExeFileName;
-
-		char md5csum[MD5_STR_SIZE];
-		if (!md5File(szExeFileName, md5csum))
 		{
-			dllMainErr_str = "NightFall GetGameAPI ERROR: could not calculate md5 checksum for exe: " + string(szExeFileName);
+			//get version info based on calling exe's hashes.
+			//also verify a supported exe.
+			char szExeFileName[MAX_PATH];
+			GetModuleFileNameA(NULL, szExeFileName, MAX_PATH);
+			namespace fs = std::filesystem;
+			fs::path p = szExeFileName;
+		
+			char md5csum[MD5_STR_SIZE];
+			if (!md5File(szExeFileName, md5csum))
+			{
+				dllMainErr_str = "NightFall GetGameAPI ERROR: could not calculate md5 checksum for exe: " + string(szExeFileName);
+			}
+			else if (!gameInfo.InitFromMD5(string(md5csum)))
+			{
+				dllMainErr_str = "NightFall GetGameAPI ERROR: no exe match found for md5: " + string(md5csum);
+			}
 		}
-		else if (!gameInfo.InitFromMD5(string(md5csum)))
-		{
-			dllMainErr_str = "NightFall GetGameAPI ERROR: no exe match found for md5: " + string(md5csum);
-		}
-
 		hmod = LoadLibraryA(DGAMEX86_PATH.c_str());
+		
+		//verify a supported DLL
+		if (hmod)
+		{
+			char szDLLFileName[MAX_PATH];
+			GetModuleFileNameA(hmod, szDLLFileName, MAX_PATH);
+			namespace fs = std::filesystem;
+			fs::path p = szDLLFileName;
+
+			char md5csum[MD5_STR_SIZE];
+			if (!md5File(szDLLFileName, md5csum))
+			{
+				dllMainErr_str = "NightFall GetGameAPI ERROR: could not calculate md5 checksum for dll: " + string(szDLLFileName);
+			}
+			else
+			{
+				int ret = gameInfo.ValidateGameDLLMD5(string(md5csum));
+				if (ret == 1)
+				{
+					dllMainErr_str = "NightFall GetGameAPI ERROR: no dll match found for md5: " + string(md5csum);
+				}
+				else if (ret == 2)
+				{
+					dllMainErr_str = "NightFall GetGameAPI ERROR: no dll/exe mismatch found for dll md5: " + string(md5csum);
+				}
+			}
+		}
 
 		if(hmod)
 		{
 			pGetGameAPI = (pGetGameAPI_spec)GetProcAddress(hmod, "GetGameAPI");
 		}
+
+
 		
 		systemHMOD = GetModuleHandleA(SYSTEM86_NAME.c_str());
 		if (systemHMOD)

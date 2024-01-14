@@ -21,6 +21,10 @@
       <Configuration>SpearHead</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Universal|Win32">
+      <Configuration>Universal</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6C9B194A-CAB0-447C-BC2B-8828C17DFBD8}</ProjectGuid>
@@ -42,6 +46,12 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MOHAA|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Universal|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>v141_xp</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
@@ -74,6 +84,10 @@
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='MOHAA|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Universal|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC60.props" />
   </ImportGroup>
@@ -111,6 +125,12 @@
     <LinkIncremental>false</LinkIncremental>
     <TargetName>gamex86</TargetName>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Universal|Win32'">
+    <OutDir>./release/universal/</OutDir>
+    <IntDir>./bin/</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>gamex86</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SpearHead|Win32'">
     <OutDir>./release/mohsh/</OutDir>
     <IntDir>./bin/</IntDir>
@@ -120,6 +140,7 @@
     <VcpkgConfiguration Condition="'$(Configuration)' == 'BreakThrough'">Release</VcpkgConfiguration>
     <VcpkgConfiguration Condition="'$(Configuration)'=='BT Client'">Release</VcpkgConfiguration>
     <VcpkgConfiguration Condition="'$(Configuration)'=='MOHAA'">Release</VcpkgConfiguration>
+    <VcpkgConfiguration Condition="'$(Configuration)'=='Universal'">Release</VcpkgConfiguration>
   </PropertyGroup>
   <PropertyGroup>
     <VcpkgConfiguration Condition="'$(Configuration)' == 'SpearHead'">Release</VcpkgConfiguration>
@@ -351,6 +372,68 @@
       <Command>"$(OutDir)/copy.bat"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Universal|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\release/dgamex86.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>src;libs/Detours/include;libs/wolfSSL;libs/SQLiteCpp/include;libs/civetweb/include;libs/nlohmann-json/single_include;libs/curl/include;libs/curlpp/include;libs/RebornSecurityHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MSVC6;WIN32;NDEBUG;_WINDOWS;_USRDLL;MOHAA;SERVER;NO_FILES;NO_CGI;NO_SSL;CURL_STATICLIB;WC_NO_HARDEN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeaderOutputFile>.\bin/dgamex86.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\bin/</AssemblerListingLocation>
+      <ObjectFileName>.\bin/</ObjectFileName>
+      <ProgramDataBaseFileName>.\bin/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Ws2_32.lib;Wldap32.lib;Shlwapi.lib;detours.lib;wolfssl.lib;sqlite3.lib;SQLiteCpp.lib;libcurl.lib;libcurlpp.lib;RebornSecurityFixes.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)\gamex86.dll</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
+      <ProgramDatabaseFile>$(OutDir)\gamex86.pdb</ProgramDatabaseFile>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <ImportLibrary>$(OutDir)\gamex86.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>libs/Detours/lib.X86;libs/wolfSSL/build/Win32/VC14.10/LIB Release;libs/SQLiteCpp/build/Release;libs/SQLiteCpp/build/sqlite3/Release;libs/curl/build/Win32/VC14.10/LIB Release - LIB wolfSSL;libs/curlpp/Build/Release;libs/RebornSecurityHeaders;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <BaseAddress>
+      </BaseAddress>
+      <AdditionalOptions>/EXPORT:"GetGameAPI" %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\release/dgamex86.bsc</OutputFile>
+    </Bscmake>
+    <PostBuildEvent>
+      <Command>"$(OutDir)/copy.bat"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='SpearHead|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -470,7 +553,6 @@
     <ClInclude Include="libs\civetweb\include\civetweb.h" />
     <ClInclude Include="src\AddressDefinitions.h" />
     <ClInclude Include="src\ChatFilter.h" />
-    <ClInclude Include="src\ClientAdmin.h" />
     <ClInclude Include="src\ClientFilter.h" />
     <ClInclude Include="src\CustomCvar.h" />
     <ClInclude Include="src\ClassDef.h" />
@@ -486,7 +568,6 @@
     <ClInclude Include="src\ihuddraw.h" />
     <ClInclude Include="src\IPFilter.h" />
     <ClInclude Include="src\NameFilter.h" />
-    <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\qcommon.h" />
     <ClInclude Include="src\ScriptedEvent.h" />
     <ClInclude Include="src\ScriptException.h" />
@@ -495,7 +576,6 @@
     <ClInclude Include="src\short3.h" />
     <ClInclude Include="src\str.h" />
     <ClInclude Include="src\sv_commands.h" />
-    <ClInclude Include="src\sv_misc.h" />
     <ClInclude Include="src\UpdateClient.h" />
     <ClInclude Include="src\vector.h" />
     <ClInclude Include="src\Version.h" />

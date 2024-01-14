@@ -1,4 +1,5 @@
 #include "ClientAdmin.h"
+#include "sv_misc.h"
 #include <fstream>
 #include "g_misc.h"
 #include "IPFilter.h"

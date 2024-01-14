@@ -4101,6 +4101,96 @@ typedef struct Player_s
 */
 
 
+typedef enum serverState_e
+{
+	SS_DEAD,
+	SS_LOADING,
+	SS_LOADING2,
+	SS_GAME
+
+} serverState_t;
+
+typedef struct challenge_s
+{
+	netAdr_t adr;
+	int challenge;
+	int time;
+	int pingTime;
+	int firstTime;
+	qboolean connected;
+
+} challenge_t;
+
+typedef struct sgSfx_s
+{
+	int flags;
+	char name[64];
+
+} sgSfx_t;
+
+typedef struct sgChannelbase_s
+{
+	qboolean isPlaying;
+	int status;
+	sgSfx_t sfx;
+	int entNum;
+	int entChannel;
+	float origin[3];
+	float volume;
+	int baseRate;
+	float newPitchMult;
+	float minDist;
+	float maxDist;
+	int startTime;
+	int time;
+	int nextCheckObstructionTime;
+	int endTime;
+	int flags;
+	int offset;
+	int loopCount;
+
+} sgChannelbase_t;
+
+typedef struct sgSoundSystem_s
+{
+	sgChannelbase_t channels[96];
+
+} sgSoundSystem_t;
+
+
+
+typedef struct serverStaticAA_s
+{
+	qboolean initialized;
+	int snapFlagServerBit;
+	int time;
+	int startTime;
+	int lastTime;
+	int serverLagTime;
+	qboolean autosave;
+	int mapTime;
+	clientAA_t* clients;
+	int iNumClients;
+	int numSnapshotEntities;
+	int nextSnapshotEntities;
+	entityState_t* snapshotEntities;
+	int nextHeartbeatTime;
+	challenge_t challenges[1024];
+	netAdr_t redirectAddress;
+	netAdr_t authorizeAddress;
+	char gameName[64];
+	char mapName[64];
+	char rawServerName[64];
+	int areaBitsWarningTime;
+	qboolean soundsNeedLoad;
+	char tmFileName[64];
+	int tmMoopcount;
+	int tmOffset;
+	sgSoundSystem_t soundSystem;
+
+} serverStaticAA_t;
+
+
 typedef struct refImport_s
 {
 	void ( *Printf )( char *format, ... );
