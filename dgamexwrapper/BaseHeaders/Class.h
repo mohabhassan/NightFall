@@ -1,6 +1,7 @@
 #pragma once
-#include "safeptr.h"
 #include "ClassMemory.h"
+
+class SafePtrBase;
 /*
  * Class Class
  * Used as a sub class for the patch.
@@ -13,6 +14,9 @@ public:
 public:
 	Class();
 	virtual ~Class();
+#ifndef REBORNSECURITYFIXES_EXPORTS
 	CLASS_CUSTOM_ALLOCATION;
+#endif
 };
 
+#include "safeptr.h"

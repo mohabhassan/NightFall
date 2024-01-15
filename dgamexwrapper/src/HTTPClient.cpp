@@ -174,7 +174,9 @@ void HTTPClient::Shutdown()
 	//shutdown curlpp
 	curlpp::terminate();
 	status = CST_STOP;
-	lock_guard<mutex> lock1(cv_mutex);
+	{
+		lock_guard<mutex> lock1(cv_mutex);
+	}
 	cv.notify_all();
 
 	lock_guard<mutex> lock2(requests_mutex);
@@ -198,9 +200,10 @@ void HTTPClient::CreateAPIRequest(string url, string method, ScriptVariable & sc
 
 	//auto start = chrono::high_resolution_clock::now();
 	{
+		lock_guard<mutex> lock1(cv_mutex);
 		status = CST_NEWREQ;
-		cv.notify_all();
 	}
+	cv.notify_all();
 	//auto stop = chrono::high_resolution_clock::now();
 	//auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 	//gi->Printf("!!!!!!!!!!!! time = %lld\n", duration.count());

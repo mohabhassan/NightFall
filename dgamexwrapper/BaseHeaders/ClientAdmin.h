@@ -1,6 +1,5 @@
 #pragma once
 #include "dgamex86.h"
-#include "sv_misc.h"
 #include <vector>
 #include <list>
 using std::string, std::vector, std::list;
@@ -113,6 +112,7 @@ public:
 	bool attemptLogout();
 
 	bool hasRight(AccessLevel right);
+	int	getRights();
 
 	void AddKick(int kickedClientNum, bool hasReason = false, string reason = "");
 	void AddBan(int bannedClientNum, bool hasReason = false, string reason = "");

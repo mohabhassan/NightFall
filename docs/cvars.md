@@ -11,12 +11,24 @@
     - [sv\_api\_client](#sv_api_client)
     - [sv\_update](#sv_update)
     - [sv\_store](#sv_store)
+    - [sv\_scriptfiles](#sv_scriptfiles)
     - [sv\_disablechat](#sv_disablechat)
     - [sv\_disabletaunt](#sv_disabletaunt)
     - [sv\_filterchat](#sv_filterchat)
     - [g\_badchatlimit](#g_badchatlimit)
+    - [g\_teamswitchdelay](#g_teamswitchdelay)
     - [sv\_maxconnperip](#sv_maxconnperip)
     - [sv\_kickping](#sv_kickping)
+    - [sv\_kickbadcmd](#sv_kickbadcmd)
+    - [sv\_packetantiflood](#sv_packetantiflood)
+    - [sv\_packetflooddelay](#sv_packetflooddelay)
+  - [| Supported Games | MOHAA Only |](#-supported-games--mohaa-only-)
+    - [sv\_remotetoolip](#sv_remotetoolip)
+  - [| Supported Games | MOHAA Only |](#-supported-games--mohaa-only--1)
+    - [sv\_antistwh](#sv_antistwh)
+  - [| Supported Games | MOHAA Only |](#-supported-games--mohaa-only--2)
+    - [sv\_rebornloader](#sv_rebornloader)
+  - [| Remarks | Inside the script, self will be Director (ScriptMaster) |](#-remarks--inside-the-script-self-will-be-director-scriptmaster-)
 
 ### sv_crashrpt_poll_delay
 | Name | sv_crashrpt_poll_delay |
@@ -82,6 +94,14 @@
 | Default value | `mainta/store.bin` or `maintt/store.bin` |
 
 ---
+### sv_scriptfiles
+| Name | sv_scriptfiles |
+|--|--|
+| Description | Specifies the amount of currently open script files (opened with [fopen](scriptallfuncs.md#fopen)). |
+| Default value | `main/store.bin` or `mainta/store.bin` or `maintt/store.bin` |
+| More Info | When you successfully open files with [fopen](scriptallfuncs.md#fopen), sv_scriptfiles increases.<br>When you close already opened files with [fclose](scriptallfuncs.md#fclose), sv_scriptfiles decreases. |
+
+---
 ### sv_disablechat
 | Name | sv_disablechat |
 |--|--|
@@ -110,6 +130,14 @@
 | Allowed values | 0 or more |
 
 ---
+### g_teamswitchdelay
+| Name | g_teamswitchdelay |
+|--|--|
+| Description | Specifies amount of seconds a player must wait before switching to a new team. |
+| More Info | This is equivalent to script function [teamswitchdelay](scriptallfuncs.md#teamswitchdelay) and using the script function changes the value of this cvar silently. |
+| Allowed values | any integer value |
+
+---
 ### sv_maxconnperip
 | Name | sv_maxconnperip |
 |--|--|
@@ -125,4 +153,64 @@
 | Allowed values | 1 or more |
 | Remarks | user is warned 1 time before getting kicked |
 
+---
+
+---
+### sv_kickbadcmd
+| Name | sv_kickbadcmd |
+|--|--|
+| Description | Specifies whether players who enter bad commands should be kicked. |
+| Allowed values | 0 or 1 |
+| Remarks | when someone types a bad command that is used for crashing the server, they will be kicked if the cvar is non-zero |
+| Supported Games | MOHAA Only |
+
+---
+
+---
+### sv_packetantiflood
+| Name | sv_packetantiflood |
+|--|--|
+| Description | Enable/disable packet anti-flood system |
+| Allowed values | 0 or 1 |
+| Supported Games | MOHAA Only |
+
+---
+
+---
+### sv_packetflooddelay
+| Name | sv_packetflooddelay |
+|--|--|
+| Description | Specify packet flood delay in milliseconds. |
+| Allowed values | any non-negative number |
+| Remarks | Specifies the minimum delay in milliseconds between two consecutive packets originating from the same IP to be processed. This is only for connectionless packets (players that already joined the game won't be affected). |
+| Supported Games | MOHAA Only |
+---
+
+---
+### sv_remotetoolip
+| Name | sv_remotetoolip |
+|--|--|
+| Description | Specify IP for whitelisted remote tool IP. |
+| Allowed values | any valid IP address |
+| Remarks | This IP will not be affected by anti-flood system. |
+| Supported Games | MOHAA Only |
+---
+
+---
+### sv_antistwh
+| Name | sv_antistwh |
+|--|--|
+| Description | Enable/Disable anti-STWH. |
+| Allowed values | 0 or 1 |
+| Remarks | Enables/Disables anti-Shoot Through Walls Hack(STWH) system. |
+| Supported Games | MOHAA Only |
+---
+
+---
+### sv_rebornloader
+| Name | sv_rebornloader |
+|--|--|
+| Description | Specifies script that will be loaded at the start of the map. |
+| Allowed values | script path |
+| Remarks | Inside the script, self will be Director (ScriptMaster) |
 ---

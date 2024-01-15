@@ -29,6 +29,7 @@
     - [floor](#floor)
     - [fmod](#fmod)
   - [ScriptThread Miscellaneous Functions](#scriptthread-miscellaneous-functions)
+    - [setcvar\_ex](#setcvar_ex)
     - [stuffsrv](#stuffsrv)
     - [conprintf](#conprintf)
     - [md5string](#md5string)
@@ -40,6 +41,8 @@
     - [regex\_parse](#regex_parse)
     - [json\_parse](#json_parse)
     - [json\_stringify](#json_stringify)
+    - [chartoint](#chartoint)
+    - [teamswitchdelay](#teamswitchdelay)
     - [getentity](#getentity)
     - [netname](#netname)
     - [getip](#getip)
@@ -76,6 +79,8 @@
     - [fcopy](#fcopy)
     - [freadpak](#freadpak)
     - [flist](#flist)
+    - [fnewdir](#fnewdir)
+    - [fremovedir](#fremovedir)
   - [ScriptThread API Functions](#scriptthread-api-functions)
     - [create\_api\_request](#create_api_request)
     - [register\_api\_route](#register_api_route)
@@ -85,13 +90,19 @@
     - [getkills](#getkills)
     - [getdeaths](#getdeaths)
     - [.secfireheld](#secfireheld)
+    - [.runheld](#runheld)
+    - [.leanleftheld](#leanleftheld)
+    - [.leanrightheld](#leanrightheld)
     - [.inventory](#inventory)
     - [getactiveweap](#getactiveweap)
     - [getconnstate](#getconnstate)
     - [isadmin](#isadmin)
+    - [adminrights](#adminrights)
+    - [bindweap](#bindweap)
   - [References](#references)
     - [C numerics library](#c-numerics-library)
     - [C standard Input/Output library](#c-standard-inputoutput-library)
+    - [Reborn Scripting Commands](#reborn-scripting-commands)
 ## ScriptThread Date/Time Functions
 ---
 ### gettime
@@ -158,7 +169,7 @@ Most of these functions use their [C numerics library](#c-numerics-library) coun
 	sin(float x)
 Returns the sine of an angle of x radians.
 
-**Warning:** For SH/BT, x is expected to be in degrees.
+> **Warning:** For SH/BT, x is expected to be in degrees.
 
 
 Example:
@@ -517,6 +528,27 @@ Floating-point remainder of num/denom.
 ```
 ---
 ## ScriptThread Miscellaneous Functions
+### setcvar_ex
+	setcvar_ex(string cvar, string value, [string options="", integer flags=0])
+Sets the `cvar` to `value` using the specified `options` and `flags`.
+Currently supported `options`:
+```
+"s" or "S"        set cvar silently (will not print to log even if developer is set)
+```
+`flags` is reserved for future use
+
+Example:
+```
+setcvar_ex "fraglimit" "1" "s" 0
+or
+setcvar_ex "fraglimit" "1" "S" 0
+
+```
+Result:
+```
+Changes fraglimit to 1 without printing "Cvar_Set2: fraglimit 1" to console/logfile
+```
+---
 ### stuffsrv
 	stuffsrv(string cmd)
 Executes command in server console.
@@ -756,6 +788,34 @@ local.result = {"content":[{"content":"aaa","type":"string"},{"content":"bb","ty
  - safe container, an array of listeners, $player for example
  - pointer, not usually used in scripts
  - reference, a reference to array, usually not used in scripts
+---
+---
+### chartoint
+	chartoint(string ch)
+Return integer (corresponding ASCII value) representation of `ch`.
+
+Example:
+```
+local.result = chartoint "a"
+```
+Result:
+```
+local.result = 97
+```
+---
+---
+### teamswitchdelay
+	teamswitchdelay(integer delay)
+Sets minimum delay `delay` to switch between teams.
+This command is equivalent to `setcvar_ex "g_teamswitchdelay" delay "s" 0`
+Example:
+```
+teamswitchdelay 50
+```
+Result:
+```
+Players will have to wait 50 seconds before switching to a new team.
+```
 ---
 ---
 ### getentity
@@ -1147,7 +1207,8 @@ Most of the following functions map to their respective cstdio library counterpa
 Opens file with file_path using access_type.
 
 share_flags specify whether to allow other processes and threads to open your file for reading/writing.
-
+This command increments value of [sv_scriptfiles](cvars.md#sv_scriptfiles) by one.
+Maximum supported concurrent open files count is 32.
 
 Example:
 ```
@@ -1172,6 +1233,7 @@ Share Flags:
 ### fclose
 	fclose(integer file_handle)
 Closes file.
+This command decrements value of [sv_scriptfiles](cvars.md#sv_scriptfiles) by one.
 
 Example:
 ```
@@ -1470,6 +1532,40 @@ Result:
 Array containing list of file/folder names.
 ```
 ---
+---
+### fnewdir
+	fnewdir(string dirpath)
+Creates new empty directory with path `dirpath`.
+
+
+Example:
+```
+local.result = fnewdir "main/mynewdir"
+
+```
+Result:
+```
+0 on success or if directory already exists.
+nonzero on failure or if one of dirpath parent directories does not exist.
+```
+---
+---
+### fremovedir
+	fremovedir(string dirpath)
+Removes **empty** directory with path `dirpath`.
+
+
+Example:
+```
+local.result = fremovedir "main/mynewdir"
+
+```
+Result:
+```
+0 on success or  if directory does not exist.
+nonzero on failure or if directory is not emtpy.
+```
+---
 ## ScriptThread API Functions
 ### create_api_request
 	create_api_request(string url, string method, string/array scriptname, var userdata)
@@ -1622,6 +1718,55 @@ Returns 1 if player is holding secondary fire button (usually right click), 0 ot
 ```
 ---
 ---
+### .runheld
+	.runheld
+Return player's run button status.
+
+
+Example:
+```
+local.result = local.player.runheld
+
+```
+Result:
+```
+Returns 1 if player is holding run (even if player is not moving), 0 otherwise (when left shift is held/player is walking).
+```
+---
+---
+### .leanleftheld
+	.leanleftheld
+Return player's lean left button status.
+
+
+Example:
+```
+local.result = local.player.leanleftheld
+
+```
+Result:
+```
+Returns 1 if player is holding lean left button (Z), 0 otherwise.
+```
+---
+---
+---
+### .leanrightheld
+	.leanrightheld
+Return player's lean right button status.
+
+
+Example:
+```
+local.result = local.player.leanrightheld
+
+```
+Result:
+```
+Returns 1 if player is holding lean right button (C), 0 otherwise.
+```
+---
+---
 ### .inventory
 	.inventory
 Return player's inventory as array.
@@ -1693,7 +1838,47 @@ Result:
 Returns integer value: 1 if logged in as admin (using ad_login), 0 otherwise.
 ```
 ---
+---
+### adminrights
+	.adminrights
+Returns rights for player.
+
+Example:
+```
+local.result = local.player.adminrights
+
+
+```
+Result:
+```
+Returns integer value: -1 if NOT logged in as admin (using ad_login).
+If logged in, returns the integer value for admin rights, which is located inside admins.ini
+```
+---
+---
+### bindweap
+	bindweap(Entity weapon)
+> **NOTE:** This command is supported for AA only.
+
+Binds weapon to player. Sets him as weapon owner.
+2nd use of the command will unbind the weapon from player.
+
+Example:
+```
+$player[1] bindweap local.weapon
+local.weapon anim fire
+$player[1] bindweap local.weapon
+
+```
+Result:
+```
+Sets player as weapon owner.
+```
+
+> **Warning:** This is sort of a hack&trick scripting command. It should only be used by experienced users and only like shown in the example - just before firing the weapon and just after, to unbind it from the player. Otherwise you can have errors, weapon model glued to player, or server crashes. It should be used only for some kind of remote turrets etc.
+---
 
 ## References
 ### [C numerics library](https://cplusplus.com/reference/cmath)
 ### [C standard Input/Output library](https://cplusplus.com/reference/cstdio/)
+### [Reborn Scripting Commands](http://www.x-null.net/wiki/index.php?title=Reborn_Scripting_Commands)

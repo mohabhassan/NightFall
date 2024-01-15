@@ -1,6 +1,7 @@
 #include "ScriptThread.h"
 #include <algorithm>
 #include <filesystem>
+#include "CustomCvar.h"
 
 #define MAX_SCRIPTFILES 32
 
@@ -210,6 +211,27 @@ void ScriptThread::FileSystemInit()
 		EV_RETURN
 	),
 		&ScriptThread::FListEvent);
+
+
+	cerSet.AddEventResponse(new Event(
+		"fnewdir",
+		EV_DEFAULT,
+		"s",
+		"path",
+		"Creates a new directory with the provided path.",
+		EV_RETURN
+	),
+		&ScriptThread::FNewDirEvent);
+
+	cerSet.AddEventResponse(new Event(
+		"fremovedir",
+		EV_DEFAULT,
+		"s",
+		"path",
+		"Removes the directory with the provided path.",
+		EV_RETURN
+	),
+		&ScriptThread::FRemoveDirEvent);
 }
 
 void ScriptThread::FOpenEvent(Event *ev)
@@ -255,6 +277,8 @@ void ScriptThread::FOpenEvent(Event *ev)
 	else
 	{
 		scriptFiles.push_back(fp);
+		CustomCvar sv_scriptfiles("sv_scriptfiles", "0", 0);
+		sv_scriptfiles.SetValue(std::to_string(scriptFiles.size()), true);
 	}
 
 	ev->AddInteger((int)fp);
@@ -287,6 +311,8 @@ void ScriptThread::FCloseEvent(Event *ev)
 	{
 		ret = fclose(fp);
 		scriptFiles.erase(it);
+		CustomCvar sv_scriptfiles("sv_scriptfiles", "0", 0);
+		sv_scriptfiles.SetValue(std::to_string(scriptFiles.size()), true);
 	}
 
 	ev->AddInteger(ret);
@@ -952,4 +978,49 @@ void ScriptThread::FListEvent(Event *ev)
 	gi->FS_FreeFileList(list);
 
 	ev->AddValue(array);
+}
+
+void ScriptThread::FNewDirEvent(Event* ev)
+{
+	int argnum = ev->NumArgs();
+
+	if (argnum != 1)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fnewdir!\n");
+		return;
+	}
+
+	string dir_path = ev->GetString(1);
+	std::error_code ec;
+	bool success = fs::create_directory(dir_path, ec);
+	if (!success && ec)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: fnewdir error " + std::to_string(ec.value()) + ": " + ec.message() + "\n");
+		ev->AddInteger(ec.value());
+		return;
+	}
+	ev->AddInteger(0);
+}
+
+void ScriptThread::FRemoveDirEvent(Event* ev)
+{
+	int argnum = ev->NumArgs();
+
+	if (argnum != 1)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: Wrong number of arguments for fremovedir!\n");
+		return;
+	}
+
+	string dir_path = ev->GetString(1);
+	std::error_code ec;
+	bool success = fs::remove(dir_path, ec);
+	if (!success && ec)
+	{
+		gi->Printf(PATCH_NAME " SCRIPT ERROR: fremovedir error " + std::to_string(ec.value()) + ": " + ec.message() + "\n");
+		ev->AddInteger(ec.value());
+		return;
+	}
+
+	ev->AddInteger(0);
 }

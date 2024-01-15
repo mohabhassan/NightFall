@@ -26,5 +26,9 @@ public:
 public:
 	SimpleEntity();
 	~SimpleEntity();
+
+	int IsSubclassOfPlayer() const;
+	int IsSubclassOfTurretGun() const;
+	int IsSubclassOfInventoryItem() const;
 };
 

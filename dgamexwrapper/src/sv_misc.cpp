@@ -37,17 +37,32 @@ void __cdecl NET_OutOfBandPrint(netSrc_t sock, netAdr_t adr, const char * format
 	NET_OutOfBandPrint_Real(sock, adr, string);
 }
 
+string NetAdrToIPString(netAdr_t& adr)
+{
+	if (adr.type == NA_LOOPBACK)
+		return "127.0.0.1";
+	else if (adr.type == NA_IP)
+		return string(to_string(adr.ip[0]) + "." + to_string(adr.ip[1]) + "." + to_string(adr.ip[2]) + "." + to_string(adr.ip[3]));
+	else
+		return "";
+}
+
+string NetAdrToPortString(netAdr_t& adr)
+{
+	return to_string(ntohs(adr.port));
+}
+
+string NetAdrToIPPortString(netAdr_t& adr)
+{
+	return NetAdrToIPString(adr) + ":" + NetAdrToPortString(adr);
+}
+
 string GetIPFromClient(client_t* cl_actual)
 {
 	if (!cl_actual)
 		return "";
 	Client cl(cl_actual);
-	if (cl->netchan.remoteAddress.type == NA_LOOPBACK)
-		return "127.0.0.1";
-	else if (cl->netchan.remoteAddress.type == NA_IP)
-		return string(to_string(cl->netchan.remoteAddress.ip[0]) + "." + to_string(cl->netchan.remoteAddress.ip[1]) + "." + to_string(cl->netchan.remoteAddress.ip[2]) + "." + to_string(cl->netchan.remoteAddress.ip[3]));
-	else
-		return "";
+	return NetAdrToIPString(cl->netchan.remoteAddress);
 }
 
 string GetPortFromClient(client_t* cl_actual)
@@ -55,7 +70,7 @@ string GetPortFromClient(client_t* cl_actual)
 	if (!cl_actual)
 		return "";
 	Client cl(cl_actual);
-	return to_string(ntohs(cl->netchan.remoteAddress.port));
+	return NetAdrToPortString(cl->netchan.remoteAddress);
 }
 
 string GetIPPortFromClient(client_t* cl)

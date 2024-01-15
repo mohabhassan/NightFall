@@ -4101,6 +4101,96 @@ typedef struct Player_s
 */
 
 
+typedef enum serverState_e
+{
+	SS_DEAD,
+	SS_LOADING,
+	SS_LOADING2,
+	SS_GAME
+
+} serverState_t;
+
+typedef struct challenge_s
+{
+	netAdr_t adr;
+	int challenge;
+	int time;
+	int pingTime;
+	int firstTime;
+	qboolean connected;
+
+} challenge_t;
+
+typedef struct sgSfx_s
+{
+	int flags;
+	char name[64];
+
+} sgSfx_t;
+
+typedef struct sgChannelbase_s
+{
+	qboolean isPlaying;
+	int status;
+	sgSfx_t sfx;
+	int entNum;
+	int entChannel;
+	float origin[3];
+	float volume;
+	int baseRate;
+	float newPitchMult;
+	float minDist;
+	float maxDist;
+	int startTime;
+	int time;
+	int nextCheckObstructionTime;
+	int endTime;
+	int flags;
+	int offset;
+	int loopCount;
+
+} sgChannelbase_t;
+
+typedef struct sgSoundSystem_s
+{
+	sgChannelbase_t channels[96];
+
+} sgSoundSystem_t;
+
+
+
+typedef struct serverStaticAA_s
+{
+	qboolean initialized;
+	int snapFlagServerBit;
+	int time;
+	int startTime;
+	int lastTime;
+	int serverLagTime;
+	qboolean autosave;
+	int mapTime;
+	clientAA_t* clients;
+	int iNumClients;
+	int numSnapshotEntities;
+	int nextSnapshotEntities;
+	entityState_t* snapshotEntities;
+	int nextHeartbeatTime;
+	challenge_t challenges[1024];
+	netAdr_t redirectAddress;
+	netAdr_t authorizeAddress;
+	char gameName[64];
+	char mapName[64];
+	char rawServerName[64];
+	int areaBitsWarningTime;
+	qboolean soundsNeedLoad;
+	char tmFileName[64];
+	int tmMoopcount;
+	int tmOffset;
+	sgSoundSystem_t soundSystem;
+
+} serverStaticAA_t;
+
+
 typedef struct refImport_s
 {
 	void ( *Printf )( char *format, ... );
@@ -5201,6 +5291,7 @@ public:
 	IMPORT_FUNCTION(Args, char*, void);
 	IMPORT_FUNCTION(Milliseconds, int, void);
 	IMPORT_FUNCTION(Cvar_Get, cvar_t*, const char* varName, const char* varValue, int varFlags);
+	IMPORT_FUNCTION(Cvar_Set, void, const char* varName, const char* varValue);
 	IMPORT_FUNCTION(MSG_WriteBits, void, int value, int bits);
 	IMPORT_FUNCTION(MSG_WriteByte, void, int c);
 	IMPORT_FUNCTION(MSG_WriteShort, void, int c);
@@ -5307,6 +5398,7 @@ public:
 	IMPORT_FUNCTION_OVERRIDE(Args, char*, ECS(), ECS());
 	IMPORT_FUNCTION_OVERRIDE(Milliseconds, int, ECS(), ECS());
 	IMPORT_FUNCTION_OVERRIDE(Cvar_Get, cvar_t*, ECS(const char* varName, const char* varValue, int varFlags), ECS(varName, varValue, varFlags));
+	IMPORT_FUNCTION_OVERRIDE(Cvar_Set, void, ECS(const char* varName, const char* varValue), ECS(varName, varValue));
 	IMPORT_FUNCTION_OVERRIDE(MSG_WriteBits, void, ECS(int value, int bits), ECS(value, bits));
 	IMPORT_FUNCTION_OVERRIDE(MSG_WriteByte, void, ECS(int c), ECS(c));
 	IMPORT_FUNCTION_OVERRIDE(MSG_WriteShort, void, ECS(int c), ECS(c));
@@ -5504,11 +5596,11 @@ public:
 };
 
 
-#ifndef REBORNSECURITYFIXES_EXPORTS
+//#ifndef REBORNSECURITYFIXES_EXPORTS
 extern	shared_ptr<BaseGameImport> gi;
 extern	shared_ptr<BaseGameExport> globals;
-extern	shared_ptr<BaseGameExport>	globals_backup;
-#endif
+extern	shared_ptr<BaseGameExport> globals_backup;
+//#endif
 
 enum INTTYPE_e { TRANS_BSP, TRANS_LEVEL, TRANS_MISSION, TRANS_MISSION_FAILED };
 

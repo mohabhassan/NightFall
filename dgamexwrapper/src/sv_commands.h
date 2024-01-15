@@ -29,6 +29,7 @@ void SV_Commands_Init();
 bool SV_Commands_HandleCommand();
 void SV_Commands_Shutdown();
 
+void SV_Commands_AddCommand(const char* cmd, xcommand_t cmdFunction);
 
 
 void SV_Kick2();

@@ -19,6 +19,9 @@
 [submodule "libs/curlpp"]
 	path = dgamexwrapper/libs/curlpp
 	url = https://github.com/jpbarrette/curlpp.git
+[submodule "dgamexwrapper/libs/RebornSecurityHeaders"]
+	path = dgamexwrapper/libs/RebornSecurityHeaders
+	url = https://github.com/mohabhassan/RebornSecurityHeaders.git
 [submodule "tests/libs/mohpc"]
 	path = tests/libs/mohpc
 	url = https://github.com/mohabhassan/mohpc.git

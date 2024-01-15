@@ -1,4 +1,5 @@
 #include "ClientAdmin.h"
+#include "sv_misc.h"
 #include <fstream>
 #include "g_misc.h"
 #include "IPFilter.h"
@@ -415,6 +416,21 @@ bool ClientAdmin::hasRight(AccessLevel right)
 	ClientAdminSession & session = sessions[sessionID];
 	ClientAdminEntry & entry = ClientAdminEntry::entries[session.getEntryID()];
 	return entry.getRigths() & (1<<right);
+}
+
+int ClientAdmin::getRights()
+{
+	if (!isAdmin())
+	{
+		return -1;
+	}
+	if (isRcon() || isInternal())
+	{
+		return AccessLevel::Max;
+	}
+	ClientAdminSession& session = sessions[sessionID];
+	ClientAdminEntry& entry = ClientAdminEntry::entries[session.getEntryID()];
+	return entry.getRigths();
 }
 
 void ClientAdmin::AddKick(int kickedClientNum, bool hasReason, string reason)

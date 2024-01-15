@@ -17,13 +17,21 @@ private:
 	string dgamex86Path;
 	string system86Name;
 
-	inline static unordered_map<string, tuple<Expansion, Side, double>> md5_game_info = { 
-		{"5e6dbee412397e0a57be8c9b4592ba55", {AA, Server, 1.11}},
+	inline static unordered_map<string, tuple<Expansion, Side, double>> md5_exe_info = { 
+		{"a8b6296979bcad2af6edc6685ef4d06d", {AA, Server, 1.11}},
 		{"418deeab51331c7a9e1051b60cba23d5", {BT, Server, 2.30}},
 		{"ac58a6562cc8f53d2f3452b29902b54d", {BT, Server, 2.40}},
 		{"1db701ce0f5cf29b8fa479f0898f7d08", {BT, Server, 2.40}},
 		{"1162c8c26b7e0d687cbdaa2e52e5ae78", {SH, Server, 2.15}}
 	};
+
+	inline static unordered_map<string, tuple<Expansion, Side, double>> md5_game_info = {
+		{"6c7731b5259ac0da9c68382bbedc1bbc", {AA, Server, 1.11}},
+		{"16f69d0f22537c4c1718d72506efa988", {BT, Server, 2.30}},
+		{"ebf1898c107418d875e9afe89a45c381", {BT, Server, 2.40}},
+		{"f80ed34d942496cb5778206e4f11ee54", {SH, Server, 2.15}}
+	};
+
 	void InitMini(Expansion game_expansion, Side game_side, double game_version)
 	{
 		gameExpansion = game_expansion;
@@ -78,12 +86,25 @@ public:
 	bool InitFromMD5(string& md5)
 	{
 		using std::get;
-		auto it = md5_game_info.find(md5);
-		if (it == md5_game_info.end())
+		auto it = md5_exe_info.find(md5);
+		if (it == md5_exe_info.end())
 			return false;
 		auto &tpl = it->second;
 		Init(get<Expansion>(tpl), get<Side>(tpl), get<double>(tpl));
 		return true;
+	}
+
+	int ValidateGameDLLMD5(string& md5)
+	{
+		using std::get;
+		auto it = md5_game_info.find(md5);
+		if (it == md5_game_info.end())
+			return 1;
+		auto& tpl = it->second;
+		if (get<Expansion>(tpl) != gameExpansion || get<Side>(tpl) != gameSide || get<double>(tpl) != gameVersion)
+			return 2;
+
+		return 0;
 	}
 
 	const Expansion GetExpansion()

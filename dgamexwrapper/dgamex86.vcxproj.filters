@@ -194,12 +194,6 @@
     <ClInclude Include="src\Version.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Animate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Class.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\ClassDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -215,9 +209,6 @@
     <ClInclude Include="src\DM_Team.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -225,12 +216,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ihuddraw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Listener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ScriptedEvent.h">
@@ -242,25 +227,13 @@
     <ClInclude Include="src\ScriptVariable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Sentient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\short3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SimpleEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\xtrace.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\CustomCvar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ClientAdmin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sv_misc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\IPFilter.h">
@@ -297,21 +270,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ClientFilter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Trigger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\safeptr.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Item.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Weapon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ClassMemory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\AddressDefinitions.h">

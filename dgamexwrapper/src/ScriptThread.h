@@ -51,6 +51,9 @@ public:
 	void		FReadPakEvent(Event * ev);
 	void		FListEvent(Event * ev);
 
+	void		FNewDirEvent(Event * ev);
+	void		FRemoveDirEvent(Event * ev);
+
 	static void		MathsInit();
 
 	void		MSinEvent(Event * ev);
@@ -98,6 +101,9 @@ public:
 	void		RegexParseEvent(Event * ev);
 	void		JsonParseEvent(Event * ev);
 	void		JsonStringifyEvent(Event * ev);
+	void		CharToIntEvent(Event* ev);
+	void		SetCvarExEvent(Event* ev);
+	void		TeamSwitchDelayEvent(Event* ev);
 
 	static void		ScriptedEventsInit();
 

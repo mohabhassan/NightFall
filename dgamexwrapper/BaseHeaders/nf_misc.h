@@ -25,3 +25,5 @@ char* Info_ValueForKey(const char* s, const char* key);
 
 bool CheckFPSSkin(char* userinfo);
 bool CheckCommentSlashesInName(char* name);
+
+char* CopyString(const char* in);
