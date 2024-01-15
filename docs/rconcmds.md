@@ -155,3 +155,12 @@
 | Description |  Print current patch version. |
 | Example | `patchver` |
 ---
+### registertool
+| Name | registertool |
+|--|--|
+| Arguments | none |
+| Description |  Used to register remote tool IP address as whitelisted from anti-STWH system. Only use this via RCON.|
+| Example | `registertool` |
+| Supported Games | MOHAA Only |
+---
+
