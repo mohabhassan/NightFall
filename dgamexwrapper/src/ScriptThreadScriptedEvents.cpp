@@ -88,7 +88,7 @@ void ScriptThread::RegisterevEvent(Event*ev)
 
 	if (exists)
 	{
-		gi->Printf(PATCH_NAME " SCRIPT ERROR: registerev: event %s is already registered !\n", eventname.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT WARNING: registerev: event %s is already registered !\n", eventname.c_str());
 		ev->AddInteger(SEVR_ALREADEXISTS);
 		return;
 	}
@@ -128,7 +128,7 @@ void ScriptThread::UnregisterevEvent(Event*ev)
 
 	if (exists)
 	{
-		gi->Printf(PATCH_NAME " SCRIPT ERROR: unregisterev: event %s is already unregistered!\n", eventname.c_str());
+		gi->Printf(PATCH_NAME " SCRIPT WARNING: unregisterev: event %s is already unregistered!\n", eventname.c_str());
 		ev->AddInteger(SEVR_ALREADEXISTS);
 		return;
 	}
