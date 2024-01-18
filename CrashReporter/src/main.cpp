@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <thread>
+#include <mutex>
 #include "Dbghelp.h"
 #include <fstream>
 #include <locale>
@@ -12,6 +13,8 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 using std::thread;
+using std::mutex;
+using std::lock_guard;
 using std::pair;
 using std::ofstream;
 using std::string;
@@ -39,8 +42,10 @@ inline std::string CurrDateTimeStr()
 }
 
 ofstream logfile(CRASHLOG_NAME, std::ofstream::out);
+mutex logfile_mutex;
 void PrintLog(const char* format, ...)
 {
+    lock_guard<mutex> lock(logfile_mutex);
     static int n = 256;
     static char* buffer = new char[n];
     va_list args;
@@ -61,6 +66,7 @@ void PrintLog(const char* format, ...)
 
 void PrintLogW(const WCHAR* format, ...)
 {
+    lock_guard<mutex> lock(logfile_mutex);
     static int n = 256;
     static WCHAR* wbuffer = new WCHAR[n];
     static CHAR* buffer = new CHAR[n];
@@ -253,29 +259,46 @@ void HangLoop(HANDLE hProcess, DWORD dwTargetProcessId, DWORD pollDelay, DWORD h
         }
     }
 }
+bool IsWINE()
 
-bool DebugLoop(HANDLE hProcess, DWORD dwTargetProcessId, DWORD pollDelay, DWORD hungDelay, bool &dumped)
+{
+    HMODULE hmod = GetModuleHandleA("ntdll.dll");
+    if (!hmod)
+        return false;
+    if (!GetProcAddress(hmod, "wine_get_version"))
+        return false;
+    return true;
+
+}
+
+bool DebugLoop(DWORD dwTargetProcessId, DWORD pollDelay, DWORD hungDelay, bool &dumped)
 {
     DEBUG_EVENT de;
-    if (OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwTargetProcessId) == NULL)
+    HANDLE hProcess;
+    PrintLog("OpenProcess\n");
+    bool is_wine = IsWINE();
+    if ((hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwTargetProcessId)) == NULL)
     {
         PrintLog("OpenProcess - FAILED: %u\n", GetLastError());
         return false;
     }
+    PrintLog("IsWINE: %u\n", is_wine);
     BOOL bDbgrPresent;
+    PrintLog("CheckRemoteDebuggerPresent\n");
     if (CheckRemoteDebuggerPresent(hProcess, &bDbgrPresent) && bDbgrPresent)
     {
         PrintLog("Remote debugger already present, exiting...\n");
         return false;
     }
+    PrintLog("DebugActiveProcess\n");
     if (!DebugActiveProcess(dwTargetProcessId))
     {
         PrintLog("DebugActiveProcess - FAILED: %u\n", GetLastError());
         return false;
     }
-
+    PrintLog("Starting HangLoop thread\n");
     thread(HangLoop, hProcess, dwTargetProcessId, pollDelay, hungDelay).detach();
-
+    PrintLog("Entering WaitForDebugEvent loop\n");
     unsigned int numBPs = 0;
     bool isHung;
     dumped = false;
@@ -375,29 +398,21 @@ void CopyCrashFiles()
 
 
 //pCmdLine: 134321524       5000            30000
-//          ^parent handle  ^polling delay  ^hung duration
+//          ^parent pid     ^polling delay  ^hung duration
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-    HANDLE hParent;
     DWORD dwParentPID;
     DWORD pollDelay, hungDelay;
 
-    if (swscanf_s(pCmdLine, L"%p %u %u", &hParent, &pollDelay, &hungDelay) != 3)
+    if (swscanf_s(pCmdLine, L"%u %u %u", &dwParentPID, &pollDelay, &hungDelay) != 3)
     {
         PrintLogW(L"Failed to parse CMDLine: %s", pCmdLine);
         return -1;
     }
 
-    dwParentPID = GetProcessId(hParent);
-    if (dwParentPID == 0)
-    {
-        PrintLog("GetProcessId - FAILED: %u\n", GetLastError());
-        return -2;
-    }
-
     PrintLog("ParentPID: %u\n", dwParentPID);
     bool dumped;
-    if (!DebugLoop(hParent, dwParentPID, pollDelay, hungDelay, dumped))
+    if (!DebugLoop(dwParentPID, pollDelay, hungDelay, dumped))
     {
         PrintLog("Ending crash reporter due to previous error.");
         return -3;

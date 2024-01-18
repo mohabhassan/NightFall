@@ -6,11 +6,11 @@ cd morfuse
 mkdir cmake
 cd cmake
 cmake -DFLEX_EXECUTABLE="..\..\win_flex_bison-2.5.25\win_flex.exe" -DBISON_EXECUTABLE="..\..\win_flex_bison-2.5.25\win_bison.exe" -DFLEX_INCLUDE_DIR="..\..\win_flex_bison-2.5.25\" -DCMAKE_BUILD_TYPE=Release -A Win32 ..\
-cmake --build . --config RelWithDebInfo
-cmake --install . --config RelWithDebInfo
+cmake --build . --config Release #RelWithDebInfo
+cmake --install . --config Release #RelWithDebInfo
 cd ../../
 mohpc:
-clone https://github.com/moh-rises/mohpc.git
+clone https://github.com/mohabhassan/mohpc.git
 cd mohpc
 cd thirdparty
 
@@ -52,6 +52,6 @@ mkdir build
 cd build
 
 cmake -A Win32 ..\
-cmake --build . --config RelWithDebInfo
+cmake --build . --config Release # or use RelWithDebInfo
 
 copy mohpc.dll and morfuse.dll to same directory as Network.exe

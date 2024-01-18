@@ -110,7 +110,7 @@ class HTTPClient
 	static atomic<Status> status;
 
 	static list<QueuedClientRequest> requests;
-	static mutex requests_mutex;//mutex for requests
+	//static mutex requests_mutex;//mutex for requests
 
 	static list<QueuedClientResponse> responses;
 	static mutex responses_mutex;//mutex for responses

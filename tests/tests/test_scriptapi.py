@@ -29,17 +29,17 @@ class TestScriptAPI():
         
     def test_scriptapiserver(self, game_manager, file_manager, rcon_manager):
         query_params = {'key1': 'value1', 'key2': 'value2'}
-        resp = requests.get('http://localhost:8080/', params=query_params)
+        resp = requests.get('http://localhost:' + game_manager.game_sv_api_ports() + '/', params=query_params)
         print('get response text: ', resp.text)
         assert resp.text == '{"message":{"content":{"0":{"content":"sdgfdsg","type":"string"},"1":{"content":"etaseg","type":"string"},"2":{"content":"wewewewewew","type":"string"}},"type":"array_object"},"status":"success"}'
         body = json.dumps({'key1': 'value1', 'key2': 'value2'})
         print('post request body: ', body)
-        resp = requests.post('http://localhost:8080/posttest', data=body)
+        resp = requests.post('http://localhost:' + game_manager.game_sv_api_ports() + '/posttest', data=body)
         print('post response text: ', resp.text)
         assert resp.text == '{"message":{"content":{"0":{"content":"sdgfdsg","type":"string"},"1":{"content":"etaseg","type":"string"},"2":{"content":"wewewewewew","type":"string"}},"type":"array_object"},"status":"success"}'
-        resp = requests.get('http://localhost:8080/', params=query_params)
+        resp = requests.get('http://localhost:' + game_manager.game_sv_api_ports() + '/', params=query_params)
         assert resp.status_code == 404
-        resp = requests.post('http://localhost:8080/posttest')
+        resp = requests.post('http://localhost:' + game_manager.game_sv_api_ports() + '/posttest')
         assert resp.status_code == 404
 
         while True:

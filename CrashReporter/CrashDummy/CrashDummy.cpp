@@ -200,10 +200,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 break;
             case ID_LOADDBGBTN:
             {
-                HANDLE hLocalProc = GetCurrentProcess();
-                HANDLE hGlobalProc;
+                //HANDLE hLocalProc = GetCurrentProcess();
+                DWORD pid = GetCurrentProcessId();
+                //HANDLE hGlobalProc;
                 WCHAR procPath[] = L"D:/nightfall/NightFall/CrashReporter/Release/CrashReporter.exe";
-
+                /*
                 if (!DuplicateHandle(hLocalProc,
                     hLocalProc,
                     hLocalProc,
@@ -220,7 +221,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     );
                     break;
                 }
-
+                */
                 STARTUPINFO si;
                 PROCESS_INFORMATION pi;
 
@@ -230,7 +231,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 WCHAR cmdline[2048];
                 DWORD pollDelay = 5000, hungDelay = 30000;
-                wsprintf(cmdline, L"%s %p %u %u", procPath, hGlobalProc, pollDelay, hungDelay);
+                wsprintf(cmdline, L"%s %u %u %u", procPath, pid, pollDelay, hungDelay);
                 if (!CreateProcess(NULL,   // No module name (use command line)
                     cmdline,        // Command line
                     NULL,           // Process handle not inheritable
