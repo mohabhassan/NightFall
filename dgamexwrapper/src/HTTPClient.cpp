@@ -14,7 +14,7 @@ mutex HTTPClient::cv_mutex;//mutex for cv
 atomic<HTTPClient::Status> HTTPClient::status;
 
 list<QueuedClientRequest> HTTPClient::requests;
-mutex HTTPClient::requests_mutex;//mutex for requests
+//mutex HTTPClient::requests_mutex;//mutex for requests
 
 list<QueuedClientResponse> HTTPClient::responses;
 mutex HTTPClient::responses_mutex;//mutex for responses
@@ -29,14 +29,14 @@ void HTTPClient::HandleRequests()
 	{
 		if (status == CST_IDLE)
 		{
-			cv.wait(lk);
+			cv.wait(lk); // acquires the lock before returning
 		}
 
 		if (status == CST_NEWREQ)
 		{
 			QueuedClientRequest req;
 			{
-				lock_guard<mutex> lock(requests_mutex);
+				//lock_guard<mutex> lock(requests_mutex);
 				req = requests.front();
 				requests.pop_front();
 				if (!requests.size())
@@ -44,7 +44,9 @@ void HTTPClient::HandleRequests()
 					status = CST_IDLE;
 				}
 			}
+			lk.unlock();
 			CreateRequest(req);
+			lk.lock();
 		}
 	}
 }
@@ -131,7 +133,8 @@ void HTTPClient::CreateRequest(QueuedClientRequest & req)
 void HTTPClient::EnqueueResponse(QueuedClientRequest & req, string respStr, long http_code)
 {
 	lock_guard<mutex> lock(responses_mutex);
-	responses.emplace_back(respStr, http_code, req.getScript(), req.getUserData());
+	if (status != CST_STOP)
+		responses.emplace_back(respStr, http_code, req.getScript(), req.getUserData());
 }
 
 
@@ -179,7 +182,7 @@ void HTTPClient::Shutdown()
 	}
 	cv.notify_all();
 
-	lock_guard<mutex> lock2(requests_mutex);
+	lock_guard<mutex> lock2(cv_mutex);
 	requests.clear();
 	lock_guard<mutex> lock3(responses_mutex);
 	responses.clear();
@@ -194,13 +197,13 @@ bool HTTPClient::IsRunning()
 void HTTPClient::CreateAPIRequest(string url, string method, ScriptVariable & script, ScriptVariable & user_data)
 {
 	{
-		lock_guard<mutex> lock2(requests_mutex);
+		lock_guard<mutex> lock2(cv_mutex);
 		requests.emplace_back(url, method, script, user_data);
 	}
 
 	//auto start = chrono::high_resolution_clock::now();
 	{
-		lock_guard<mutex> lock1(cv_mutex);
+		//lock_guard<mutex> lock1(cv_mutex);
 		status = CST_NEWREQ;
 	}
 	cv.notify_all();
