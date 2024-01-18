@@ -404,7 +404,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     DWORD dwParentPID;
     DWORD pollDelay, hungDelay;
 
-    if (swscanf_s(pCmdLine, L"%p %u %u", &dwParentPID, &pollDelay, &hungDelay) != 3)
+    if (swscanf_s(pCmdLine, L"%u %u %u", &dwParentPID, &pollDelay, &hungDelay) != 3)
     {
         PrintLogW(L"Failed to parse CMDLine: %s", pCmdLine);
         return -1;

@@ -231,7 +231,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 WCHAR cmdline[2048];
                 DWORD pollDelay = 5000, hungDelay = 30000;
-                wsprintf(cmdline, L"%s %p %u %u", procPath, pid, pollDelay, hungDelay);
+                wsprintf(cmdline, L"%s %u %u %u", procPath, pid, pollDelay, hungDelay);
                 if (!CreateProcess(NULL,   // No module name (use command line)
                     cmdline,        // Command line
                     NULL,           // Process handle not inheritable

@@ -642,7 +642,7 @@ void startCrashReporter()
 	auto crashRptPath = mainPath / "CrashReporter.exe";
 	WCHAR cmdline[2048];
 	DWORD pollDelay = sv_crashrpt_poll_delay.GetIntValue() * 1000, hungDelay = sv_crashrpt_hang_wait.GetIntValue() * 1000;
-	wsprintfW(cmdline, L"%s %p %u %u", crashRptPath.c_str(), PID, pollDelay, hungDelay);
+	wsprintfW(cmdline, L"%s %u %u %u", crashRptPath.c_str(), PID, pollDelay, hungDelay);
 	if (!CreateProcessW(NULL,   // No module name (use command line)
 		cmdline,        // Command line
 		NULL,           // Process handle not inheritable
