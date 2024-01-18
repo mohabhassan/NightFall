@@ -35,13 +35,14 @@ class BotManager():
     
     def start_bot(self, *args):
         try:
-            self.bot_process = subprocess.Popen([self.exe_path.as_posix(), '-t', self.server_port, *args], stdout=subprocess.PIPE, stdin=subprocess.PIPE, cwd=self.bot_path)
+            self.bot_process = subprocess.Popen([self.exe_path, '-t', self.server_port, *args], stdout=subprocess.PIPE, stdin=subprocess.PIPE, cwd=self.bot_path)
             self.out_q = Queue()
             self.stdout_thread_stop = Event()
             self.stdout_thread = Thread(target=enqueue_output, args=(self.bot_process.stdout, self.out_q, self.stdout_thread_stop), daemon=True)
             self.stdout_thread.start()
             self.instance_id = BotManager.total_instances
             BotManager.total_instances += 1
+            print('BotManager: start_bot: exe_path:', self.exe_path)
             print('BotManager: start_bot: instance_id:', self.instance_id)
             return True
         except Exception as e:
@@ -191,5 +192,5 @@ class BotManager():
         self.send_command(b'set dm_playergermanmodel german_wehrmacht_soldier')
         assert self.instance_id != -1
         self.join_team(team)
-        time.sleep(1) #for spawn
+        time.sleep(5) #for spawn
         print('BotManager: spawned:', team.decode())

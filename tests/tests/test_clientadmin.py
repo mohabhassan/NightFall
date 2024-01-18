@@ -326,7 +326,7 @@ Enabled taunts for client 1
         timelimit = int(timelimit)
         timelimit = max(timelimit+1, 7)
         bot_manager.send_command(b'ad_timelimit ' + str(timelimit).encode())
-        time.sleep(1) # so cvar change can be executed
+        time.sleep(5) # so cvar change can be executed
         assert rcon_manager.get_cvar_value(b'timelimit') == str(timelimit)
 
     def test_ad_gametype(self, game_manager, file_manager, rcon_manager, bot_manager):
