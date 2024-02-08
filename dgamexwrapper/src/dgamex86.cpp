@@ -754,17 +754,17 @@ void	G_Shutdown (void)
 	
 	shutdownScriptHooks();
 	shutdownConsoleCommands();
-	CustomCvar sv_update("sv_update", "1", CVAR_ARCHIVE);
-	
-	if (sv_update.GetIntValue())
-	{
-		UpdateClient uc;
-		uc.CheckForUpdate();
-	}
 
 	if (gameInfo.IsAA() && gameInfo.IsServer() && rbe->RB_Shutdown)
 	{
 		rbe->RB_Shutdown();
+	}
+
+	
+	//if (sv_update.GetIntValue())
+	{
+		UpdateClient uc;
+		uc.CheckForUpdate();
 	}
 	globals_backup->Shutdown()();
 

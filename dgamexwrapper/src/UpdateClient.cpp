@@ -76,12 +76,12 @@ string UpdateClient::RequestUpdateInfo()
 	catch (const std::exception&e)
 	{
 		//gi->Printf(PATCH_NAME " api client exception occured: %s\n", e.what());
-		gi->Printf(PATCH_NAME " Update Client: Failed to check for updates: %s\n", e.what());
+		gi->Printf(PATCH_NAME " Update Client: Error: Failed to check for updates: %s\n", e.what());
 		return "";
 	}
 	if (httpCode != 200)
 	{
-		gi->Printf(PATCH_NAME " Update Client: Unexpected response code: %ld\n", httpCode);
+		gi->Printf(PATCH_NAME " Update Client: Error: Unexpected response code: %ld\n", httpCode);
 		return "";
 	}
 	return respStr;
@@ -95,9 +95,14 @@ static size_t write_callback_file(FILE *stream, char* ptr, size_t size, size_t n
 }
 
 //FIXME: this is nasty, but update logic is not really frustrating
-bool UpdateClient::UpdateFile(string fileRelPath, string fileURL, string fileMD5)
+bool UpdateClient::UpdateFile(string fileRelPath, string fileURL, string fileMD5, bool fileOptional)
 {
 	gi->Printf(PATCH_NAME " Update Client: Checking file: %s\n", fileRelPath.c_str());
+	if (fileOptional && !updateOptionals)
+	{
+		gi->Printf(PATCH_NAME " Update Client: Ignoring optional file: %s\n", fileRelPath.c_str());
+	}
+
 	bool fileExists = true;
 	try
 	{
@@ -241,8 +246,8 @@ bool UpdateClient::UpdateFile(string fileRelPath, string fileURL, string fileMD5
 		}
 		catch (const std::exception& e)
 		{
-			gi->Printf(PATCH_NAME " Update Client: Failed to delete file: %s.back : error: %s , ignoring....\n", fileRelPath.c_str(), fileRelPath.c_str(), e.what());
-			return false;
+			gi->Printf(PATCH_NAME " Update Client: Warning: Failed to delete file: %s.back : what: %s , ignoring....\n", fileRelPath.c_str(), e.what());
+			//return false;
 		}
 	}
 
@@ -263,71 +268,74 @@ void UpdateClient::CheckForUpdate()
 {
 
 	string respStr = RequestUpdateInfo();
-	if (!respStr.empty())
+	if (respStr.empty()) //error is printed in RequestUpdateInfo
+		return;
+
+	json j;
+	try
 	{
-		json j;
-		try
-		{
-			j = json::parse(respStr);
-		}
-		catch (json::parse_error& e)
-		{
-			gi->Printf(PATCH_NAME " Update Client: json::parse failed!\n");
-			return;
-		}
-		if (j["version"] == PATCH_VERSION)
-		{
-			gi->Printf(PATCH_NAME " Update Client: same version, skipping update.\n");
-			return;
-		}
+		j = json::parse(respStr);
+	}
+	catch (json::parse_error& e)
+	{
+		gi->Printf(PATCH_NAME " Update Client: error: json::parse failed!\n");
+		return;
+	}
+	if (j["version"] == PATCH_VERSION)
+	{
+		gi->Printf(PATCH_NAME " Update Client: same version of %s, skipping update.\n", PATCH_VERSION);
+		return;
+	}
 
-		json dir_info;
-		if (gameInfo.IsSH())
-		{
-			CustomCvar shortversion("shortversion", "2.15", CVAR_ROM);
-			dir_info = j["sh"][shortversion.GetStringValue()];
-		}
-		else if (gameInfo.IsBT())
-		{
-			CustomCvar shortversion("shortversion", "2.30", CVAR_ROM);
-			dir_info = j["bt"][shortversion.GetStringValue()];
-		}
-		else if (gameInfo.IsAA())
-		{
-			CustomCvar shortversion("shortversion", "1.11", CVAR_ROM);
-			dir_info = j["aa"][shortversion.GetStringValue()];
-		}
-		else//let's use AA for now
-		{
-			CustomCvar shortversion("shortversion", "1.11", CVAR_ROM);
-			dir_info = j["aa"][shortversion.GetStringValue()];
-		}
+	json dir_info;
+	if (gameInfo.IsSH())
+	{
+		CustomCvar shortversion("shortversion", "2.15", CVAR_ROM);
+		dir_info = j["sh"][shortversion.GetStringValue()];
+	}
+	else if (gameInfo.IsBT())
+	{
+		CustomCvar shortversion("shortversion", "2.30", CVAR_ROM);
+		dir_info = j["bt"][shortversion.GetStringValue()];
+	}
+	else if (gameInfo.IsAA())
+	{
+		CustomCvar shortversion("shortversion", "1.11", CVAR_ROM);
+		dir_info = j["aa"][shortversion.GetStringValue()];
+	}
+	else//let's use AA for now
+	{
+		CustomCvar shortversion("shortversion", "1.11", CVAR_ROM);
+		dir_info = j["aa"][shortversion.GetStringValue()];
+	}
 
+	CustomCvar sv_update_optionals("sv_update_optionals", "1", CVAR_ARCHIVE);
+	updateOptionals = sv_update_optionals.GetIntValue();
 
-		bool allgood = true;
-		// range-based for
-		for (auto& element : dir_info)
-		{
-			string relPath = element["relPath"];
-			auto files = element["files"];
+	bool allgood = true;
+	// range-based for
+	for (auto& element : dir_info)
+	{
+		string relPath = element["relPath"];
+		auto files = element["files"];
 
-			for (auto& file : files) 
-			{
-				string fileName = file["name"];
-				string fileRelPath = relPath + fileName;
-				string fileMd5 = file["md5"];
-				string fileURL = file["url"];
-				allgood = UpdateFile(fileRelPath.c_str(), fileURL.c_str(), fileMd5);
-			}
-		}
-		if (allgood)
+		for (auto& file : files) 
 		{
-			gi->Printf(PATCH_NAME " Update Client: Successfully update from version %s to version %s\n", PATCH_VERSION, string(j["version"]).c_str());
+			string fileName = file["name"];
+			string fileRelPath = relPath + fileName;
+			string fileMd5 = file["md5"];
+			string fileURL = file["url"];
+			bool fileOptional = file["optional"];
+			allgood = allgood && UpdateFile(fileRelPath.c_str(), fileURL.c_str(), fileMd5, fileOptional);
 		}
-		else
-		{
-			gi->Printf(PATCH_NAME " Update Client: Update attempt failed.\n");
-		}
+	}
+	if (allgood)
+	{
+		gi->Printf(PATCH_NAME " Update Client: Successfully updated from version %s to version %s\n", PATCH_VERSION, string(j["version"]).c_str());
+	}
+	else
+	{
+		gi->Printf(PATCH_NAME " Update Client: Update attempt failed from version %s to version %s\n", PATCH_VERSION, string(j["version"]).c_str());
 	}
 
 }
