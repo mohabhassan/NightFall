@@ -240,7 +240,7 @@ void ScriptThread::FOpenEvent(Event *ev)
 	str filename, a_type;
 	int argnum = ev->NumArgs();
 	int share_flags = 0;
-	int _shFlags = _SH_DENYRW;
+	int _shFlags = _SH_DENYNO;
 
 	if (argnum != 2 && argnum != 3)
 	{
@@ -261,7 +261,9 @@ void ScriptThread::FOpenEvent(Event *ev)
 	{
 		share_flags = ev->GetInteger(3);
 	}
-	if (share_flags == 1)
+	if (share_flags == 0)
+		_shFlags = _SH_DENYRW;
+	else if (share_flags == 1)
 		_shFlags = _SH_DENYWR;
 	else if (share_flags == 2)
 		_shFlags = _SH_DENYRD;
