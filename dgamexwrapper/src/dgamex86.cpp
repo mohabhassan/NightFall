@@ -679,7 +679,6 @@ void G_InitGame( int startTime, int randomSeed )
 	#ifndef _WIN32
 	initsighandlers();  // init our custom signal handlers  (linux only)
 	#endif
-
 	initScriptHooks();
 
 	initConsoleCommands();
@@ -931,10 +930,10 @@ void* __cdecl GetGameAPI( void *import_actual )
 	globals->SetBotThink(G_BotThink);
 	*/
 	globals->SetCleanup(G_CleanUp);
-	globals->SetClientBegin([](gentity_t* ent, userCmd_t* cmd) {return G_ClientBegin(GEntity(ent), cmd); });
+	globals->SetClientBegin([](gentity_t* ent, userCmd_t* cmd) {if (ent) G_ClientBegin(GEntity(ent), cmd); });
 
 
-	globals->SetClientCommand([](gentity_t* ent) {return G_ClientCommand(GEntity(ent)); });
+	globals->SetClientCommand([](gentity_t* ent) {if(ent) G_ClientCommand(GEntity(ent)); });
 	if (gameInfo.GetExpansion() == gameInfo.AA)
 	{
 		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime); }); //todo: handle for AA/SH/BT
@@ -944,10 +943,10 @@ void* __cdecl GetGameAPI( void *import_actual )
 		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime, a3); }); //todo: handle for AA/SH/BT
 	}
 
-	globals->SetClientDisconnect([](gentity_t* ent) {return G_ClientDisconnect(GEntity(ent)); });
-	globals->SetClientThink([](gentity_t* ent, userCmd_t* cmd, userEyes_t* eyeInfo) {return G_ClientThink(GEntity(ent), cmd, eyeInfo); });
+	globals->SetClientDisconnect([](gentity_t* ent) {if (ent) G_ClientDisconnect(GEntity(ent)); });
+	globals->SetClientThink([](gentity_t* ent, userCmd_t* cmd, userEyes_t* eyeInfo) {if (ent)  G_ClientThink(GEntity(ent), cmd, eyeInfo); });
 
-	globals->SetClientUserinfoChanged([](gentity_t* ent, char* userInfo) {return G_ClientUserinfoChanged(GEntity(ent), userInfo); });
+	globals->SetClientUserinfoChanged([](gentity_t* ent, char* userInfo) {if (ent)  G_ClientUserinfoChanged(GEntity(ent), userInfo); });
 	globals->SetConsoleCommand(G_ConsoleCommand);
 
 	/*	
