@@ -176,7 +176,7 @@ char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 			char* ip = Info_ValueForKey(userinfo, "ip");
 			if (ip == "")
 			{
-				gi->Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
+				//gi->Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 				reason = NULL;
 			}
 			else
