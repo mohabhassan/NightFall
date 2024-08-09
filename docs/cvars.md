@@ -9,7 +9,7 @@
     - [sv\_api\_ports](#sv_api_ports)
     - [sv\_api\_acl](#sv_api_acl)
     - [sv\_api\_client](#sv_api_client)
-    - [sv\_update](#sv_update)
+    - [sv\_update\_optionals](#sv_update_optionals)
     - [sv\_store](#sv_store)
     - [sv\_scriptfiles](#sv_scriptfiles)
     - [sv\_disablechat](#sv_disablechat)
@@ -80,11 +80,11 @@
 | More Info | [sv_api_client](api_client.md#sv_api_client)|
 
 ---
-### sv_update
-| Name | sv_update |
+### sv_update_optionals
+| Name | sv_update_optionals |
 |--|--|
-| Description | Enable/disable auto updates. |
-| More Info | Update checks are carried at each map end.<br> Set to 1 to enable updates, set to 0 to disable updates. |
+| Description | Enable/disable optional updates. |
+| More Info | Update checks are carried at each map end.<br> Set to 1 to enable updating optional files, set to 0 to disable updating them. |
 
 ---
 ### sv_store
