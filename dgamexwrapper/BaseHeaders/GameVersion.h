@@ -2,10 +2,19 @@
 #include <string>
 #include <unordered_map>
 #include <tuple>
+#include <vector>
 
-using std::string, std::unordered_map, std::tuple;
+using std::string, std::vector, std::unordered_map, std::tuple;
 class GameInfo
 {
+	inline static vector<string> sideStrs = { "Client", "Server" };
+	inline static vector<string> expansionStrs = { "AA", "SH", "BT" };
+	inline static unordered_map<double, string> versionStrs = { 
+		{1.11, "1.11"},
+		{2.15, "2.15"},
+		{2.30, "2.30"},
+		{2.40, "2.40"}
+	};
 public:
 	enum Expansion { AA, SH, BT };
 	enum Side { Client,	Server };
@@ -118,6 +127,18 @@ public:
 	const double GetVersion()
 	{
 		return gameVersion;
+	}
+	string GetExpansionStr()
+	{
+		return expansionStrs[gameExpansion];
+	}
+	string GetSideStr()
+	{
+		return sideStrs[gameSide];
+	}
+	string GetVersionStr()
+	{
+		return versionStrs[gameVersion];
 	}
 	const bool IsClient()
 	{

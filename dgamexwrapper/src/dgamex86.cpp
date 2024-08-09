@@ -1,4 +1,5 @@
 #define INCL_DOSMODULEMGR
+#include "Version.h"
 #include "dgamex86.h"
 #include "AddressManager.h"
 #include "AddressDefinitions.h"
@@ -684,6 +685,8 @@ void G_InitGame( int startTime, int randomSeed )
 	initConsoleCommands();
 
 	startCrashReporter();
+
+	CustomCvar sv_info("sv_info", "NightFall V" PATCH_VERSION " (" PATCH_STAGE ") Windows " + gameInfo.GetExpansionStr() + " " + gameInfo.GetSideStr() + " " + gameInfo.GetVersionStr(), CVAR_SERVERINFO | CVAR_CHEAT);
 
 	if (gameInfo.IsAA() && gameInfo.IsServer() && rbe->RB_InitGame)
 	{
