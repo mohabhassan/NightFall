@@ -1203,7 +1203,7 @@ Most of the following functions map to their respective cstdio library counterpa
 
 ---
 ### fopen
-	fopen(string file_path, string access_type, [integer share_flags=0])
+	fopen(string file_path, string access_type, [integer share_flags=3])
 Opens file with file_path using access_type.
 
 share_flags specify whether to allow other processes and threads to open your file for reading/writing.
