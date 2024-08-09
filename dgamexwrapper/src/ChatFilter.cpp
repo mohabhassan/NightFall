@@ -385,7 +385,12 @@ bool ChatFilter::CheckScriptCallback(vector<string>& chat_args, gentity_t * ent,
 	{
 		ScriptVariable var;
 		sev.Trigger({ GEntity(ent)->entity, target, chat_args}, &var);
-		if (var.GetType() != VARIABLE_POINTER)
+		if (var.GetType() == VARIABLE_NONE)
+		{
+			gi->Printf(PATCH_NAME " ChatFilter Script Callback error: dmmessage handler script returned NULL, allowing mesage.\n");
+			return true;
+		}
+		else if (var.GetType() != VARIABLE_POINTER)
 		{
 			return var.intValue();
 		}

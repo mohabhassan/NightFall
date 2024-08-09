@@ -1,4 +1,5 @@
 #define INCL_DOSMODULEMGR
+#include "Version.h"
 #include "dgamex86.h"
 #include "AddressManager.h"
 #include "AddressDefinitions.h"
@@ -175,7 +176,7 @@ char* G_ClientConnect_Internal(int clientNum, qboolean firstTime)
 			char* ip = Info_ValueForKey(userinfo, "ip");
 			if (ip == "")
 			{
-				gi->Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
+				//gi->Printf(PATCH_NAME " connect error: empty client ip %d on G_ClientConnect_Internal! Ignoring...\n", clientNum);
 				reason = NULL;
 			}
 			else
@@ -678,12 +679,13 @@ void G_InitGame( int startTime, int randomSeed )
 	#ifndef _WIN32
 	initsighandlers();  // init our custom signal handlers  (linux only)
 	#endif
-
 	initScriptHooks();
 
 	initConsoleCommands();
 
 	startCrashReporter();
+
+	CustomCvar sv_info("sv_info", "NightFall V" PATCH_VERSION " (" PATCH_STAGE ") Windows " + gameInfo.GetExpansionStr() + " " + gameInfo.GetSideStr() + " " + gameInfo.GetVersionStr(), CVAR_SERVERINFO | CVAR_CHEAT);
 
 	if (gameInfo.IsAA() && gameInfo.IsServer() && rbe->RB_InitGame)
 	{
@@ -754,17 +756,17 @@ void	G_Shutdown (void)
 	
 	shutdownScriptHooks();
 	shutdownConsoleCommands();
-	CustomCvar sv_update("sv_update", "1", CVAR_ARCHIVE);
-	
-	if (sv_update.GetIntValue())
-	{
-		UpdateClient uc;
-		uc.CheckForUpdate();
-	}
 
 	if (gameInfo.IsAA() && gameInfo.IsServer() && rbe->RB_Shutdown)
 	{
 		rbe->RB_Shutdown();
+	}
+
+	
+	//if (sv_update.GetIntValue())
+	{
+		UpdateClient uc;
+		uc.CheckForUpdate();
 	}
 	globals_backup->Shutdown()();
 
@@ -928,10 +930,10 @@ void* __cdecl GetGameAPI( void *import_actual )
 	globals->SetBotThink(G_BotThink);
 	*/
 	globals->SetCleanup(G_CleanUp);
-	globals->SetClientBegin([](gentity_t* ent, userCmd_t* cmd) {return G_ClientBegin(GEntity(ent), cmd); });
+	globals->SetClientBegin([](gentity_t* ent, userCmd_t* cmd) {if (ent) G_ClientBegin(GEntity(ent), cmd); });
 
 
-	globals->SetClientCommand([](gentity_t* ent) {return G_ClientCommand(GEntity(ent)); });
+	globals->SetClientCommand([](gentity_t* ent) {if(ent) G_ClientCommand(GEntity(ent)); });
 	if (gameInfo.GetExpansion() == gameInfo.AA)
 	{
 		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime); }); //todo: handle for AA/SH/BT
@@ -941,10 +943,10 @@ void* __cdecl GetGameAPI( void *import_actual )
 		globals->SetClientConnect([](int clientNum, qboolean firstTime, int a3) -> char* {return G_ClientConnect(clientNum, firstTime, a3); }); //todo: handle for AA/SH/BT
 	}
 
-	globals->SetClientDisconnect([](gentity_t* ent) {return G_ClientDisconnect(GEntity(ent)); });
-	globals->SetClientThink([](gentity_t* ent, userCmd_t* cmd, userEyes_t* eyeInfo) {return G_ClientThink(GEntity(ent), cmd, eyeInfo); });
+	globals->SetClientDisconnect([](gentity_t* ent) {if (ent) G_ClientDisconnect(GEntity(ent)); });
+	globals->SetClientThink([](gentity_t* ent, userCmd_t* cmd, userEyes_t* eyeInfo) {if (ent)  G_ClientThink(GEntity(ent), cmd, eyeInfo); });
 
-	globals->SetClientUserinfoChanged([](gentity_t* ent, char* userInfo) {return G_ClientUserinfoChanged(GEntity(ent), userInfo); });
+	globals->SetClientUserinfoChanged([](gentity_t* ent, char* userInfo) {if (ent)  G_ClientUserinfoChanged(GEntity(ent), userInfo); });
 	globals->SetConsoleCommand(G_ConsoleCommand);
 
 	/*	
