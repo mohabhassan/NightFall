@@ -5,7 +5,6 @@ MOHAA/MOHSH/MOHBT (d)gamex86 wrapper based on the old MOHAA gamex86 wrapper.
 
 NightFall serves a wrapper that compliments various aspects of MOHAA's script engine capabilities.
 
-https://www.x-null.net/forums/forum.php
 
 This is the best public version out there.
 
@@ -50,15 +49,6 @@ You can download latest version from [here](https://github.com/mohabhassan/Night
 ## Main Developer
  - **RyBack**
  
-## Secondary Developers/Contributors
- - Todesengel
- - RazoRapiD
- - Ley0k
- - xNULL|James
- - DoubleKill
- - Appelpitje
- - Criminal
- - Zappa
 
 Have fun ! ;)
 
