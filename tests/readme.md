@@ -8,6 +8,9 @@ This is a suite of several tests to cover the functionality for most of NightFal
  - `pip install pytest pytest-retry pytest-timeout requests`
 
 ## Running
+
+For WINE, only change the gamepath
+
 ### AlliedAssault 1.11:
 `pytest ./tests --game aa --gamever 1.11 --gamepath 'D:/MOHAA_STUFF/nightfall/game/servers/AA111' --mode server --port 12205 -rA -s -x --retries 2 --timeout=120 > logaa111.txt 2>&1`
 ### SpearHead 2.15:
