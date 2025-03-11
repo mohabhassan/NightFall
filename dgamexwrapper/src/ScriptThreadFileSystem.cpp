@@ -239,7 +239,7 @@ void ScriptThread::FOpenEvent(Event *ev)
 	FILE *fp = NULL;
 	str filename, a_type;
 	int argnum = ev->NumArgs();
-	int share_flags = 0;
+	int share_flags = 3;
 	int _shFlags = _SH_DENYNO;
 
 	if (argnum != 2 && argnum != 3)
